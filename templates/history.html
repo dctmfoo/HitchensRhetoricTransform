@@ -2,29 +2,30 @@
 
 {% block content %}
 <div class="paper">
-    <h2 class="mb-4">Transformation History</h2>
+    <h2 class="mb-4 text-center">Transformation Gallery</h2>
     
-    {% for transformation in transformations %}
-    <div class="history-card mb-4">
-        <div class="card">
-            <div class="card-header">
-                <small class="text-muted">{{ transformation.created_at.strftime('%Y-%m-%d %H:%M:%S') }}</small>
-                <span class="badge bg-primary">Verbosity: {{ transformation.verbosity_level }}</span>
-            </div>
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-md-6">
+    <div class="transformation-gallery">
+        {% for transformation in transformations %}
+        <div class="gallery-item">
+            <div class="gallery-card">
+                <div class="card-metadata">
+                    <span class="timestamp">{{ transformation.created_at.strftime('%Y-%m-%d %H:%M:%S') }}</span>
+                    <span class="badge bg-primary">Verbosity: {{ transformation.verbosity_level }}</span>
+                </div>
+                <div class="card-content">
+                    <div class="original-text">
                         <h5>Original Text</h5>
                         <p>{{ transformation.input_text }}</p>
                     </div>
-                    <div class="col-md-6">
-                        <h5>Transformed Text</h5>
+                    <div class="divider"></div>
+                    <div class="transformed-text">
+                        <h5>Hitchens' Version</h5>
                         <p>{{ transformation.output_text }}</p>
                     </div>
                 </div>
             </div>
         </div>
+        {% endfor %}
     </div>
-    {% endfor %}
 </div>
 {% endblock %}
