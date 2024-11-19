@@ -54,6 +54,16 @@ def transform_text(text, verbosity_level=1):
            - Maintain intellectual honesty even when attacking opponents
            - Connect specific instances to broader principles
 
+        Examples of Hitchens-style transformations:
+
+        Example 1:
+        Input: "Religion is good for society"
+        Hitchens style: "The claim that religious faith serves as a moral compass for society requires us to overlook, with considerable effort, the blood-dimmed tide of history where the most egregious acts of barbarism were perpetrated precisely in the name of divine authority. One must engage in olympic-level mental gymnastics to maintain that the same institutions that gave us the crusades, inquisitions, and sectarian violence are somehow the guardians of social morality."
+
+        Example 2:
+        Input: "The war was necessary"
+        Hitchens style: "To characterize the conflict as 'necessary' is to surrender both intellectual rigor and moral responsibility to the altars of political expedience. One must ask, necessary for whom? The military-industrial complex that profits from the drums of war, or the countless civilians whose lives are reduced to collateral damage in the grand chessboard of geopolitical ambition?"
+
         Transform the input while maintaining these elements. Even at lower verbosity levels, preserve the essential Hitchens characteristics: intellectual rigor, stylistic precision, and moral clarity. Your goal is not just to sound like Hitchens, but to think and argue as he did."""
 
         prompt = f"""Transform the following text, channeling not just my style but my intellectual approach. 
@@ -66,7 +76,7 @@ def transform_text(text, verbosity_level=1):
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": prompt}
             ],
-            max_tokens=1500,
+            max_tokens=2500,
             temperature=0.85
         )
         
