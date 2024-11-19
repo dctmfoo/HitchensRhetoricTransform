@@ -3,15 +3,18 @@ import { extendTheme } from '@chakra-ui/react';
 const theme = extendTheme({
   colors: {
     brand: {
-      deepBurgundy: '#4A1625',
-      agedParchment: '#F5E6D3',
-      inkBlack: '#2B2B2B',
-      oxfordBlue: '#002147',
-      antiqueGold: '#BFA264',
-      leatherBrown: '#8B4513',
-      fadedSepia: '#D4C4B7',
-      forestGreen: '#2B4C3F',
-      mutedCrimson: '#7B323C'
+      deepBurgundy: '#2C0A16', // Darker burgundy
+      agedParchment: '#1A1A1A', // Dark background
+      inkBlack: '#121212', // Deeper black
+      oxfordBlue: '#001529', // Darker oxford blue
+      antiqueGold: '#9B824F', // Muted gold
+      leatherBrown: '#592D0D', // Richer brown
+      fadedSepia: '#2A2522', // Dark sepia
+      forestGreen: '#1B2E26', // Darker forest green
+      mutedCrimson: '#4A1F24', // Darker crimson
+      textLight: '#E0D5C6', // Light text for dark background
+      accentGold: '#BFA264', // Bright accent for highlights
+      borderDark: '#333333' // Dark borders
     }
   },
   fonts: {
@@ -27,17 +30,19 @@ const theme = extendTheme({
       variants: {
         solid: {
           bgGradient: 'linear(145deg, brand.deepBurgundy, brand.mutedCrimson)',
-          color: 'white',
+          color: 'brand.textLight',
           _hover: {
-            bgGradient: 'linear(145deg, brand.mutedCrimson, brand.deepBurgundy)'
+            bgGradient: 'linear(145deg, brand.mutedCrimson, brand.deepBurgundy)',
+            transform: 'translateY(-1px)',
+            boxShadow: 'lg'
           }
         },
         outline: {
           borderColor: 'brand.antiqueGold',
-          color: 'brand.oxfordBlue',
+          color: 'brand.accentGold',
           _hover: {
             bg: 'brand.antiqueGold',
-            color: 'white'
+            color: 'brand.inkBlack'
           }
         }
       }
@@ -45,15 +50,16 @@ const theme = extendTheme({
     Textarea: {
       variants: {
         filled: {
-          bg: 'brand.agedParchment',
+          bg: 'brand.inkBlack',
           border: '1px solid',
-          borderColor: 'brand.leatherBrown',
+          borderColor: 'brand.borderDark',
+          color: 'brand.textLight',
           _hover: {
-            bg: 'brand.agedParchment',
+            bg: 'brand.inkBlack',
           },
           _focus: {
-            borderColor: 'brand.antiqueGold',
-            boxShadow: '0 0 0 1px brand.antiqueGold'
+            borderColor: 'brand.accentGold',
+            boxShadow: '0 0 0 1px brand.accentGold'
           }
         }
       },
@@ -63,7 +69,15 @@ const theme = extendTheme({
     },
     Container: {
       baseStyle: {
-        maxW: 'container.xl'
+        maxW: 'container.xl',
+        px: { base: 4, md: 6 }
+      }
+    },
+    Card: {
+      baseStyle: {
+        bg: 'brand.fadedSepia',
+        borderRadius: 'lg',
+        boxShadow: 'lg'
       }
     }
   },
@@ -71,7 +85,19 @@ const theme = extendTheme({
     global: {
       body: {
         bg: 'brand.agedParchment',
-        color: 'brand.inkBlack'
+        color: 'brand.textLight',
+        lineHeight: 'tall'
+      },
+      'h1, h2, h3, h4, h5, h6': {
+        color: 'brand.accentGold',
+        letterSpacing: 'wide'
+      },
+      a: {
+        color: 'brand.antiqueGold',
+        _hover: {
+          color: 'brand.accentGold',
+          textDecoration: 'none'
+        }
       }
     }
   }
