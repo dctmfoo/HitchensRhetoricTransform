@@ -1,13 +1,17 @@
-from flask import render_template, request, jsonify
+from flask import render_template, request, jsonify, send_from_directory
 from app import app, db
 from models import Transformation
 from utils.openai_helper import transform_text
+import os
 
-@app.route('/')
-def index():
-    return render_template('index.html')
+@app.route('/', defaults={'path': ''})
+@app.route('/<path:path>')
+def serve_react(path):
+    if path and os.path.exists(os.path.join(app.static_folder, 'react', path)):
+        return send_from_directory(os.path.join(app.static_folder, 'react'), path)
+    return send_from_directory(os.path.join(app.static_folder, 'react'), 'index.html')
 
-@app.route('/transform', methods=['POST'])
+@app.route('/api/transform', methods=['POST'])
 def transform():
     try:
         data = request.get_json()
@@ -19,7 +23,6 @@ def transform():
             
         transformed_text = transform_text(input_text, verbosity_level)
         
-        # Save to database
         transformation = Transformation(
             input_text=input_text,
             output_text=transformed_text,
@@ -35,9 +38,18 @@ def transform():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-@app.route('/history')
+@app.route('/api/history')
 def history():
-    transformations = Transformation.query.order_by(
-        Transformation.created_at.desc()
-    ).all()
-    return render_template('history.html', transformations=transformations)
+    try:
+        transformations = Transformation.query.order_by(
+            Transformation.created_at.desc()
+        ).all()
+        return jsonify([{
+            'id': t.id,
+            'input_text': t.input_text,
+            'output_text': t.output_text,
+            'verbosity_level': t.verbosity_level,
+            'created_at': t.created_at.isoformat()
+        } for t in transformations])
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
