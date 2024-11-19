@@ -7,9 +7,11 @@ import {
   Textarea,
   VStack,
   Text,
-  useToast
+  useToast,
+  HStack
 } from '@chakra-ui/react';
 import { useState, useEffect, useRef } from 'react';
+import html2canvas from 'html2canvas';
 
 function Home() {
   const [inputText, setInputText] = useState('');
@@ -17,6 +19,7 @@ function Home() {
   const [verbosity, setVerbosity] = useState('1');
   const [isLoading, setIsLoading] = useState(false);
   const typewriterRef = useRef(null);
+  const outputRef = useRef(null);
   const toast = useToast();
 
   useEffect(() => {
@@ -102,6 +105,53 @@ function Home() {
     }, 30); // Slightly faster typing speed for better UX
   };
 
+  const handleScreenshot = async () => {
+    if (!outputText) {
+      toast({
+        title: 'Error',
+        description: 'No text to capture',
+        status: 'error',
+        duration: 2000,
+        isClosable: true
+      });
+      return;
+    }
+
+    try {
+      const element = outputRef.current;
+      const canvas = await html2canvas(element, {
+        backgroundColor: '#FAF3E3', // Matching brand.agedParchment
+        scale: 2, // Higher quality
+      });
+
+      // Convert to blob
+      canvas.toBlob((blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = 'hitchens-style-text.png';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(url);
+      }, 'image/png', 1.0);
+
+      toast({
+        title: 'Success',
+        description: 'Screenshot saved',
+        status: 'success',
+        duration: 2000
+      });
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description: 'Failed to capture screenshot',
+        status: 'error',
+        duration: 2000
+      });
+    }
+  };
+
   return (
     <Box 
       bg="white" 
@@ -172,41 +222,68 @@ function Home() {
           <VStack flex={1} spacing={4} align="stretch">
             <Text fontWeight="bold">Transformed Text</Text>
             <Box position="relative">
-              <Textarea
-                value={outputText}
-                readOnly
-                minH="200px"
+              <Box
+                ref={outputRef}
+                position="relative"
                 bg="brand.agedParchment"
                 border="1px"
                 borderColor="brand.leatherBrown"
-                sx={{
-                  '&::after': {
-                    content: '"|"',
-                    animation: 'blink 1s step-end infinite',
-                    display: isLoading ? 'none' : 'inline'
-                  },
-                  '@keyframes blink': {
-                    'from, to': { opacity: 1 },
-                    '50%': { opacity: 0 }
-                  }
-                }}
-              />
-              <Button
-                size="sm"
-                position="absolute"
-                top={2}
-                right={2}
-                onClick={() => {
-                  navigator.clipboard.writeText(outputText);
-                  toast({
-                    title: 'Copied!',
-                    status: 'success',
-                    duration: 2000
-                  });
-                }}
+                borderRadius="md"
+                p={4}
               >
-                Copy
-              </Button>
+                <Textarea
+                  value={outputText}
+                  readOnly
+                  minH="200px"
+                  bg="transparent"
+                  border="none"
+                  _focus={{ border: "none", boxShadow: "none" }}
+                  sx={{
+                    '&::after': {
+                      content: '"|"',
+                      animation: 'blink 1s step-end infinite',
+                      display: isLoading ? 'none' : 'inline'
+                    },
+                    '@keyframes blink': {
+                      'from, to': { opacity: 1 },
+                      '50%': { opacity: 0 }
+                    }
+                  }}
+                />
+                {outputText && (
+                  <Text
+                    mt={4}
+                    fontStyle="italic"
+                    textAlign="right"
+                    color="brand.deepBurgundy"
+                  >
+                    - Christopher Hitchens Style
+                  </Text>
+                )}
+              </Box>
+              <HStack position="absolute" top={2} right={2} spacing={2}>
+                <Button
+                  size="sm"
+                  onClick={() => {
+                    navigator.clipboard.writeText(outputText);
+                    toast({
+                      title: 'Copied!',
+                      status: 'success',
+                      duration: 2000
+                    });
+                  }}
+                >
+                  Copy
+                </Button>
+                <Button
+                  size="sm"
+                  onClick={handleScreenshot}
+                  colorScheme="blue"
+                  isDisabled={!outputText}
+                >
+                  Screenshot
+                </Button>
+              </HStack>
             </Box>
           </VStack>
         </Flex>
