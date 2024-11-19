@@ -1,10 +1,9 @@
 import { Box, Flex, Link as ChakraLink, Container, Button } from '@chakra-ui/react';
-import { Link as RouterLink, useLocation } from 'react-router-dom';
+import { Link as RouterLink } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 function Navigation() {
   const { user, logout } = useAuth();
-  const location = useLocation();
 
   const handleLogout = async () => {
     await logout();
@@ -64,16 +63,14 @@ function Navigation() {
                 Logout
               </Button>
             ) : (
-              location.pathname !== '/login' && (
-                <ChakraLink
-                  as={RouterLink}
-                  to="/login"
-                  color="white"
-                  _hover={{ color: 'brand.antiqueGold' }}
-                >
-                  Login
-                </ChakraLink>
-              )
+              <ChakraLink
+                as={RouterLink}
+                to="/login"
+                color="white"
+                _hover={{ color: 'brand.antiqueGold' }}
+              >
+                Login
+              </ChakraLink>
             )}
           </Flex>
         </Flex>

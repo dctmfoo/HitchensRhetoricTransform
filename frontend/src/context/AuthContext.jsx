@@ -1,12 +1,54 @@
-import { createContext, useContext, useState, useCallback } from 'react';
+import { createContext, useContext, useState, useCallback, useEffect } from 'react';
 import { useToast } from '@chakra-ui/react';
 
 const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
   const toast = useToast();
+
+  const handleError = (error) => {
+    setError(error);
+    toast({
+      title: 'Error',
+      description: error.message,
+      status: 'error',
+      duration: 3000,
+      isClosable: true,
+    });
+  };
+
+  const checkAuth = useCallback(async () => {
+    try {
+      const response = await fetch('/api/auth/user', {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'same-origin'
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        setUser(data);
+        setError(null);
+      } else {
+        setUser(null);
+        if (response.status !== 401) {
+          throw new Error('Failed to verify authentication');
+        }
+      }
+    } catch (error) {
+      handleError(error);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [toast]);
+
+  useEffect(() => {
+    checkAuth();
+  }, [checkAuth]);
 
   const login = useCallback(async (username, password) => {
     setIsLoading(true);
@@ -16,6 +58,7 @@ export const AuthProvider = ({ children }) => {
         headers: {
           'Content-Type': 'application/json',
         },
+        credentials: 'same-origin',
         body: JSON.stringify({ username, password }),
       });
 
@@ -26,15 +69,10 @@ export const AuthProvider = ({ children }) => {
       }
 
       setUser(data.user);
+      setError(null);
       return true;
     } catch (error) {
-      toast({
-        title: 'Error',
-        description: error.message,
-        status: 'error',
-        duration: 3000,
-        isClosable: true,
-      });
+      handleError(error);
       return false;
     } finally {
       setIsLoading(false);
@@ -42,30 +80,38 @@ export const AuthProvider = ({ children }) => {
   }, [toast]);
 
   const logout = useCallback(async () => {
+    setIsLoading(true);
     try {
-      await fetch('/api/auth/logout');
-      setUser(null);
-    } catch (error) {
-      console.error('Logout error:', error);
-    }
-  }, []);
+      const response = await fetch('/api/auth/logout', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'same-origin'
+      });
 
-  const checkAuth = useCallback(async () => {
-    try {
-      const response = await fetch('/api/auth/user');
-      if (response.ok) {
-        const data = await response.json();
-        setUser(data);
-      } else {
-        setUser(null);
+      if (!response.ok) {
+        throw new Error('Failed to logout');
       }
-    } catch (error) {
+
       setUser(null);
+      setError(null);
+    } catch (error) {
+      handleError(error);
+    } finally {
+      setIsLoading(false);
     }
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, isLoading, login, logout, checkAuth }}>
+    <AuthContext.Provider value={{ 
+      user, 
+      isLoading, 
+      error,
+      login, 
+      logout, 
+      checkAuth 
+    }}>
       {children}
     </AuthContext.Provider>
   );

@@ -6,31 +6,62 @@ import {
   Button,
   Badge,
   VStack,
-  useToast
+  useToast,
+  Spinner,
+  Alert,
+  AlertIcon,
+  AlertTitle,
+  AlertDescription,
 } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 function History() {
   const [transformations, setTransformations] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
   const toast = useToast();
+  const navigate = useNavigate();
+  const { user } = useAuth();
 
   useEffect(() => {
-    fetchTransformations();
-  }, []);
+    if (user) {
+      fetchTransformations();
+    }
+  }, [user]);
 
   const fetchTransformations = async () => {
     try {
-      const response = await fetch('/api/history');
+      const response = await fetch('/api/history', {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'same-origin'
+      });
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          navigate('/login', { replace: true });
+          return;
+        }
+        throw new Error('Failed to load transformation history');
+      }
+
       const data = await response.json();
       setTransformations(data);
+      setError(null);
     } catch (error) {
+      setError(error.message);
       toast({
         title: 'Error',
-        description: 'Failed to load transformation history',
+        description: error.message,
         status: 'error',
         duration: 5000,
         isClosable: true
       });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -42,6 +73,38 @@ function History() {
       duration: 2000
     });
   };
+
+  if (isLoading) {
+    return (
+      <Box textAlign="center" py={10}>
+        <Spinner size="xl" color="brand.deepBurgundy" />
+        <Text mt={4}>Loading transformations...</Text>
+      </Box>
+    );
+  }
+
+  if (error) {
+    return (
+      <Alert
+        status="error"
+        variant="subtle"
+        flexDirection="column"
+        alignItems="center"
+        justifyContent="center"
+        textAlign="center"
+        height="200px"
+        borderRadius="lg"
+      >
+        <AlertIcon boxSize="40px" mr={0} />
+        <AlertTitle mt={4} mb={1} fontSize="lg">
+          Error Loading History
+        </AlertTitle>
+        <AlertDescription maxWidth="sm">
+          {error}
+        </AlertDescription>
+      </Alert>
+    );
+  }
 
   return (
     <Box>
