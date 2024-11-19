@@ -114,15 +114,26 @@ function Home() {
 
     try {
       const element = outputRef.current;
+      
+      // Force layout recalculation
+      await new Promise(resolve => setTimeout(resolve, 100));
+      
       const canvas = await html2canvas(element, {
         backgroundColor: '#FFFFFF',
         scale: 2,
         useCORS: true,
         logging: true,
         width: element.offsetWidth,
-        height: element.offsetHeight,
+        height: element.scrollHeight,  // Use scrollHeight instead
         windowWidth: element.offsetWidth,
-        windowHeight: element.offsetHeight
+        windowHeight: element.scrollHeight,
+        onclone: (clonedDoc) => {
+          const clonedElement = clonedDoc.querySelector('[data-screenshot="true"]');
+          if (clonedElement) {
+            clonedElement.style.height = 'auto';
+            clonedElement.style.minHeight = 'unset';
+          }
+        }
       });
 
       canvas.toBlob((blob) => {
@@ -227,15 +238,14 @@ function Home() {
                 ref={outputRef}
                 data-screenshot="true"
                 bg="white"
-                p={8}
+                p={12}
                 minH="200px"
                 width="100%"
                 position="relative"
                 display="flex"
                 flexDirection="column"
-                gap={4}
-                border="1px"
-                borderColor="brand.leatherBrown"
+                justifyContent="space-between"
+                border="1px solid #E2E8F0"
                 borderRadius="md"
               >
                 <Box
@@ -243,7 +253,8 @@ function Home() {
                   fontFamily="mono"
                   color="black"
                   fontSize="1rem"
-                  lineHeight="1.6"
+                  lineHeight="1.8"
+                  mb={8}
                   sx={{
                     '&::after': {
                       content: '"|"',
@@ -259,20 +270,22 @@ function Home() {
                   {outputText}
                 </Box>
                 {outputText && (
-                  <Flex 
-                    direction="column" 
-                    align="flex-end"
-                    mt="auto"
-                    pt={4}
+                  <Box
+                    width="100%"
+                    display="flex"
+                    justifyContent="flex-end"
+                    mt={4}
                   >
-                    <Box 
-                      as="img" 
+                    <img
                       src="/static/images/hitchens-signature.png"
                       alt="Christopher Hitchens Signature"
-                      height="40px"
-                      objectFit="contain"
+                      style={{
+                        height: '50px',
+                        objectFit: 'contain',
+                        marginTop: 'auto'
+                      }}
                     />
-                  </Flex>
+                  </Box>
                 )}
               </Box>
               <HStack position="absolute" top={2} right={2} spacing={2}>
