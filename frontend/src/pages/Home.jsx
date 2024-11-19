@@ -11,7 +11,7 @@ import {
   HStack
 } from '@chakra-ui/react';
 import { useState, useEffect, useRef } from 'react';
-import domtoimage from 'dom-to-image';
+import * as htmlToImage from 'html-to-image';
 
 function Home() {
   const [inputText, setInputText] = useState('');
@@ -20,7 +20,6 @@ function Home() {
   const [isLoading, setIsLoading] = useState(false);
   const typewriterRef = useRef(null);
   const outputRef = useRef(null);
-  const contentRef = useRef(null);
   const toast = useToast();
 
   useEffect(() => {
@@ -107,26 +106,18 @@ function Home() {
 
     try {
       const element = outputRef.current;
-      
-      // Wait for any pending renders
-      await new Promise(resolve => setTimeout(resolve, 500));
-
-      // Use dom-to-image to capture the element
-      const dataUrl = await domtoimage.toPng(element, {
+      const dataUrl = await htmlToImage.toPng(element, {
         quality: 1.0,
-        bgcolor: '#ffffff',
-        style: {
-          transform: 'scale(2)',
-          transformOrigin: 'top left'
-        }
+        backgroundColor: '#ffffff',
+        pixelRatio: 2,
+        width: element.offsetWidth,
+        height: element.scrollHeight
       });
 
-      // Create download link
       const link = document.createElement('a');
       link.download = 'hitchens-response.png';
       link.href = dataUrl;
       link.click();
-
     } catch (error) {
       console.error('Screenshot error:', error);
       toast({
@@ -212,8 +203,8 @@ function Home() {
                 ref={outputRef}
                 data-screenshot="true"
                 bg="white"
-                p={10}
-                minH="300px"
+                p={16}
+                minH="400px"
                 width="100%"
                 maxW="800px"
                 mx="auto"
@@ -221,17 +212,12 @@ function Home() {
                 display="flex"
                 flexDirection="column"
                 borderRadius="md"
-                style={{
-                  pageBreakInside: 'avoid',
-                  breakInside: 'avoid'
-                }}
               >
                 <Box
-                  ref={contentRef}
                   whiteSpace="pre-wrap"
-                  fontFamily="Georgia, serif"
+                  fontFamily="'Times New Roman', serif"
                   color="black"
-                  fontSize="16px"
+                  fontSize="20px"
                   lineHeight="1.8"
                   pb={16}
                   flex="1"
@@ -252,10 +238,10 @@ function Home() {
                 {outputText && (
                   <Box
                     position="absolute"
-                    bottom={10}
-                    right={10}
-                    width="150px"
-                    height="50px"
+                    bottom={16}
+                    right={16}
+                    width="200px"
+                    height="70px"
                   >
                     <Box
                       as="img"
