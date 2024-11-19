@@ -119,16 +119,11 @@ function Home() {
         backgroundColor: '#FAF3E3',
         scale: 2,
         useCORS: true,
-        scrollY: -window.scrollY,
-        windowHeight: element.scrollHeight,
-        height: element.scrollHeight,
-        onclone: (clonedDoc) => {
-          const clonedElement = clonedDoc.querySelector('[data-screenshot="true"]');
-          if (clonedElement) {
-            clonedElement.style.height = 'auto';
-            clonedElement.style.minHeight = 'unset';
-          }
-        }
+        logging: true,
+        width: element.offsetWidth,
+        height: element.offsetHeight,
+        windowWidth: element.offsetWidth,
+        windowHeight: element.offsetHeight
       });
 
       canvas.toBlob((blob) => {
@@ -149,6 +144,7 @@ function Home() {
         duration: 2000
       });
     } catch (error) {
+      console.error('Screenshot error:', error);
       toast({
         title: 'Error',
         description: 'Failed to capture screenshot',
@@ -231,7 +227,6 @@ function Home() {
               <Box
                 ref={outputRef}
                 data-screenshot="true"
-                position="relative"
                 bg="brand.agedParchment"
                 border="1px"
                 borderColor="brand.leatherBrown"
@@ -239,20 +234,18 @@ function Home() {
                 p={6}
                 minH="200px"
                 height="auto"
-                overflow="visible"
+                width="100%"
+                position="relative"
                 display="flex"
                 flexDirection="column"
               >
-                <Textarea
-                  value={outputText}
-                  readOnly
-                  height="auto"
-                  minH="200px"
+                <Box
+                  whiteSpace="pre-wrap"
+                  fontFamily="mono"
+                  p={4}
                   bg="transparent"
-                  border="none"
-                  resize="none"
-                  pb={outputText ? "60px" : "0"}
-                  _focus={{ border: "none", boxShadow: "none" }}
+                  minH="200px"
+                  height="auto"
                   sx={{
                     '&::after': {
                       content: '"|"',
@@ -264,7 +257,9 @@ function Home() {
                       '50%': { opacity: 0 }
                     }
                   }}
-                />
+                >
+                  {outputText}
+                </Box>
                 {outputText && (
                   <Text
                     position="absolute"
