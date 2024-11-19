@@ -108,7 +108,6 @@ function Home() {
         description: 'No text to capture',
         status: 'error',
         duration: 2000,
-        isClosable: true
       });
       return;
     }
@@ -116,7 +115,7 @@ function Home() {
     try {
       const element = outputRef.current;
       const canvas = await html2canvas(element, {
-        backgroundColor: '#FAF3E3',
+        backgroundColor: '#FFFFFF',
         scale: 2,
         useCORS: true,
         logging: true,
@@ -227,25 +226,24 @@ function Home() {
               <Box
                 ref={outputRef}
                 data-screenshot="true"
-                bg="brand.agedParchment"
-                border="1px"
-                borderColor="brand.leatherBrown"
-                borderRadius="md"
-                p={6}
+                bg="white"
+                p={8}
                 minH="200px"
-                height="auto"
                 width="100%"
                 position="relative"
                 display="flex"
                 flexDirection="column"
+                gap={4}
+                border="1px"
+                borderColor="brand.leatherBrown"
+                borderRadius="md"
               >
                 <Box
                   whiteSpace="pre-wrap"
                   fontFamily="mono"
-                  p={4}
-                  bg="transparent"
-                  minH="200px"
-                  height="auto"
+                  color="black"
+                  fontSize="1rem"
+                  lineHeight="1.6"
                   sx={{
                     '&::after': {
                       content: '"|"',
@@ -261,15 +259,20 @@ function Home() {
                   {outputText}
                 </Box>
                 {outputText && (
-                  <Text
-                    position="absolute"
-                    bottom={4}
-                    right={4}
-                    fontStyle="italic"
-                    color="brand.deepBurgundy"
+                  <Flex 
+                    direction="column" 
+                    align="flex-end"
+                    mt="auto"
+                    pt={4}
                   >
-                    - Christopher Hitchens Style
-                  </Text>
+                    <Box 
+                      as="img" 
+                      src="/static/images/hitchens-signature.png"
+                      alt="Christopher Hitchens Signature"
+                      height="40px"
+                      objectFit="contain"
+                    />
+                  </Flex>
                 )}
               </Box>
               <HStack position="absolute" top={2} right={2} spacing={2}>
