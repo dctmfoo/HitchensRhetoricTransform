@@ -9,14 +9,24 @@ import {
   Text,
   useToast
 } from '@chakra-ui/react';
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 function Home() {
   const [inputText, setInputText] = useState('');
   const [outputText, setOutputText] = useState('');
   const [verbosity, setVerbosity] = useState('1');
   const [isLoading, setIsLoading] = useState(false);
+  const typewriterRef = useRef(null);
   const toast = useToast();
+
+  useEffect(() => {
+    return () => {
+      // Cleanup interval on unmount
+      if (typewriterRef.current) {
+        clearInterval(typewriterRef.current);
+      }
+    };
+  }, []);
 
   const handleTransform = async () => {
     if (!inputText.trim()) {
@@ -64,15 +74,32 @@ function Home() {
   };
 
   const typewriterEffect = (text) => {
+    // Clear any existing interval
+    if (typewriterRef.current) {
+      clearInterval(typewriterRef.current);
+    }
+
     let index = 0;
+    const textLength = text.length;
     setOutputText('');
-    const interval = setInterval(() => {
-      setOutputText((prev) => prev + text[index]);
+
+    // Store the interval ID in the ref
+    typewriterRef.current = setInterval(() => {
+      setOutputText((prev) => {
+        // Ensure we're adding the correct character even if state updates are batched
+        const nextIndex = prev.length;
+        if (nextIndex >= textLength) {
+          clearInterval(typewriterRef.current);
+          return prev;
+        }
+        return prev + text[nextIndex];
+      });
+
       index++;
-      if (index === text.length) {
-        clearInterval(interval);
+      if (index >= textLength) {
+        clearInterval(typewriterRef.current);
       }
-    }, 50);
+    }, 30); // Slightly faster typing speed for better UX
   };
 
   return (
@@ -152,6 +179,17 @@ function Home() {
                 bg="brand.agedParchment"
                 border="1px"
                 borderColor="brand.leatherBrown"
+                sx={{
+                  '&::after': {
+                    content: '"|"',
+                    animation: 'blink 1s step-end infinite',
+                    display: isLoading ? 'none' : 'inline'
+                  },
+                  '@keyframes blink': {
+                    'from, to': { opacity: 1 },
+                    '50%': { opacity: 0 }
+                  }
+                }}
               />
               <Button
                 size="sm"
