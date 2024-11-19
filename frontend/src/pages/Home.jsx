@@ -102,57 +102,40 @@ function Home() {
   };
 
   const handleScreenshot = async () => {
-    if (!outputText) {
-      toast({
-        title: 'Error',
-        description: 'No text to capture',
-        status: 'error',
-        duration: 2000,
-      });
-      return;
-    }
+    if (!outputText) return;
 
     try {
       const element = outputRef.current;
-      
-      // Force layout recalculation
-      await new Promise(resolve => setTimeout(resolve, 100));
-      
+      await new Promise(resolve => setTimeout(resolve, 500)); // Wait for layout
+
       const canvas = await html2canvas(element, {
         backgroundColor: '#FFFFFF',
         scale: 2,
         useCORS: true,
         logging: true,
-        width: element.offsetWidth,
-        height: element.scrollHeight,  // Use scrollHeight instead
-        windowWidth: element.offsetWidth,
+        scrollY: -window.scrollY,
+        windowWidth: element.scrollWidth,
         windowHeight: element.scrollHeight,
+        height: element.scrollHeight,
+        width: element.scrollWidth,
         onclone: (clonedDoc) => {
           const clonedElement = clonedDoc.querySelector('[data-screenshot="true"]');
           if (clonedElement) {
             clonedElement.style.height = 'auto';
-            clonedElement.style.minHeight = 'unset';
+            clonedElement.style.minHeight = element.scrollHeight + 'px';
           }
         }
       });
 
+      // Convert and download
       canvas.toBlob((blob) => {
-        const url = window.URL.createObjectURL(blob);
+        const url = URL.createObjectURL(blob);
         const link = document.createElement('a');
+        link.download = 'hitchens-response.png';
         link.href = url;
-        link.download = 'hitchens-style-text.png';
-        document.body.appendChild(link);
         link.click();
-        document.body.removeChild(link);
-        window.URL.revokeObjectURL(url);
+        URL.revokeObjectURL(url);
       }, 'image/png', 1.0);
-
-      toast({
-        title: 'Success',
-        description: 'Screenshot saved',
-        status: 'success',
-        duration: 2000
-      });
     } catch (error) {
       console.error('Screenshot error:', error);
       toast({
@@ -238,23 +221,28 @@ function Home() {
                 ref={outputRef}
                 data-screenshot="true"
                 bg="white"
-                p={12}
-                minH="200px"
+                p={8}
+                minH="300px"
                 width="100%"
+                maxW="800px"
+                mx="auto"
                 position="relative"
                 display="flex"
                 flexDirection="column"
-                justifyContent="space-between"
-                border="1px solid #E2E8F0"
                 borderRadius="md"
+                style={{
+                  pageBreakInside: 'avoid',
+                  breakInside: 'avoid'
+                }}
               >
                 <Box
                   whiteSpace="pre-wrap"
-                  fontFamily="mono"
+                  fontFamily="Georgia, serif"
                   color="black"
-                  fontSize="1rem"
+                  fontSize="16px"
                   lineHeight="1.8"
-                  mb={8}
+                  pb={12}
+                  flex="1"
                   sx={{
                     '&::after': {
                       content: '"|"',
@@ -271,19 +259,20 @@ function Home() {
                 </Box>
                 {outputText && (
                   <Box
-                    width="100%"
-                    display="flex"
-                    justifyContent="flex-end"
-                    mt={4}
+                    position="absolute"
+                    bottom={8}
+                    right={8}
+                    width="150px"
+                    height="50px"
                   >
-                    <img
+                    <Box
+                      as="img"
                       src="/static/images/hitchens-signature.png"
                       alt="Christopher Hitchens Signature"
-                      style={{
-                        height: '50px',
-                        objectFit: 'contain',
-                        marginTop: 'auto'
-                      }}
+                      width="100%"
+                      height="100%"
+                      objectFit="contain"
+                      objectPosition="right bottom"
                     />
                   </Box>
                 )}
