@@ -52,8 +52,17 @@ function Navigation() {
             )}
           </Flex>
           
-          <Flex align="center">
-            {user ? (
+          <Flex align="center" gap={4}>
+            <ChakraLink
+              as={RouterLink}
+              to="/login"
+              color="white"
+              _hover={{ color: 'brand.antiqueGold' }}
+              display={user ? 'none' : 'block'}
+            >
+              Login
+            </ChakraLink>
+            {user && (
               <Button
                 onClick={handleLogout}
                 variant="ghost"
@@ -62,15 +71,6 @@ function Navigation() {
               >
                 Logout
               </Button>
-            ) : (
-              <ChakraLink
-                as={RouterLink}
-                to="/login"
-                color="white"
-                _hover={{ color: 'brand.antiqueGold' }}
-              >
-                Login
-              </ChakraLink>
             )}
           </Flex>
         </Flex>

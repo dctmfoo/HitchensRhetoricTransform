@@ -7,6 +7,7 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isInitialized, setIsInitialized] = useState(false);
   const toast = useToast();
 
   const handleError = (error) => {
@@ -21,6 +22,10 @@ export const AuthProvider = ({ children }) => {
   };
 
   const checkAuth = useCallback(async () => {
+    if (!isInitialized) {
+      setIsLoading(true);
+    }
+    
     try {
       const response = await fetch('/api/auth/user', {
         headers: {
@@ -41,10 +46,12 @@ export const AuthProvider = ({ children }) => {
       }
     } catch (error) {
       handleError(error);
+      setUser(null);
     } finally {
       setIsLoading(false);
+      setIsInitialized(true);
     }
-  }, [toast]);
+  }, [toast, isInitialized]);
 
   useEffect(() => {
     checkAuth();
@@ -108,6 +115,7 @@ export const AuthProvider = ({ children }) => {
       user, 
       isLoading, 
       error,
+      isInitialized,
       login, 
       logout, 
       checkAuth 
