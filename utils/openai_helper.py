@@ -76,7 +76,7 @@ def transform_text(text, verbosity_level=1):
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": prompt}
             ],
-            max_tokens=2500,
+            max_tokens=5000,
             temperature=0.85
         )
         
