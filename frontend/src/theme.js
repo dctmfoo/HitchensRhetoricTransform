@@ -3,12 +3,18 @@ import { extendTheme } from '@chakra-ui/react';
 const theme = extendTheme({
   colors: {
     brand: {
-      background: '#121212',
-      surface: '#1E1E1E',
-      text: '#FFFFFF',
-      textSecondary: '#A0A0A0',
-      accent: '#4A9EFF',
-      border: '#333333'
+      deepBurgundy: '#2C0A16', // Darker burgundy
+      agedParchment: '#1A1A1A', // Dark background
+      inkBlack: '#121212', // Deeper black
+      oxfordBlue: '#001529', // Darker oxford blue
+      antiqueGold: '#9B824F', // Muted gold
+      leatherBrown: '#592D0D', // Richer brown
+      fadedSepia: '#2A2522', // Dark sepia
+      forestGreen: '#1B2E26', // Darker forest green
+      mutedCrimson: '#4A1F24', // Darker crimson
+      textLight: '#E0D5C6', // Light text for dark background
+      accentGold: '#BFA264', // Bright accent for highlights
+      borderDark: '#333333' // Dark borders
     }
   },
   fonts: {
@@ -23,21 +29,20 @@ const theme = extendTheme({
       },
       variants: {
         solid: {
-          bg: 'brand.accent',
-          color: 'brand.text',
+          bgGradient: 'linear(145deg, brand.deepBurgundy, brand.mutedCrimson)',
+          color: 'brand.textLight',
           _hover: {
-            bg: 'brand.accent',
-            opacity: 0.9,
+            bgGradient: 'linear(145deg, brand.mutedCrimson, brand.deepBurgundy)',
             transform: 'translateY(-1px)',
             boxShadow: 'lg'
           }
         },
         outline: {
-          borderColor: 'brand.border',
-          color: 'brand.accent',
+          borderColor: 'brand.antiqueGold',
+          color: 'brand.accentGold',
           _hover: {
-            bg: 'brand.accent',
-            color: 'brand.text'
+            bg: 'brand.antiqueGold',
+            color: 'brand.inkBlack'
           }
         }
       }
@@ -45,16 +50,16 @@ const theme = extendTheme({
     Textarea: {
       variants: {
         filled: {
-          bg: 'brand.surface',
+          bg: 'brand.inkBlack',
           border: '1px solid',
-          borderColor: 'brand.border',
-          color: 'brand.text',
+          borderColor: 'brand.borderDark',
+          color: 'brand.textLight',
           _hover: {
-            bg: 'brand.surface',
+            bg: 'brand.inkBlack',
           },
           _focus: {
-            borderColor: 'brand.accent',
-            boxShadow: '0 0 0 1px brand.accent'
+            borderColor: 'brand.accentGold',
+            boxShadow: '0 0 0 1px brand.accentGold'
           }
         }
       },
@@ -70,7 +75,7 @@ const theme = extendTheme({
     },
     Card: {
       baseStyle: {
-        bg: 'brand.surface',
+        bg: 'brand.fadedSepia',
         borderRadius: 'lg',
         boxShadow: 'lg'
       }
@@ -79,18 +84,18 @@ const theme = extendTheme({
   styles: {
     global: {
       body: {
-        bg: 'brand.background',
-        color: 'brand.text',
+        bg: 'brand.agedParchment',
+        color: 'brand.textLight',
         lineHeight: 'tall'
       },
       'h1, h2, h3, h4, h5, h6': {
-        color: 'brand.text',
+        color: 'brand.accentGold',
         letterSpacing: 'wide'
       },
       a: {
-        color: 'brand.accent',
+        color: 'brand.antiqueGold',
         _hover: {
-          opacity: 0.9,
+          color: 'brand.accentGold',
           textDecoration: 'none'
         }
       }
