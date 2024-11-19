@@ -11,7 +11,7 @@ import {
   HStack
 } from '@chakra-ui/react';
 import { useState, useEffect, useRef } from 'react';
-import html2canvas from 'html2canvas';
+import domtoimage from 'dom-to-image';
 
 function Home() {
   const [inputText, setInputText] = useState('');
@@ -20,6 +20,7 @@ function Home() {
   const [isLoading, setIsLoading] = useState(false);
   const typewriterRef = useRef(null);
   const outputRef = useRef(null);
+  const contentRef = useRef(null);
   const toast = useToast();
 
   useEffect(() => {
@@ -56,7 +57,7 @@ function Home() {
       });
 
       const data = await response.json();
-      
+
       if (response.ok) {
         typewriterEffect(data.transformed_text);
       } else {
@@ -106,36 +107,26 @@ function Home() {
 
     try {
       const element = outputRef.current;
-      await new Promise(resolve => setTimeout(resolve, 500)); // Wait for layout
+      
+      // Wait for any pending renders
+      await new Promise(resolve => setTimeout(resolve, 500));
 
-      const canvas = await html2canvas(element, {
-        backgroundColor: '#FFFFFF',
-        scale: 2,
-        useCORS: true,
-        logging: true,
-        scrollY: -window.scrollY,
-        windowWidth: element.scrollWidth,
-        windowHeight: element.scrollHeight,
-        height: element.scrollHeight,
-        width: element.scrollWidth,
-        onclone: (clonedDoc) => {
-          const clonedElement = clonedDoc.querySelector('[data-screenshot="true"]');
-          if (clonedElement) {
-            clonedElement.style.height = 'auto';
-            clonedElement.style.minHeight = element.scrollHeight + 'px';
-          }
+      // Use dom-to-image to capture the element
+      const dataUrl = await domtoimage.toPng(element, {
+        quality: 1.0,
+        bgcolor: '#ffffff',
+        style: {
+          transform: 'scale(2)',
+          transformOrigin: 'top left'
         }
       });
 
-      // Convert and download
-      canvas.toBlob((blob) => {
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.download = 'hitchens-response.png';
-        link.href = url;
-        link.click();
-        URL.revokeObjectURL(url);
-      }, 'image/png', 1.0);
+      // Create download link
+      const link = document.createElement('a');
+      link.download = 'hitchens-response.png';
+      link.href = dataUrl;
+      link.click();
+
     } catch (error) {
       console.error('Screenshot error:', error);
       toast({
@@ -172,7 +163,7 @@ function Home() {
         <Heading textAlign="center" color="brand.oxfordBlue">
           Hitchens Style Transformer
         </Heading>
-        
+
         <Flex w="100%" gap={8} direction={{ base: 'column', md: 'row' }}>
           <VStack flex={1} spacing={4} align="stretch">
             <Text fontWeight="bold">Input Text</Text>
@@ -189,7 +180,7 @@ function Home() {
                 boxShadow: '0 0 0 1px brand.antiqueGold'
               }}
             />
-            
+
             <Select
               value={verbosity}
               onChange={(e) => setVerbosity(e.target.value)}
@@ -199,7 +190,7 @@ function Home() {
               <option value="2">Moderate</option>
               <option value="3">Verbose</option>
             </Select>
-            
+
             <Button
               onClick={handleTransform}
               isLoading={isLoading}
@@ -213,7 +204,7 @@ function Home() {
               Transform
             </Button>
           </VStack>
-          
+
           <VStack flex={1} spacing={4} align="stretch">
             <Text fontWeight="bold">Transformed Text</Text>
             <Box position="relative">
@@ -221,7 +212,7 @@ function Home() {
                 ref={outputRef}
                 data-screenshot="true"
                 bg="white"
-                p={8}
+                p={10}
                 minH="300px"
                 width="100%"
                 maxW="800px"
@@ -236,12 +227,13 @@ function Home() {
                 }}
               >
                 <Box
+                  ref={contentRef}
                   whiteSpace="pre-wrap"
                   fontFamily="Georgia, serif"
                   color="black"
                   fontSize="16px"
                   lineHeight="1.8"
-                  pb={12}
+                  pb={16}
                   flex="1"
                   sx={{
                     '&::after': {
@@ -260,8 +252,8 @@ function Home() {
                 {outputText && (
                   <Box
                     position="absolute"
-                    bottom={8}
-                    right={8}
+                    bottom={10}
+                    right={10}
                     width="150px"
                     height="50px"
                   >
