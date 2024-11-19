@@ -1,4 +1,5 @@
 from flask import render_template, request, jsonify, send_from_directory
+from flask_login import login_required, current_user
 from app import app, db
 from models import Transformation
 from utils.openai_helper import transform_text
@@ -12,6 +13,7 @@ def serve_react(path):
     return send_from_directory(os.path.join(app.static_folder, 'react'), 'index.html')
 
 @app.route('/api/transform', methods=['POST'])
+@login_required
 def transform():
     try:
         data = request.get_json()
@@ -26,7 +28,8 @@ def transform():
         transformation = Transformation(
             input_text=input_text,
             output_text=transformed_text,
-            verbosity_level=verbosity_level
+            verbosity_level=verbosity_level,
+            user_id=current_user.id
         )
         db.session.add(transformation)
         db.session.commit()
@@ -39,9 +42,10 @@ def transform():
         return jsonify({'error': str(e)}), 500
 
 @app.route('/api/history')
+@login_required
 def history():
     try:
-        transformations = Transformation.query.order_by(
+        transformations = Transformation.query.filter_by(user_id=current_user.id).order_by(
             Transformation.created_at.desc()
         ).all()
         return jsonify([{
