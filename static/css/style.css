@@ -107,6 +107,40 @@ textarea {
     transition: background-color 0.2s ease;
 }
 
+.text-content {
+    position: relative;
+}
+
+.copy-btn {
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding: 0.25rem 0.75rem;
+    font-size: 0.85rem;
+    color: var(--oxford-blue);
+    background-color: rgba(255, 255, 255, 0.9);
+    border: 1px solid var(--gold-accent);
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    opacity: 0;
+}
+
+.text-content:hover .copy-btn {
+    opacity: 1;
+}
+
+.copy-btn:hover {
+    background-color: var(--gold-accent);
+    color: white;
+}
+
+.copy-btn.copied {
+    background-color: var(--oxford-blue);
+    color: white;
+    border-color: var(--oxford-blue);
+}
+
 .original-text:hover, .transformed-text:hover {
     background-color: rgba(255, 255, 255, 0.9);
 }

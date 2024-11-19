@@ -15,12 +15,22 @@
                 <div class="card-content">
                     <div class="original-text">
                         <h5>Original Text</h5>
-                        <p>{{ transformation.input_text }}</p>
+                        <div class="text-content">
+                            <p>{{ transformation.input_text }}</p>
+                            <button class="copy-btn" data-clipboard-text="{{ transformation.input_text }}">
+                                Copy
+                            </button>
+                        </div>
                     </div>
                     <div class="divider"></div>
                     <div class="transformed-text">
                         <h5>Hitchens' Version</h5>
-                        <p>{{ transformation.output_text }}</p>
+                        <div class="text-content">
+                            <p>{{ transformation.output_text }}</p>
+                            <button class="copy-btn" data-clipboard-text="{{ transformation.output_text }}">
+                                Copy
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
