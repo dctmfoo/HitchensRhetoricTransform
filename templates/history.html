@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="paper">
+    <h2 class="mb-4">Transformation History</h2>
+    
+    {% for transformation in transformations %}
+    <div class="history-card mb-4">
+        <div class="card">
+            <div class="card-header">
+                <small class="text-muted">{{ transformation.created_at.strftime('%Y-%m-%d %H:%M:%S') }}</small>
+                <span class="badge bg-primary">Verbosity: {{ transformation.verbosity_level }}</span>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h5>Original Text</h5>
+                        <p>{{ transformation.input_text }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <h5>Transformed Text</h5>
+                        <p>{{ transformation.output_text }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

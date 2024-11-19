@@ -1,0 +1,68 @@
+:root {
+    --mahogany: #4A0404;
+    --aged-paper: #F4E4BC;
+    --ink-black: #1A1A1A;
+}
+
+body {
+    font-family: 'Playfair Display', serif;
+    background-color: var(--aged-paper);
+    color: var(--ink-black);
+}
+
+.navbar {
+    background-color: var(--mahogany);
+}
+
+.paper {
+    background-color: #fff;
+    background-image: url('../images/paper-texture.svg');
+    padding: 2rem;
+    border-radius: 5px;
+    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+}
+
+textarea {
+    font-family: 'Playfair Display', serif;
+    background-color: rgba(255, 255, 255, 0.9);
+    border: 1px solid #ccc;
+    padding: 1rem;
+}
+
+.btn-primary {
+    background-color: var(--mahogany);
+    border-color: var(--mahogany);
+}
+
+.example-card {
+    padding: 1.5rem;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: rgba(255, 255, 255, 0.7);
+}
+
+.history-card {
+    transition: transform 0.2s;
+}
+
+.history-card:hover {
+    transform: translateY(-2px);
+}
+
+/* Typewriter effect classes */
+.typewriter {
+    overflow: hidden;
+    white-space: nowrap;
+    border-right: 2px solid var(--ink-black);
+    animation: typing 3.5s steps(40, end), blink-caret 0.75s step-end infinite;
+}
+
+@keyframes typing {
+    from { width: 0 }
+    to { width: 100% }
+}
+
+@keyframes blink-caret {
+    from, to { border-color: transparent }
+    50% { border-color: var(--ink-black) }
+}
