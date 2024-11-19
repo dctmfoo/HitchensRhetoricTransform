@@ -11,6 +11,7 @@ import {
   FormErrorMessage,
   Alert,
   AlertIcon,
+  HStack,
 } from '@chakra-ui/react';
 import { useState } from 'react';
 import { useNavigate, Navigate } from 'react-router-dom';
@@ -54,6 +55,12 @@ function Login() {
       });
       navigate('/');
     }
+  };
+
+  const handleUseDemoAccount = () => {
+    setUsername('demo');
+    setPassword('demo123');
+    setErrors({});
   };
 
   return (
@@ -122,19 +129,32 @@ function Login() {
               <FormErrorMessage>{errors.password}</FormErrorMessage>
             </FormControl>
 
-            <Button
-              type="submit"
-              isLoading={isLoading}
-              loadingText="Logging in..."
-              bgGradient="linear(145deg, brand.deepBurgundy, brand.mutedCrimson)"
-              color="white"
-              _hover={{
-                bgGradient: "linear(145deg, brand.mutedCrimson, brand.deepBurgundy)"
-              }}
-              width="100%"
-            >
-              Login
-            </Button>
+            <HStack spacing={4}>
+              <Button
+                type="submit"
+                isLoading={isLoading}
+                loadingText="Logging in..."
+                bgGradient="linear(145deg, brand.deepBurgundy, brand.mutedCrimson)"
+                color="white"
+                _hover={{
+                  bgGradient: "linear(145deg, brand.mutedCrimson, brand.deepBurgundy)"
+                }}
+                flex="1"
+              >
+                Login
+              </Button>
+              <Button
+                onClick={handleUseDemoAccount}
+                variant="outline"
+                borderColor="brand.antiqueGold"
+                color="brand.deepBurgundy"
+                _hover={{
+                  bg: "brand.agedParchment"
+                }}
+              >
+                Use Demo Account
+              </Button>
+            </HStack>
           </VStack>
         </form>
 
