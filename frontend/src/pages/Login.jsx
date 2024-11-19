@@ -8,6 +8,7 @@ import {
   Heading,
   useToast,
   FormErrorMessage,
+  Text,
 } from '@chakra-ui/react';
 import { useState } from 'react';
 import { useNavigate, Navigate } from 'react-router-dom';
@@ -54,23 +55,16 @@ function Login() {
   };
 
   const handleUseDemoAccount = async () => {
-    setUsername('demo');
-    setPassword('demo123');
-    setErrors({});
-    // Add slight delay to ensure state updates
-    setTimeout(() => {
-      login('demo', 'demo123').then(success => {
-        if (success) {
-          toast({
-            title: 'Welcome to demo account!',
-            status: 'success',
-            duration: 3000,
-            isClosable: true,
-          });
-          navigate('/');
-        }
+    const success = await login('demo', 'demo123');
+    if (success) {
+      toast({
+        title: 'Welcome to demo account!',
+        status: 'success',
+        duration: 3000,
+        isClosable: true,
       });
-    }, 100);
+      navigate('/');
+    }
   };
 
   return (
@@ -98,28 +92,41 @@ function Login() {
       }}
     >
       <VStack spacing={6} position="relative" zIndex={1}>
-        <Heading textAlign="center" color="brand.oxfordBlue">
-          Login
-        </Heading>
+        <Box textAlign="center" w="100%" mb={2}>
+          <Text
+            fontSize="lg"
+            fontWeight="medium"
+            color="brand.deepBurgundy"
+            mb={2}
+          >
+            Quick Access: Try Our Demo Account
+          </Text>
+          <Button
+            onClick={handleUseDemoAccount}
+            size="lg"
+            width="100%"
+            height="60px"
+            fontSize="xl"
+            bgGradient="linear(145deg, brand.antiqueGold, brand.leatherBrown)"
+            color="white"
+            _hover={{
+              bgGradient: "linear(145deg, brand.leatherBrown, brand.antiqueGold)",
+              transform: "translateY(-2px)",
+              boxShadow: "lg"
+            }}
+            _active={{
+              transform: "translateY(0)",
+            }}
+          >
+            Try Demo Account
+          </Button>
+        </Box>
 
-        <Button
-          onClick={handleUseDemoAccount}
-          size="lg"
-          width="100%"
-          bgGradient="linear(145deg, brand.antiqueGold, brand.leatherBrown)"
-          color="white"
-          _hover={{
-            bgGradient: "linear(145deg, brand.leatherBrown, brand.antiqueGold)",
-            transform: "translateY(-2px)",
-            boxShadow: "lg"
-          }}
-          _active={{
-            transform: "translateY(0)",
-          }}
-          mb={4}
-        >
-          Try Demo Account
-        </Button>
+        <Box w="100%" h="2px" bgGradient="linear(to-r, transparent, brand.antiqueGold, transparent)" my={4} />
+
+        <Heading textAlign="center" color="brand.oxfordBlue" size="lg">
+          Login to Your Account
+        </Heading>
         
         <form onSubmit={handleSubmit} style={{ width: '100%' }}>
           <VStack spacing={4} align="stretch">
