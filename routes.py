@@ -7,9 +7,10 @@ import os
 @app.route('/', defaults={'path': ''})
 @app.route('/<path:path>')
 def serve_react(path):
-    if path and os.path.exists(os.path.join(app.static_folder, 'react', path)):
-        return send_from_directory(os.path.join(app.static_folder, 'react'), path)
-    return send_from_directory(os.path.join(app.static_folder, 'react'), 'index.html')
+    static_folder = os.path.join('static', 'react')
+    if path and os.path.exists(os.path.join(static_folder, path)):
+        return send_from_directory(static_folder, path)
+    return send_from_directory(static_folder, 'index.html')
 
 @app.route('/api/transform', methods=['POST'])
 def transform():
