@@ -3,40 +3,20 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Navigation from './components/Navigation';
 import Home from './pages/Home';
 import History from './pages/History';
-import Login from './pages/Login';
-import ProtectedRoute from './components/ProtectedRoute';
-import { AuthProvider } from './context/AuthContext';
 import theme from './theme';
 
 function App() {
   return (
     <ChakraProvider theme={theme}>
-      <AuthProvider>
-        <Router>
-          <Navigation />
-          <Container maxW="container.xl" py={8}>
-            <Routes>
-              <Route path="/login" element={<Login />} />
-              <Route
-                path="/"
-                element={
-                  <ProtectedRoute>
-                    <Home />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/history"
-                element={
-                  <ProtectedRoute>
-                    <History />
-                  </ProtectedRoute>
-                }
-              />
-            </Routes>
-          </Container>
-        </Router>
-      </AuthProvider>
+      <Router>
+        <Navigation />
+        <Container maxW="container.xl" py={8}>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/history" element={<History />} />
+          </Routes>
+        </Container>
+      </Router>
     </ChakraProvider>
   );
 }
