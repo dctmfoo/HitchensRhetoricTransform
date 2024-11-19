@@ -106,18 +106,29 @@ function Home() {
 
     try {
       const element = outputRef.current;
-      const dataUrl = await htmlToImage.toPng(element, {
-        quality: 1.0,
-        backgroundColor: '#ffffff',
-        pixelRatio: 2,
+      
+      // Wait for content to be fully rendered
+      await new Promise(resolve => setTimeout(resolve, 100));
+      
+      const canvas = await htmlToImage.toCanvas(element, {
+        quality: 1,
+        backgroundColor: '#FFFFFF',
         width: element.offsetWidth,
-        height: element.scrollHeight
+        height: Math.max(element.scrollHeight, element.offsetHeight),
+        style: {
+          transform: 'scale(1)',
+          transformOrigin: 'top left'
+        }
       });
 
-      const link = document.createElement('a');
-      link.download = 'hitchens-response.png';
-      link.href = dataUrl;
-      link.click();
+      canvas.toBlob((blob) => {
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.download = 'hitchens-response.png';
+        link.href = url;
+        link.click();
+        URL.revokeObjectURL(url);
+      }, 'image/png', 1.0);
     } catch (error) {
       console.error('Screenshot error:', error);
       toast({
@@ -203,24 +214,24 @@ function Home() {
                 ref={outputRef}
                 data-screenshot="true"
                 bg="white"
-                p={16}
-                minH="400px"
-                width="100%"
-                maxW="800px"
-                mx="auto"
-                position="relative"
+                p={8}
+                width="600px"
+                minHeight="auto"
                 display="flex"
                 flexDirection="column"
+                justifyContent="space-between"
+                border="1px solid #e2e8f0"
                 borderRadius="md"
+                mx="auto"
+                position="relative"
               >
                 <Box
-                  whiteSpace="pre-wrap"
-                  fontFamily="'Times New Roman', serif"
-                  color="black"
-                  fontSize="20px"
+                  fontFamily="Georgia, serif"
+                  fontSize="18px"
                   lineHeight="1.8"
-                  pb={16}
-                  flex="1"
+                  color="black"
+                  whiteSpace="pre-wrap"
+                  mb={12}
                   sx={{
                     '&::after': {
                       content: '"|"',
@@ -235,22 +246,24 @@ function Home() {
                 >
                   {outputText}
                 </Box>
+                
                 {outputText && (
                   <Box
                     position="absolute"
-                    bottom={16}
-                    right={16}
-                    width="200px"
-                    height="70px"
+                    bottom={8}
+                    right={8}
+                    width="150px"
+                    height="50px"
                   >
-                    <Box
-                      as="img"
+                    <img
                       src="/static/images/hitchens-signature.png"
                       alt="Christopher Hitchens Signature"
-                      width="100%"
-                      height="100%"
-                      objectFit="contain"
-                      objectPosition="right bottom"
+                      style={{
+                        width: '100%',
+                        height: '100%',
+                        objectFit: 'contain',
+                        objectPosition: 'right bottom'
+                      }}
                     />
                   </Box>
                 )}
