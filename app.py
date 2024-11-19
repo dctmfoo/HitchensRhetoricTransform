@@ -32,7 +32,8 @@ def load_user(user_id):
 # Import routes and register blueprints after app initialization to avoid circular imports
 with app.app_context():
     from routes import *
-    from auth import auth_bp
+    from auth import auth_bp, create_demo_user
     app.register_blueprint(auth_bp)
     import models
     db.create_all()
+    create_demo_user()  # Create demo user if it doesn't exist

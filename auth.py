@@ -5,6 +5,17 @@ from models import User, db
 
 auth_bp = Blueprint('auth', __name__)
 
+def create_demo_user():
+    # Check if demo user already exists
+    demo_user = User.query.filter_by(username='demo').first()
+    if not demo_user:
+        demo_user = User()
+        demo_user.username = 'demo'
+        demo_user.email = 'demo@example.com'
+        demo_user.set_password('demo123')
+        db.session.add(demo_user)
+        db.session.commit()
+
 @auth_bp.route('/api/auth/register', methods=['POST'])
 def register():
     data = request.get_json()

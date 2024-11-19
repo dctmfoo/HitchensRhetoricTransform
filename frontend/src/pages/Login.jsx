@@ -9,6 +9,8 @@ import {
   useToast,
   Text,
   FormErrorMessage,
+  Alert,
+  AlertIcon,
 } from '@chakra-ui/react';
 import { useState } from 'react';
 import { useNavigate, Navigate } from 'react-router-dom';
@@ -135,6 +137,22 @@ function Login() {
             </Button>
           </VStack>
         </form>
+
+        <Alert
+          status="info"
+          variant="subtle"
+          borderRadius="md"
+          bg="brand.agedParchment"
+          borderColor="brand.antiqueGold"
+          borderWidth="1px"
+        >
+          <AlertIcon color="brand.deepBurgundy" />
+          <VStack align="start" spacing={1}>
+            <Text fontWeight="bold">Demo Account:</Text>
+            <Text>Username: demo</Text>
+            <Text>Password: demo123</Text>
+          </VStack>
+        </Alert>
       </VStack>
     </Box>
   );
