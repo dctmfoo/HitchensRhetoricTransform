@@ -24,7 +24,6 @@ function Home() {
 
   useEffect(() => {
     return () => {
-      // Cleanup interval on unmount
       if (typewriterRef.current) {
         clearInterval(typewriterRef.current);
       }
@@ -77,7 +76,6 @@ function Home() {
   };
 
   const typewriterEffect = (text) => {
-    // Clear any existing interval
     if (typewriterRef.current) {
       clearInterval(typewriterRef.current);
     }
@@ -86,10 +84,8 @@ function Home() {
     const textLength = text.length;
     setOutputText('');
 
-    // Store the interval ID in the ref
     typewriterRef.current = setInterval(() => {
       setOutputText((prev) => {
-        // Ensure we're adding the correct character even if state updates are batched
         const nextIndex = prev.length;
         if (nextIndex >= textLength) {
           clearInterval(typewriterRef.current);
@@ -102,7 +98,7 @@ function Home() {
       if (index >= textLength) {
         clearInterval(typewriterRef.current);
       }
-    }, 30); // Slightly faster typing speed for better UX
+    }, 30);
   };
 
   const handleScreenshot = async () => {
@@ -120,11 +116,21 @@ function Home() {
     try {
       const element = outputRef.current;
       const canvas = await html2canvas(element, {
-        backgroundColor: '#FAF3E3', // Matching brand.agedParchment
-        scale: 2, // Higher quality
+        backgroundColor: '#FAF3E3',
+        scale: 2,
+        useCORS: true,
+        scrollY: -window.scrollY,
+        windowHeight: element.scrollHeight,
+        height: element.scrollHeight,
+        onclone: (clonedDoc) => {
+          const clonedElement = clonedDoc.querySelector('[data-screenshot="true"]');
+          if (clonedElement) {
+            clonedElement.style.height = 'auto';
+            clonedElement.style.minHeight = 'unset';
+          }
+        }
       });
 
-      // Convert to blob
       canvas.toBlob((blob) => {
         const url = window.URL.createObjectURL(blob);
         const link = document.createElement('a');
@@ -224,19 +230,28 @@ function Home() {
             <Box position="relative">
               <Box
                 ref={outputRef}
+                data-screenshot="true"
                 position="relative"
                 bg="brand.agedParchment"
                 border="1px"
                 borderColor="brand.leatherBrown"
                 borderRadius="md"
-                p={4}
+                p={6}
+                minH="200px"
+                height="auto"
+                overflow="visible"
+                display="flex"
+                flexDirection="column"
               >
                 <Textarea
                   value={outputText}
                   readOnly
+                  height="auto"
                   minH="200px"
                   bg="transparent"
                   border="none"
+                  resize="none"
+                  pb={outputText ? "60px" : "0"}
                   _focus={{ border: "none", boxShadow: "none" }}
                   sx={{
                     '&::after': {
@@ -252,9 +267,10 @@ function Home() {
                 />
                 {outputText && (
                   <Text
-                    mt={4}
+                    position="absolute"
+                    bottom={4}
+                    right={4}
                     fontStyle="italic"
-                    textAlign="right"
                     color="brand.deepBurgundy"
                   >
                     - Christopher Hitchens Style
