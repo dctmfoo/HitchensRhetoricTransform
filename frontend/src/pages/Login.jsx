@@ -7,11 +7,7 @@ import {
   VStack,
   Heading,
   useToast,
-  Text,
   FormErrorMessage,
-  Alert,
-  AlertIcon,
-  HStack,
 } from '@chakra-ui/react';
 import { useState } from 'react';
 import { useNavigate, Navigate } from 'react-router-dom';
@@ -57,10 +53,24 @@ function Login() {
     }
   };
 
-  const handleUseDemoAccount = () => {
+  const handleUseDemoAccount = async () => {
     setUsername('demo');
     setPassword('demo123');
     setErrors({});
+    // Add slight delay to ensure state updates
+    setTimeout(() => {
+      login('demo', 'demo123').then(success => {
+        if (success) {
+          toast({
+            title: 'Welcome to demo account!',
+            status: 'success',
+            duration: 3000,
+            isClosable: true,
+          });
+          navigate('/');
+        }
+      });
+    }, 100);
   };
 
   return (
@@ -91,6 +101,25 @@ function Login() {
         <Heading textAlign="center" color="brand.oxfordBlue">
           Login
         </Heading>
+
+        <Button
+          onClick={handleUseDemoAccount}
+          size="lg"
+          width="100%"
+          bgGradient="linear(145deg, brand.antiqueGold, brand.leatherBrown)"
+          color="white"
+          _hover={{
+            bgGradient: "linear(145deg, brand.leatherBrown, brand.antiqueGold)",
+            transform: "translateY(-2px)",
+            boxShadow: "lg"
+          }}
+          _active={{
+            transform: "translateY(0)",
+          }}
+          mb={4}
+        >
+          Try Demo Account
+        </Button>
         
         <form onSubmit={handleSubmit} style={{ width: '100%' }}>
           <VStack spacing={4} align="stretch">
@@ -129,50 +158,21 @@ function Login() {
               <FormErrorMessage>{errors.password}</FormErrorMessage>
             </FormControl>
 
-            <HStack spacing={4}>
-              <Button
-                type="submit"
-                isLoading={isLoading}
-                loadingText="Logging in..."
-                bgGradient="linear(145deg, brand.deepBurgundy, brand.mutedCrimson)"
-                color="white"
-                _hover={{
-                  bgGradient: "linear(145deg, brand.mutedCrimson, brand.deepBurgundy)"
-                }}
-                flex="1"
-              >
-                Login
-              </Button>
-              <Button
-                onClick={handleUseDemoAccount}
-                variant="outline"
-                borderColor="brand.antiqueGold"
-                color="brand.deepBurgundy"
-                _hover={{
-                  bg: "brand.agedParchment"
-                }}
-              >
-                Use Demo Account
-              </Button>
-            </HStack>
+            <Button
+              type="submit"
+              isLoading={isLoading}
+              loadingText="Logging in..."
+              bgGradient="linear(145deg, brand.deepBurgundy, brand.mutedCrimson)"
+              color="white"
+              _hover={{
+                bgGradient: "linear(145deg, brand.mutedCrimson, brand.deepBurgundy)"
+              }}
+              width="100%"
+            >
+              Login
+            </Button>
           </VStack>
         </form>
-
-        <Alert
-          status="info"
-          variant="subtle"
-          borderRadius="md"
-          bg="brand.agedParchment"
-          borderColor="brand.antiqueGold"
-          borderWidth="1px"
-        >
-          <AlertIcon color="brand.deepBurgundy" />
-          <VStack align="start" spacing={1}>
-            <Text fontWeight="bold">Demo Account:</Text>
-            <Text>Username: demo</Text>
-            <Text>Password: demo123</Text>
-          </VStack>
-        </Alert>
       </VStack>
     </Box>
   );
