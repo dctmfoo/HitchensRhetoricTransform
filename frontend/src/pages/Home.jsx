@@ -5,9 +5,9 @@ import {
   Heading,
   Select,
   Textarea,
-  useToast as chakraToast,
   VStack,
-  Text
+  Text,
+  useToast
 } from '@chakra-ui/react';
 import { useState } from 'react';
 
@@ -16,7 +16,7 @@ function Home() {
   const [outputText, setOutputText] = useState('');
   const [verbosity, setVerbosity] = useState('1');
   const [isLoading, setIsLoading] = useState(false);
-  const toast = chakraToast();
+  const toast = useToast();
 
   const handleTransform = async () => {
     if (!inputText.trim()) {

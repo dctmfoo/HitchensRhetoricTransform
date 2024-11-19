@@ -18,6 +18,55 @@ const theme = extendTheme({
     heading: '"Playfair Display", serif',
     body: '"Playfair Display", serif'
   },
+  components: {
+    Button: {
+      baseStyle: {
+        fontWeight: 'normal',
+        borderRadius: 'md',
+      },
+      variants: {
+        solid: {
+          bgGradient: 'linear(145deg, brand.deepBurgundy, brand.mutedCrimson)',
+          color: 'white',
+          _hover: {
+            bgGradient: 'linear(145deg, brand.mutedCrimson, brand.deepBurgundy)'
+          }
+        },
+        outline: {
+          borderColor: 'brand.antiqueGold',
+          color: 'brand.oxfordBlue',
+          _hover: {
+            bg: 'brand.antiqueGold',
+            color: 'white'
+          }
+        }
+      }
+    },
+    Textarea: {
+      variants: {
+        filled: {
+          bg: 'brand.agedParchment',
+          border: '1px solid',
+          borderColor: 'brand.leatherBrown',
+          _hover: {
+            bg: 'brand.agedParchment',
+          },
+          _focus: {
+            borderColor: 'brand.antiqueGold',
+            boxShadow: '0 0 0 1px brand.antiqueGold'
+          }
+        }
+      },
+      defaultProps: {
+        variant: 'filled'
+      }
+    },
+    Container: {
+      baseStyle: {
+        maxW: 'container.xl'
+      }
+    }
+  },
   styles: {
     global: {
       body: {

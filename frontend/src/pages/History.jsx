@@ -6,13 +6,13 @@ import {
   Button,
   Badge,
   VStack,
-  useToast as chakraToast
+  useToast
 } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
 
 function History() {
   const [transformations, setTransformations] = useState([]);
-  const toast = chakraToast();
+  const toast = useToast();
 
   useEffect(() => {
     fetchTransformations();
