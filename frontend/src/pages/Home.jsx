@@ -342,40 +342,38 @@ const TextTransformer = () => {
 
             <FormControl mb={4}>
               <FormLabel>Style Intensity</FormLabel>
-              <Box p={4} borderRadius="md" bg="white" border="1px" borderColor="gray.200">
-                <Slider
-                  id="style-intensity"
-                  defaultValue={1}
-                  min={1}
-                  max={3}
-                  step={1}
-                  onChange={(v) => setStyleIntensity(v)}
-                  onMouseEnter={() => setShowTooltip(true)}
-                  onMouseLeave={() => setShowTooltip(false)}
+              <Slider
+                id="style-intensity"
+                defaultValue={1}
+                min={1}
+                max={3}
+                step={1}
+                onChange={(v) => setStyleIntensity(v)}
+                onMouseEnter={() => setShowTooltip(true)}
+                onMouseLeave={() => setShowTooltip(false)}
+              >
+                <SliderTrack bg="gray.200">
+                  <SliderFilledTrack bg="brand.deepBurgundy" />
+                </SliderTrack>
+                <Tooltip
+                  hasArrow
+                  bg="brand.deepBurgundy"
+                  color="white"
+                  placement="top"
+                  isOpen={showTooltip}
+                  label={`Intensity: ${
+                    styleIntensity === 1 ? 'Subtle' :
+                    styleIntensity === 2 ? 'Balanced' : 'Pronounced'
+                  }`}
                 >
-                  <SliderTrack bg="gray.200">
-                    <SliderFilledTrack bg="brand.deepBurgundy" />
-                  </SliderTrack>
-                  <Tooltip
-                    hasArrow
-                    bg="brand.deepBurgundy"
-                    color="white"
-                    placement="top"
-                    isOpen={showTooltip}
-                    label={`Intensity: ${
-                      styleIntensity === 1 ? 'Subtle' :
-                      styleIntensity === 2 ? 'Balanced' : 'Pronounced'
-                    }`}
-                  >
-                    <SliderThumb boxSize={4} />
-                  </Tooltip>
-                </Slider>
-                <Flex justify="space-between" mt={2}>
-                  <Text fontSize="sm">Subtle</Text>
-                  <Text fontSize="sm">Balanced</Text>
-                  <Text fontSize="sm">Pronounced</Text>
-                </Flex>
-              </Box>
+                  <SliderThumb boxSize={4} />
+                </Tooltip>
+              </Slider>
+              <Flex justify="space-between" mt={2}>
+                <Text fontSize="sm">Subtle</Text>
+                <Text fontSize="sm">Balanced</Text>
+                <Text fontSize="sm">Pronounced</Text>
+              </Flex>
             </FormControl>
 
             <HStack spacing={4}>
