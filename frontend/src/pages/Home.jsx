@@ -15,7 +15,8 @@ import {
   Switch,
   FormControl,
   FormLabel,
-  Icon
+  Icon,
+  Divider
 } from '@chakra-ui/react';
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
@@ -337,84 +338,138 @@ const TextTransformer = () => {
               }}
             />
 
-            <HStack spacing={4}>
-              <Select
-                value={persona}
-                onChange={(e) => setPersona(e.target.value)}
-                bg="white"
-                flex={1}
-              >
-                <option value="hitchens">Christopher Hitchens</option>
-                <option value="trump">Donald Trump</option>
-                <option value="friedman">Milton Friedman</option>
-              </Select>
+            <VStack spacing={6} align="stretch">
+              <FormControl>
+                <FormLabel 
+                  htmlFor="persona-select"
+                  fontSize="lg"
+                  fontWeight="bold"
+                  color="brand.deepBurgundy"
+                >
+                  Choose Writing Style
+                </FormLabel>
+                <Select
+                  id="persona-select"
+                  value={persona}
+                  onChange={(e) => setPersona(e.target.value)}
+                  size="lg"
+                  bg="white"
+                  border="2px"
+                  borderColor="brand.leatherBrown"
+                  _hover={{
+                    borderColor: 'brand.antiqueGold'
+                  }}
+                  _focus={{
+                    borderColor: 'brand.antiqueGold',
+                    boxShadow: '0 0 0 1px brand.antiqueGold'
+                  }}
+                  icon={<Icon name="chevron-down" />}
+                  iconSize={24}
+                  h="60px"
+                  fontSize="md"
+                >
+                  <option value="hitchens" style={{padding: '10px'}}>Christopher Hitchens - Intellectual & Literary</option>
+                  <option value="trump" style={{padding: '10px'}}>Donald Trump - Bold & Direct</option>
+                  <option value="friedman" style={{padding: '10px'}}>Milton Friedman - Economic & Analytical</option>
+                </Select>
+              </FormControl>
 
-              <Select
-                value={verbosity}
-                onChange={(e) => setVerbosity(e.target.value)}
-                bg="white"
-                flex={1}
-              >
-                <option value="1">Concise</option>
-                <option value="2">Moderate</option>
-                <option value="3">Verbose</option>
-              </Select>
-            </HStack>
+              <FormControl>
+                <FormLabel 
+                  htmlFor="verbosity-select"
+                  fontSize="lg"
+                  fontWeight="bold"
+                  color="brand.deepBurgundy"
+                >
+                  Response Length
+                </FormLabel>
+                <Select
+                  id="verbosity-select"
+                  value={verbosity}
+                  onChange={(e) => setVerbosity(e.target.value)}
+                  size="lg"
+                  bg="white"
+                  border="2px"
+                  borderColor="brand.leatherBrown"
+                  _hover={{
+                    borderColor: 'brand.antiqueGold'
+                  }}
+                  _focus={{
+                    borderColor: 'brand.antiqueGold',
+                    boxShadow: '0 0 0 1px brand.antiqueGold'
+                  }}
+                  h="60px"
+                  fontSize="md"
+                >
+                  <option value="1">Concise - Brief Response</option>
+                  <option value="2">Moderate - Balanced Length</option>
+                  <option value="3">Verbose - Detailed Analysis</option>
+                </Select>
+              </FormControl>
 
-            <FormControl display="flex" alignItems="center" justifyContent="space-between">
-              <FormLabel htmlFor="typewriter-toggle" mb="0">
-                Typewriter Effect
-              </FormLabel>
-              <Switch
-                id="typewriter-toggle"
-                isChecked={typewriterEnabled}
-                onChange={(e) => setTypewriterEnabled(e.target.checked)}
-                colorScheme="brand"
-              />
-            </FormControl>
+              <Divider my={2} borderColor="brand.leatherBrown" />
 
-            <HStack spacing={4}>
-              <Button
-                onClick={handleTransform}
-                isLoading={isLoading}
-                loadingText="Transforming..."
-                flex="1"
-                bgGradient="linear(145deg, brand.deepBurgundy, brand.mutedCrimson)"
-                color="white"
-                _hover={{
-                  bgGradient: "linear(145deg, brand.mutedCrimson, brand.deepBurgundy)"
-                }}
-              >
-                Transform
-              </Button>
-              <Button
-                onClick={handleRetry}
-                isDisabled={!lastTransformedText || isLoading}
-                flex="1"
-                variant="outline"
-                borderColor="brand.deepBurgundy"
-                color="brand.deepBurgundy"
-                _hover={{
-                  bg: 'brand.agedParchment'
-                }}
-              >
-                Retry Effect
-              </Button>
-              <Button
-                onClick={handleClear}
-                isDisabled={isLoading || (!inputText && !outputText)}
-                flex="1"
-                variant="outline"
-                borderColor="brand.deepBurgundy"
-                color="brand.deepBurgundy"
-                _hover={{
-                  bg: 'brand.agedParchment'
-                }}
-              >
-                Clear All
-              </Button>
-            </HStack>
-          </VStack>
+              <FormControl display="flex" alignItems="center" justifyContent="space-between">
+                <FormLabel 
+                  htmlFor="typewriter-toggle" 
+                  mb="0"
+                  fontSize="lg"
+                  fontWeight="bold"
+                  color="brand.deepBurgundy"
+                >
+                  Typewriter Effect
+                </FormLabel>
+                <Switch
+                  id="typewriter-toggle"
+                  isChecked={typewriterEnabled}
+                  onChange={(e) => setTypewriterEnabled(e.target.checked)}
+                  colorScheme="brand"
+                  size="lg"
+                />
+              </FormControl>
+
+              <HStack spacing={4}>
+                <Button
+                  onClick={handleTransform}
+                  isLoading={isLoading}
+                  loadingText="Transforming..."
+                  flex="1"
+                  bgGradient="linear(145deg, brand.deepBurgundy, brand.mutedCrimson)"
+                  color="white"
+                  _hover={{
+                    bgGradient: "linear(145deg, brand.mutedCrimson, brand.deepBurgundy)"
+                  }}
+                >
+                  Transform
+                </Button>
+                <Button
+                  onClick={handleRetry}
+                  isDisabled={!lastTransformedText || isLoading}
+                  flex="1"
+                  variant="outline"
+                  borderColor="brand.deepBurgundy"
+                  color="brand.deepBurgundy"
+                  _hover={{
+                    bg: 'brand.agedParchment'
+                  }}
+                >
+                  Retry Effect
+                </Button>
+                <Button
+                  onClick={handleClear}
+                  isDisabled={isLoading || (!inputText && !outputText)}
+                  flex="1"
+                  variant="outline"
+                  borderColor="brand.deepBurgundy"
+                  color="brand.deepBurgundy"
+                  _hover={{
+                    bg: 'brand.agedParchment'
+                  }}
+                >
+                  Clear All
+                </Button>
+              </HStack>
+            </VStack>
 
           <VStack flex={1} spacing={4} align="stretch">
             <Text fontWeight="bold">Transformed Text</Text>
