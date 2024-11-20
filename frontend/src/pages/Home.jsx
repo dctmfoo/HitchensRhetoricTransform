@@ -13,10 +13,10 @@ import {
   Image,
   Stack
 } from '@chakra-ui/react';
-import { useState, useEffect, useRef, useContext } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
 import * as htmlToImage from 'html-to-image';
-import { AuthContext } from '../context/AuthContext';
+import { useAuth } from '../context/AuthContext';
 
 const LandingPage = () => (
   <Container maxW="container.xl" py={20}>
@@ -86,6 +86,7 @@ const TextTransformer = () => {
   const outputRef = useRef(null);
   const toast = useToast();
   const navigate = useNavigate();
+  const { authFetch } = useAuth();
 
   useEffect(() => {
     return () => {
@@ -94,18 +95,6 @@ const TextTransformer = () => {
       }
     };
   }, []);
-
-  const handleUnauthorized = () => {
-    localStorage.removeItem('token');
-    toast({
-      title: 'Session Expired',
-      description: 'Please login again to continue',
-      status: 'error',
-      duration: 3000,
-      isClosable: true
-    });
-    navigate('/login');
-  };
 
   const handleTransform = async () => {
     if (!inputText.trim()) {
@@ -119,30 +108,15 @@ const TextTransformer = () => {
       return;
     }
 
-    const token = localStorage.getItem('token');
-    if (!token) {
-      handleUnauthorized();
-      return;
-    }
-
     setIsLoading(true);
     try {
-      const response = await fetch('/api/transform', {
+      const response = await authFetch('/api/transform', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
         body: JSON.stringify({
           text: inputText,
           verbosity: verbosity
         })
       });
-
-      if (response.status === 401) {
-        handleUnauthorized();
-        return;
-      }
 
       const data = await response.json();
 
@@ -388,7 +362,16 @@ const TextTransformer = () => {
 };
 
 function Home() {
-  const { isAuthenticated } = useContext(AuthContext);
+  const { isAuthenticated, loading } = useAuth();
+
+  if (loading) {
+    return (
+      <Container centerContent py={20}>
+        <Text>Loading...</Text>
+      </Container>
+    );
+  }
+
   return isAuthenticated ? <TextTransformer /> : <LandingPage />;
 }
 

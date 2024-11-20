@@ -1,10 +1,11 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
 
-const AuthContext = createContext(null);
+export const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   const getAuthHeaders = () => {
     const token = localStorage.getItem('token');
@@ -29,6 +30,7 @@ export const AuthProvider = ({ children }) => {
     if (response.status === 401) {
       localStorage.removeItem('token');
       setUser(null);
+      setIsAuthenticated(false);
       throw new Error('Unauthorized');
     }
     
@@ -44,14 +46,17 @@ export const AuthProvider = ({ children }) => {
         .then(data => {
           if (data.user) {
             setUser(data.user);
+            setIsAuthenticated(true);
           }
         })
         .catch(err => {
           console.error('Error fetching user:', err);
           localStorage.removeItem('token');
+          setIsAuthenticated(false);
         })
         .finally(() => setLoading(false));
     } else {
+      setIsAuthenticated(false);
       setLoading(false);
     }
   }, []);
@@ -73,6 +78,7 @@ export const AuthProvider = ({ children }) => {
     
     localStorage.setItem('token', data.token);
     setUser(data.user);
+    setIsAuthenticated(true);
     return data;
   };
 
@@ -93,6 +99,7 @@ export const AuthProvider = ({ children }) => {
     
     localStorage.setItem('token', data.token);
     setUser(data.user);
+    setIsAuthenticated(true);
     return data;
   };
 
@@ -102,11 +109,20 @@ export const AuthProvider = ({ children }) => {
     } finally {
       localStorage.removeItem('token');
       setUser(null);
+      setIsAuthenticated(false);
     }
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, register, logout, loading, authFetch }}>
+    <AuthContext.Provider value={{ 
+      user, 
+      login, 
+      register, 
+      logout, 
+      loading, 
+      authFetch,
+      isAuthenticated 
+    }}>
       {children}
     </AuthContext.Provider>
   );
