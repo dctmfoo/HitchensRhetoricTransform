@@ -23,16 +23,23 @@ import { useAuth } from "../context/AuthContext";
 
 const LandingPage = () => (
   <Container maxW="container.xl" py={20}>
-    <Stack spacing={8} align="center" textAlign="center">
+    <Stack spacing={12} align="center" textAlign="center">
       <Heading
-        fontSize={{ base: "3xl", md: "4xl", lg: "5xl" }}
+        fontSize={{ base: "4xl", md: "5xl", lg: "6xl" }}
         bgGradient="linear(145deg, brand.deepBurgundy, brand.mutedCrimson)"
         bgClip="text"
+        letterSpacing="tight"
+        mb={4}
       >
         Transform Your Writing into Hitchens' Style
       </Heading>
 
-      <Text fontSize={{ base: "lg", md: "xl" }} color="gray.600" maxW="2xl">
+      <Text 
+        fontSize={{ base: "xl", md: "2xl" }} 
+        color="gray.700" 
+        maxW="2xl"
+        lineHeight="1.8"
+      >
         Experience the power of AI-driven text transformation that captures the
         essence of Christopher Hitchens' distinctive writing style. Elevate your
         prose with intellectual depth and rhetorical brilliance.
@@ -41,33 +48,52 @@ const LandingPage = () => (
       <Box
         w="full"
         maxW="3xl"
-        p={8}
+        p={10}
         bg="white"
-        borderRadius="lg"
-        boxShadow="xl"
+        borderRadius="xl"
+        boxShadow="2xl"
+        border="1px"
+        borderColor="brand.fadedSepia"
       >
-        <VStack spacing={6}>
-          <Text fontSize="lg" fontStyle="italic" color="gray.700">
+        <VStack spacing={8}>
+          <Text 
+            fontSize="2xl" 
+            fontStyle="italic" 
+            color="gray.800"
+            fontFamily="Georgia, serif"
+          >
             "The measure of a decent human being is how he or she treats the
             defenseless."
           </Text>
-          <Text fontWeight="bold" color="brand.deepBurgundy">
+          <Text 
+            fontSize="lg"
+            fontWeight="semibold" 
+            color="brand.deepBurgundy"
+          >
             — Christopher Hitchens
           </Text>
         </VStack>
       </Box>
 
-      <Stack direction={{ base: "column", md: "row" }} spacing={4}>
+      <Stack 
+        direction={{ base: "column", md: "row" }} 
+        spacing={6}
+        mt={6}
+      >
         <Button
           as={RouterLink}
           to="/login"
           size="lg"
+          fontSize="xl"
+          py={8}
+          px={12}
           bgGradient="linear(145deg, brand.deepBurgundy, brand.mutedCrimson)"
           color="white"
           _hover={{
-            bgGradient:
-              "linear(145deg, brand.mutedCrimson, brand.deepBurgundy)",
+            bgGradient: "linear(145deg, brand.mutedCrimson, brand.deepBurgundy)",
+            transform: "translateY(-2px)",
           }}
+          transition="all 0.2s"
         >
           Sign In to Transform
         </Button>
@@ -75,12 +101,18 @@ const LandingPage = () => (
           as={RouterLink}
           to="/register"
           size="lg"
+          fontSize="xl"
+          py={8}
+          px={12}
           variant="outline"
           borderColor="brand.deepBurgundy"
+          borderWidth="2px"
           color="brand.deepBurgundy"
           _hover={{
             bg: "brand.agedParchment",
+            transform: "translateY(-2px)",
           }}
+          transition="all 0.2s"
         >
           Create Account
         </Button>
@@ -123,6 +155,7 @@ const TextTransformer = () => {
       status: "info",
       duration: 2000,
       isClosable: true,
+      position: "top",
     });
   };
 
@@ -134,60 +167,37 @@ const TextTransformer = () => {
       return "hitchens-transformed.png";
     }
 
-    // Common words to filter out for better filename creation
     const commonWords = new Set([
-      "the",
-      "a",
-      "an",
-      "and",
-      "or",
-      "but",
-      "in",
-      "on",
-      "at",
-      "to",
-      "for",
-      "of",
-      "with",
-      "by",
-      "from",
-      "up",
-      "about",
-      "into",
-      "over",
-      "after",
+      "the", "a", "an", "and", "or", "but", "in", "on", "at",
+      "to", "for", "of", "with", "by", "from", "up", "about",
+      "into", "over", "after",
     ]);
 
-    // Take first sentence or up to 100 characters for processing
     const textSample = text.split(".")[0].substring(0, 100);
     console.log("Text sample for filename:", textSample);
 
-    // Process the text into clean words
     const words = textSample
       .toLowerCase()
-      .replace(/[^a-z0-9\s-]/g, "") // Remove special characters
+      .replace(/[^a-z0-9\s-]/g, "")
       .split(/\s+/)
       .filter(
         (word) =>
-          word.length > 2 && // Keep words longer than 2 characters
-          !commonWords.has(word) && // Remove common words
-          !/^\d+$/.test(word), // Remove pure numbers
+          word.length > 2 &&
+          !commonWords.has(word) &&
+          !/^\d+$/.test(word),
       )
-      .slice(0, 3); // Take only first 3 meaningful words
+      .slice(0, 3);
 
     console.log("Selected words for filename:", words);
 
-    // Generate timestamp in a more compact format
     const timestamp = new Date()
       .toISOString()
       .replace(/[-:]/g, "")
       .split(".")[0]
       .substring(0, 12);
 
-    // Create a short random suffix
     const randomSuffix = Math.random().toString(36).substring(2, 6);
 
-    // Combine elements into final filename
     const filename = `hitchens-${words.join("-")}-${timestamp}-${randomSuffix}.png`;
     console.log("Generated filename:", filename);
 
@@ -233,6 +243,7 @@ const TextTransformer = () => {
         status: "error",
         duration: 3000,
         isClosable: true,
+        position: "top",
       });
       return;
     }
@@ -264,6 +275,7 @@ const TextTransformer = () => {
         status: "error",
         duration: 5000,
         isClosable: true,
+        position: "top",
       });
     } finally {
       setIsLoading(false);
@@ -309,6 +321,7 @@ const TextTransformer = () => {
         description: "The image has been downloaded successfully",
         status: "success",
         duration: 2000,
+        position: "top",
       });
     } catch (error) {
       console.error("Screenshot error:", error);
@@ -317,6 +330,7 @@ const TextTransformer = () => {
         description: "Failed to capture screenshot",
         status: "error",
         duration: 2000,
+        position: "top",
       });
     }
   };
@@ -324,9 +338,9 @@ const TextTransformer = () => {
   return (
     <Box
       bg="white"
-      p={8}
-      borderRadius="lg"
-      boxShadow="md"
+      p={10}
+      borderRadius="xl"
+      boxShadow="lg"
       border="1px"
       borderColor="brand.fadedSepia"
       position="relative"
@@ -342,25 +356,41 @@ const TextTransformer = () => {
         bg: 'url("/static/images/paper-texture.svg")',
       }}
     >
-      <VStack spacing={6} position="relative" zIndex={1}>
-        <Heading textAlign="center" color="brand.oxfordBlue">
+      <VStack spacing={8} position="relative" zIndex={1}>
+        <Heading 
+          textAlign="center" 
+          color="brand.oxfordBlue"
+          fontSize={{ base: "3xl", md: "4xl" }}
+          letterSpacing="tight"
+        >
           Hitchens Style Transformer
         </Heading>
 
-        <Flex w="100%" gap={8} direction={{ base: "column", md: "row" }}>
-          <VStack flex={1} spacing={4} align="stretch">
-            <Text fontWeight="bold">Input Text</Text>
+        <Flex w="100%" gap={10} direction={{ base: "column", md: "row" }}>
+          <VStack flex={1} spacing={6} align="stretch">
+            <Text 
+              fontSize="lg" 
+              fontWeight="bold" 
+              color="brand.oxfordBlue"
+            >
+              Input Text
+            </Text>
             <Textarea
               value={inputText}
               onChange={(e) => setInputText(e.target.value)}
               placeholder="Enter your text here..."
-              minH="200px"
+              minH="250px"
               bg="brand.agedParchment"
-              border="1px"
+              border="2px"
               borderColor="brand.leatherBrown"
+              fontSize="lg"
+              p={4}
               _focus={{
                 borderColor: "brand.antiqueGold",
                 boxShadow: "0 0 0 1px brand.antiqueGold",
+              }}
+              _hover={{
+                borderColor: "brand.antiqueGold",
               }}
             />
 
@@ -368,6 +398,11 @@ const TextTransformer = () => {
               value={verbosity}
               onChange={(e) => setVerbosity(e.target.value)}
               bg="white"
+              size="lg"
+              borderColor="brand.leatherBrown"
+              _hover={{
+                borderColor: "brand.antiqueGold",
+              }}
             >
               <option value="1">Concise</option>
               <option value="2">Moderate</option>
@@ -378,8 +413,18 @@ const TextTransformer = () => {
               display="flex"
               alignItems="center"
               justifyContent="space-between"
+              bg="white"
+              p={4}
+              borderRadius="md"
+              border="1px"
+              borderColor="brand.fadedSepia"
             >
-              <FormLabel htmlFor="typewriter-toggle" mb="0">
+              <FormLabel 
+                htmlFor="typewriter-toggle" 
+                mb="0"
+                fontSize="lg"
+                color="brand.oxfordBlue"
+              >
                 Typewriter Effect
               </FormLabel>
               <Switch
@@ -387,6 +432,7 @@ const TextTransformer = () => {
                 isChecked={typewriterEnabled}
                 onChange={(e) => setTypewriterEnabled(e.target.checked)}
                 colorScheme="brand"
+                size="lg"
               />
             </FormControl>
 
@@ -396,12 +442,16 @@ const TextTransformer = () => {
                 isLoading={isLoading}
                 loadingText="Transforming..."
                 flex="1"
+                size="lg"
+                fontSize="lg"
+                py={6}
                 bgGradient="linear(145deg, brand.deepBurgundy, brand.mutedCrimson)"
                 color="white"
                 _hover={{
-                  bgGradient:
-                    "linear(145deg, brand.mutedCrimson, brand.deepBurgundy)",
+                  bgGradient: "linear(145deg, brand.mutedCrimson, brand.deepBurgundy)",
+                  transform: "translateY(-2px)",
                 }}
+                transition="all 0.2s"
               >
                 Transform
               </Button>
@@ -409,33 +459,51 @@ const TextTransformer = () => {
                 onClick={handleRetry}
                 isDisabled={!lastTransformedText || isLoading}
                 flex="1"
+                size="lg"
+                fontSize="lg"
+                py={6}
                 variant="outline"
                 borderColor="brand.deepBurgundy"
+                borderWidth="2px"
                 color="brand.deepBurgundy"
                 _hover={{
                   bg: "brand.agedParchment",
+                  transform: "translateY(-2px)",
                 }}
+                transition="all 0.2s"
               >
-                Retry Transformation
+                Retry
               </Button>
               <Button
                 onClick={handleClear}
                 isDisabled={isLoading || (!inputText && !outputText)}
                 flex="1"
+                size="lg"
+                fontSize="lg"
+                py={6}
                 variant="outline"
                 borderColor="brand.deepBurgundy"
+                borderWidth="2px"
                 color="brand.deepBurgundy"
                 _hover={{
                   bg: "brand.agedParchment",
+                  transform: "translateY(-2px)",
                 }}
+                transition="all 0.2s"
               >
-                Clear All
+                Clear
               </Button>
             </HStack>
           </VStack>
 
-          <VStack flex={1} spacing={4} align="stretch">
-            <Text fontWeight="bold">Transformed Text</Text>
+          <VStack flex={1} spacing={6} align="stretch">
+            <Text 
+              fontSize="lg" 
+              fontWeight="bold"
+              color="brand.oxfordBlue"
+            >
+              Transformed Text
+            </Text>
             <Box position="relative">
               <Box
                 ref={outputRef}
@@ -447,16 +515,18 @@ const TextTransformer = () => {
                 display="flex"
                 flexDirection="column"
                 justifyContent="space-between"
-                border="1px solid #e2e8f0"
-                borderRadius="md"
+                border="2px solid"
+                borderColor="brand.fadedSepia"
+                borderRadius="xl"
                 mx="auto"
                 position="relative"
+                boxShadow="xl"
               >
                 <Box
                   fontFamily="Georgia, serif"
-                  fontSize="18px"
+                  fontSize="xl"
                   lineHeight="1.8"
-                  color="black"
+                  color="gray.800"
                   whiteSpace="pre-wrap"
                   mb={12}
                   sx={{
@@ -495,25 +565,42 @@ const TextTransformer = () => {
                   </Box>
                 )}
               </Box>
-              <HStack position="absolute" top={2} right={2} spacing={2}>
+              <HStack 
+                position="absolute" 
+                top={4} 
+                right={4} 
+                spacing={3}
+                bg="white"
+                p={2}
+                borderRadius="md"
+                boxShadow="md"
+              >
                 <Button
-                  size="sm"
+                  size="md"
                   onClick={() => {
                     navigator.clipboard.writeText(outputText);
                     toast({
                       title: "Copied!",
                       status: "success",
                       duration: 2000,
+                      position: "top",
                     });
                   }}
+                  colorScheme="gray"
+                  fontWeight="bold"
                 >
                   Copy
                 </Button>
                 <Button
-                  size="sm"
+                  size="md"
                   onClick={handleScreenshot}
-                  colorScheme="blue"
                   isDisabled={!outputText}
+                  bgGradient="linear(145deg, brand.deepBurgundy, brand.mutedCrimson)"
+                  color="white"
+                  _hover={{
+                    bgGradient: "linear(145deg, brand.mutedCrimson, brand.deepBurgundy)",
+                  }}
+                  fontWeight="bold"
                 >
                   Screenshot
                 </Button>
@@ -532,7 +619,9 @@ function Home() {
   if (loading) {
     return (
       <Container centerContent py={20}>
-        <Text>Loading...</Text>
+        <Text fontSize="xl" color="brand.oxfordBlue">
+          Loading...
+        </Text>
       </Container>
     );
   }
