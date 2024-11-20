@@ -11,7 +11,10 @@ import {
   HStack,
   Container,
   Image,
-  Stack
+  Stack,
+  Switch,
+  FormControl,
+  FormLabel
 } from '@chakra-ui/react';
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
@@ -82,6 +85,8 @@ const TextTransformer = () => {
   const [outputText, setOutputText] = useState('');
   const [verbosity, setVerbosity] = useState('1');
   const [isLoading, setIsLoading] = useState(false);
+  const [lastTransformedText, setLastTransformedText] = useState('');
+  const [typewriterEnabled, setTypewriterEnabled] = useState(true);
   const typewriterRef = useRef(null);
   const outputRef = useRef(null);
   const toast = useToast();
@@ -99,6 +104,7 @@ const TextTransformer = () => {
   const handleClear = () => {
     setInputText('');
     setOutputText('');
+    setLastTransformedText('');
     if (typewriterRef.current) {
       clearInterval(typewriterRef.current);
     }
@@ -160,6 +166,37 @@ const TextTransformer = () => {
     return filename;
   };
 
+  const typewriterEffect = (text) => {
+    if (!typewriterEnabled) {
+      setOutputText(text);
+      return;
+    }
+
+    if (typewriterRef.current) {
+      clearInterval(typewriterRef.current);
+    }
+
+    let index = 0;
+    const textLength = text.length;
+    setOutputText('');
+
+    typewriterRef.current = setInterval(() => {
+      setOutputText((prev) => {
+        const nextIndex = prev.length;
+        if (nextIndex >= textLength) {
+          clearInterval(typewriterRef.current);
+          return prev;
+        }
+        return prev + text[nextIndex];
+      });
+
+      index++;
+      if (index >= textLength) {
+        clearInterval(typewriterRef.current);
+      }
+    }, 30);
+  };
+
   const handleTransform = async () => {
     if (!inputText.trim()) {
       toast({
@@ -185,6 +222,7 @@ const TextTransformer = () => {
       const data = await response.json();
 
       if (response.ok) {
+        setLastTransformedText(data.transformed_text);
         typewriterEffect(data.transformed_text);
       } else {
         throw new Error(data.error || 'An error occurred during transformation');
@@ -202,30 +240,10 @@ const TextTransformer = () => {
     }
   };
 
-  const typewriterEffect = (text) => {
-    if (typewriterRef.current) {
-      clearInterval(typewriterRef.current);
+  const handleRetry = () => {
+    if (lastTransformedText) {
+      typewriterEffect(lastTransformedText);
     }
-
-    let index = 0;
-    const textLength = text.length;
-    setOutputText('');
-
-    typewriterRef.current = setInterval(() => {
-      setOutputText((prev) => {
-        const nextIndex = prev.length;
-        if (nextIndex >= textLength) {
-          clearInterval(typewriterRef.current);
-          return prev;
-        }
-        return prev + text[nextIndex];
-      });
-
-      index++;
-      if (index >= textLength) {
-        clearInterval(typewriterRef.current);
-      }
-    }, 30);
   };
 
   const handleScreenshot = async () => {
@@ -326,6 +344,18 @@ const TextTransformer = () => {
               <option value="3">Verbose</option>
             </Select>
 
+            <FormControl display="flex" alignItems="center" justifyContent="space-between">
+              <FormLabel htmlFor="typewriter-toggle" mb="0">
+                Typewriter Effect
+              </FormLabel>
+              <Switch
+                id="typewriter-toggle"
+                isChecked={typewriterEnabled}
+                onChange={(e) => setTypewriterEnabled(e.target.checked)}
+                colorScheme="brand"
+              />
+            </FormControl>
+
             <HStack spacing={4}>
               <Button
                 onClick={handleTransform}
@@ -339,6 +369,19 @@ const TextTransformer = () => {
                 }}
               >
                 Transform
+              </Button>
+              <Button
+                onClick={handleRetry}
+                isDisabled={!lastTransformedText || isLoading}
+                flex="1"
+                variant="outline"
+                borderColor="brand.deepBurgundy"
+                color="brand.deepBurgundy"
+                _hover={{
+                  bg: 'brand.agedParchment'
+                }}
+              >
+                Retry Effect
               </Button>
               <Button
                 onClick={handleClear}
