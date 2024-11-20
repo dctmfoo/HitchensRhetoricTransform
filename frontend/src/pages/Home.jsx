@@ -326,13 +326,21 @@ const TextTransformer = () => {
               }}
             />
 
-            <HStack spacing={4} align="start">
+            <HStack spacing={6} align="end">
               <FormControl flex={1}>
-                <FormLabel>Verbosity Level</FormLabel>
+                <FormLabel fontWeight="medium" color="brand.oxfordBlue">Verbosity Level</FormLabel>
                 <Select
                   value={verbosity}
                   onChange={(e) => setVerbosity(e.target.value)}
                   bg="white"
+                  borderColor="brand.leatherBrown"
+                  _hover={{
+                    borderColor: 'brand.antiqueGold'
+                  }}
+                  _focus={{
+                    borderColor: 'brand.antiqueGold',
+                    boxShadow: '0 0 0 1px brand.antiqueGold'
+                  }}
                 >
                   <option value="1">Concise</option>
                   <option value="2">Moderate</option>
@@ -341,7 +349,7 @@ const TextTransformer = () => {
               </FormControl>
 
               <FormControl flex={1}>
-                <FormLabel>Style Intensity</FormLabel>
+                <FormLabel fontWeight="medium" color="brand.oxfordBlue">Style Intensity</FormLabel>
                 <Box>
                   <Slider
                     id="style-intensity"
@@ -353,7 +361,7 @@ const TextTransformer = () => {
                     onMouseEnter={() => setShowTooltip(true)}
                     onMouseLeave={() => setShowTooltip(false)}
                   >
-                    <SliderTrack bg="gray.200">
+                    <SliderTrack bg="brand.fadedSepia">
                       <SliderFilledTrack bg="brand.deepBurgundy" />
                     </SliderTrack>
                     <Tooltip
@@ -367,13 +375,21 @@ const TextTransformer = () => {
                         styleIntensity === 2 ? 'Balanced' : 'Pronounced'
                       }`}
                     >
-                      <SliderThumb boxSize={4} />
+                      <SliderThumb 
+                        boxSize={6} 
+                        bg="white"
+                        borderColor="brand.deepBurgundy"
+                        borderWidth="2px"
+                        _hover={{
+                          boxSize: 7
+                        }}
+                      />
                     </Tooltip>
                   </Slider>
                   <Flex justify="space-between" mt={2}>
-                    <Text fontSize="sm">Subtle</Text>
-                    <Text fontSize="sm">Balanced</Text>
-                    <Text fontSize="sm">Pronounced</Text>
+                    <Text fontSize="sm" color="brand.oxfordBlue">Subtle</Text>
+                    <Text fontSize="sm" color="brand.oxfordBlue">Balanced</Text>
+                    <Text fontSize="sm" color="brand.oxfordBlue">Pronounced</Text>
                   </Flex>
                 </Box>
               </FormControl>
