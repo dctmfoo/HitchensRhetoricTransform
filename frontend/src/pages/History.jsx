@@ -9,10 +9,14 @@ import {
   useToast
 } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
+import { useAuth } from '../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 function History() {
   const [transformations, setTransformations] = useState([]);
   const toast = useToast();
+  const { authFetch } = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchTransformations();
@@ -20,10 +24,16 @@ function History() {
 
   const fetchTransformations = async () => {
     try {
-      const response = await fetch('/api/history');
+      const response = await authFetch('/api/history');
+      if (!response.ok) {
+        throw new Error('Failed to fetch transformations');
+      }
       const data = await response.json();
       setTransformations(data);
     } catch (error) {
+      if (error.message === 'Unauthorized') {
+        navigate('/login');
+      }
       toast({
         title: 'Error',
         description: 'Failed to load transformation history',

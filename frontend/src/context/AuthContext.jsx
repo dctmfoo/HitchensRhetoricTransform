@@ -6,26 +6,51 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  const getAuthHeaders = () => {
+    const token = localStorage.getItem('token');
+    return token ? {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    } : {
+      'Content-Type': 'application/json'
+    };
+  };
+
+  const authFetch = async (url, options = {}) => {
+    const headers = getAuthHeaders();
+    const response = await fetch(url, {
+      ...options,
+      headers: {
+        ...headers,
+        ...options.headers
+      }
+    });
+    
+    if (response.status === 401) {
+      localStorage.removeItem('token');
+      setUser(null);
+      throw new Error('Unauthorized');
+    }
+    
+    return response;
+  };
+
   useEffect(() => {
     // Check if user is logged in on mount
     const token = localStorage.getItem('token');
     if (token) {
-      fetch('/api/auth/user', {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      })
-      .then(res => res.json())
-      .then(data => {
-        if (data.user) {
-          setUser(data.user);
-        }
-      })
-      .catch(err => {
-        console.error('Error fetching user:', err);
-        localStorage.removeItem('token');
-      })
-      .finally(() => setLoading(false));
+      authFetch('/api/auth/user')
+        .then(res => res.json())
+        .then(data => {
+          if (data.user) {
+            setUser(data.user);
+          }
+        })
+        .catch(err => {
+          console.error('Error fetching user:', err);
+          localStorage.removeItem('token');
+        })
+        .finally(() => setLoading(false));
     } else {
       setLoading(false);
     }
@@ -73,12 +98,7 @@ export const AuthProvider = ({ children }) => {
 
   const logout = async () => {
     try {
-      const token = localStorage.getItem('token');
-      await fetch('/api/auth/logout', {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
+      await authFetch('/api/auth/logout');
     } finally {
       localStorage.removeItem('token');
       setUser(null);
@@ -86,7 +106,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, register, logout, loading }}>
+    <AuthContext.Provider value={{ user, login, register, logout, loading, authFetch }}>
       {children}
     </AuthContext.Provider>
   );
