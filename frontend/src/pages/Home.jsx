@@ -326,58 +326,60 @@ const TextTransformer = () => {
               }}
             />
 
-            <FormControl mb={4}>
-              <FormLabel>Verbosity Level</FormLabel>
-              <Select
-                value={verbosity}
-                onChange={(e) => setVerbosity(e.target.value)}
-                bg="white"
-              >
-                <option value="1">Concise</option>
-                <option value="2">Moderate</option>
-                <option value="3">Verbose</option>
-              </Select>
-            </FormControl>
-
-            <FormControl mb={4}>
-              <FormLabel>Style Intensity</FormLabel>
-              <Box position="relative" zIndex={2}>
-                <Slider
-                  id="style-intensity"
-                  defaultValue={1}
-                  min={1}
-                  max={3}
-                  step={1}
-                  onChange={(v) => setStyleIntensity(v)}
-                  onMouseEnter={() => setShowTooltip(true)}
-                  onMouseLeave={() => setShowTooltip(false)}
+            <HStack spacing={4} align="start">
+              <FormControl flex={1}>
+                <FormLabel>Verbosity Level</FormLabel>
+                <Select
+                  value={verbosity}
+                  onChange={(e) => setVerbosity(e.target.value)}
+                  bg="white"
                 >
-                  <SliderTrack bg="gray.200">
-                    <SliderFilledTrack bg="brand.deepBurgundy" />
-                  </SliderTrack>
-                  <Tooltip
-                    hasArrow
-                    bg="brand.deepBurgundy"
-                    color="white"
-                    placement="top"
-                    isOpen={showTooltip}
-                    label={`Intensity: ${
-                      styleIntensity === 1 ? 'Subtle' :
-                      styleIntensity === 2 ? 'Balanced' : 'Pronounced'
-                    }`}
-                  >
-                    <SliderThumb boxSize={4} />
-                  </Tooltip>
-                </Slider>
-                <Flex justify="space-between" mt={2}>
-                  <Text fontSize="sm">Subtle</Text>
-                  <Text fontSize="sm">Balanced</Text>
-                  <Text fontSize="sm">Pronounced</Text>
-                </Flex>
-              </Box>
-            </FormControl>
+                  <option value="1">Concise</option>
+                  <option value="2">Moderate</option>
+                  <option value="3">Verbose</option>
+                </Select>
+              </FormControl>
 
-            <HStack spacing={4} mt={2}>
+              <FormControl flex={1}>
+                <FormLabel>Style Intensity</FormLabel>
+                <Box>
+                  <Slider
+                    id="style-intensity"
+                    defaultValue={1}
+                    min={1}
+                    max={3}
+                    step={1}
+                    onChange={(v) => setStyleIntensity(v)}
+                    onMouseEnter={() => setShowTooltip(true)}
+                    onMouseLeave={() => setShowTooltip(false)}
+                  >
+                    <SliderTrack bg="gray.200">
+                      <SliderFilledTrack bg="brand.deepBurgundy" />
+                    </SliderTrack>
+                    <Tooltip
+                      hasArrow
+                      bg="brand.deepBurgundy"
+                      color="white"
+                      placement="top"
+                      isOpen={showTooltip}
+                      label={`Intensity: ${
+                        styleIntensity === 1 ? 'Subtle' :
+                        styleIntensity === 2 ? 'Balanced' : 'Pronounced'
+                      }`}
+                    >
+                      <SliderThumb boxSize={4} />
+                    </Tooltip>
+                  </Slider>
+                  <Flex justify="space-between" mt={2}>
+                    <Text fontSize="sm">Subtle</Text>
+                    <Text fontSize="sm">Balanced</Text>
+                    <Text fontSize="sm">Pronounced</Text>
+                  </Flex>
+                </Box>
+              </FormControl>
+            </HStack>
+
+            <HStack spacing={4} mt={4}>
               <Button
                 onClick={handleTransform}
                 isLoading={isLoading}
