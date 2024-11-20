@@ -17,69 +17,136 @@ import {
   FormLabel,
   Icon,
   Divider,
-  Badge
+  Badge,
+  SimpleGrid,
+  useColorModeValue,
 } from '@chakra-ui/react';
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
 import * as htmlToImage from 'html-to-image';
 import { useAuth } from '../context/AuthContext';
-import { FaUserTie, FaUserAlt, FaChartLine } from 'react-icons/fa';
+import { FaUserTie, FaUserAlt, FaChartLine, FaQuoteLeft } from 'react-icons/fa';
+
+const PersonaCard = ({ icon, title, description, quote, color }) => (
+  <Box
+    bg={useColorModeValue('white', 'gray.800')}
+    p={6}
+    borderRadius="lg"
+    boxShadow="xl"
+    border="1px"
+    borderColor="brand.fadedSepia"
+    transition="all 0.3s"
+    _hover={{
+      transform: 'translateY(-5px)',
+      boxShadow: '2xl',
+    }}
+  >
+    <VStack spacing={4} align="start">
+      <Icon as={icon} boxSize={8} color={color} />
+      <Heading size="md" color={color}>
+        {title}
+      </Heading>
+      <Text color="gray.600">{description}</Text>
+      <Box pt={4}>
+        <Flex align="start">
+          <Icon as={FaQuoteLeft} boxSize={6} color={color} mr={2} />
+          <Text fontStyle="italic" color="gray.700">
+            {quote}
+          </Text>
+        </Flex>
+      </Box>
+    </VStack>
+  </Box>
+);
 
 const LandingPage = () => (
   <Container maxW="container.xl" py={20}>
-    <Stack spacing={8} align="center" textAlign="center">
-      <Heading
-        fontSize={{ base: '3xl', md: '4xl', lg: '5xl' }}
-        bgGradient="linear(145deg, brand.deepBurgundy, brand.mutedCrimson)"
-        bgClip="text"
-      >
-        Transform Your Writing into Hitchens' Style
-      </Heading>
-      
-      <Text fontSize={{ base: 'lg', md: 'xl' }} color="gray.600" maxW="2xl">
-        Experience the power of AI-driven text transformation that captures the essence
-        of Christopher Hitchens' distinctive writing style. Elevate your prose with
-        intellectual depth and rhetorical brilliance.
-      </Text>
-
-      <Box w="full" maxW="3xl" p={8} bg="white" borderRadius="lg" boxShadow="xl">
-        <VStack spacing={6}>
-          <Text fontSize="lg" fontStyle="italic" color="gray.700">
-            "The measure of a decent human being is how he or she treats the defenseless."
-          </Text>
-          <Text fontWeight="bold" color="brand.deepBurgundy">
-            — Christopher Hitchens
-          </Text>
-        </VStack>
+    <Stack spacing={12} align="center" textAlign="center">
+      <Box>
+        <Heading
+          fontSize={{ base: '3xl', md: '4xl', lg: '5xl' }}
+          bgGradient="linear(145deg, brand.deepBurgundy, brand.mutedCrimson)"
+          bgClip="text"
+          mb={4}
+        >
+          Transform Your Writing Style
+        </Heading>
+        <Text fontSize={{ base: 'lg', md: 'xl' }} color="gray.600" maxW="2xl">
+          Experience the power of AI-driven text transformation that captures the essence
+          of three distinct writing styles. Choose your persona and elevate your prose.
+        </Text>
       </Box>
 
-      <Stack direction={{ base: 'column', md: 'row' }} spacing={4}>
-        <Button
-          as={RouterLink}
-          to="/login"
-          size="lg"
-          bgGradient="linear(145deg, brand.deepBurgundy, brand.mutedCrimson)"
-          color="white"
-          _hover={{
-            bgGradient: "linear(145deg, brand.mutedCrimson, brand.deepBurgundy)"
-          }}
-        >
-          Sign In to Transform
-        </Button>
-        <Button
-          as={RouterLink}
-          to="/register"
-          size="lg"
-          variant="outline"
-          borderColor="brand.deepBurgundy"
+      <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={8} w="full">
+        <PersonaCard
+          icon={FaUserTie}
+          title="Christopher Hitchens"
+          description="Transform your text into the intellectual and literary style of Christopher Hitchens. Perfect for essays, critiques, and analytical pieces."
+          quote="The measure of a decent human being is how he or she treats the defenseless."
           color="brand.deepBurgundy"
-          _hover={{
-            bg: 'brand.agedParchment'
-          }}
-        >
-          Create Account
-        </Button>
-      </Stack>
+        />
+        <PersonaCard
+          icon={FaUserAlt}
+          title="Donald Trump"
+          description="Convert your message into Trump's distinctive, direct communication style. Ideal for impactful, attention-grabbing statements."
+          quote="Nobody knows the system better than me, which is why I alone can fix it."
+          color="brand.mutedCrimson"
+        />
+        <PersonaCard
+          icon={FaChartLine}
+          title="Milton Friedman"
+          description="Adopt the analytical and economic perspective of Milton Friedman. Excellent for policy discussions and economic analysis."
+          quote="If you put the federal government in charge of the Sahara Desert, in 5 years there'd be a shortage of sand."
+          color="brand.oxfordBlue"
+        />
+      </SimpleGrid>
+
+      <Box 
+        w="full" 
+        maxW="3xl" 
+        p={8} 
+        bg="white" 
+        borderRadius="lg" 
+        boxShadow="xl"
+        border="1px"
+        borderColor="brand.fadedSepia"
+      >
+        <VStack spacing={6}>
+          <Heading size="lg" color="brand.deepBurgundy">
+            Ready to Transform Your Writing?
+          </Heading>
+          <Text fontSize="lg" color="gray.600">
+            Sign in or create an account to access our powerful text transformation tools.
+          </Text>
+          <Stack direction={{ base: 'column', sm: 'row' }} spacing={4}>
+            <Button
+              as={RouterLink}
+              to="/login"
+              size="lg"
+              bgGradient="linear(145deg, brand.deepBurgundy, brand.mutedCrimson)"
+              color="white"
+              _hover={{
+                bgGradient: "linear(145deg, brand.mutedCrimson, brand.deepBurgundy)"
+              }}
+            >
+              Sign In to Transform
+            </Button>
+            <Button
+              as={RouterLink}
+              to="/register"
+              size="lg"
+              variant="outline"
+              borderColor="brand.deepBurgundy"
+              color="brand.deepBurgundy"
+              _hover={{
+                bg: 'brand.agedParchment'
+              }}
+            >
+              Create Account
+            </Button>
+          </Stack>
+        </VStack>
+      </Box>
     </Stack>
   </Container>
 );
