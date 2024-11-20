@@ -11,14 +11,7 @@ import {
   HStack,
   Container,
   Image,
-  Stack,
-  FormControl,
-  FormLabel,
-  Slider,
-  SliderTrack,
-  SliderFilledTrack,
-  SliderThumb,
-  Tooltip,
+  Stack
 } from '@chakra-ui/react';
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
@@ -88,8 +81,6 @@ const TextTransformer = () => {
   const [inputText, setInputText] = useState('');
   const [outputText, setOutputText] = useState('');
   const [verbosity, setVerbosity] = useState('1');
-  const [styleIntensity, setStyleIntensity] = useState(1);
-  const [showTooltip, setShowTooltip] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const typewriterRef = useRef(null);
   const outputRef = useRef(null);
@@ -187,8 +178,7 @@ const TextTransformer = () => {
         method: 'POST',
         body: JSON.stringify({
           text: inputText,
-          verbosity: parseInt(verbosity),
-          style_intensity: parseInt(styleIntensity)
+          verbosity: verbosity
         })
       });
 
@@ -309,95 +299,32 @@ const TextTransformer = () => {
           Hitchens Style Transformer
         </Heading>
 
-        <Flex w="100%" gap={8} direction={{ base: "column", md: "row" }}>
+        <Flex w="100%" gap={8} direction={{ base: 'column', md: 'row' }}>
           <VStack flex={1} spacing={4} align="stretch">
-            <FormControl>
-              <FormLabel fontWeight="bold">Input Text</FormLabel>
-              <Textarea
-                value={inputText}
-                onChange={(e) => setInputText(e.target.value)}
-                placeholder="Enter your text here..."
-                minH="200px"
-                bg="brand.agedParchment"
-                border="1px"
-                borderColor="brand.leatherBrown"
-                _focus={{
-                  borderColor: 'brand.antiqueGold',
-                  boxShadow: '0 0 0 1px brand.antiqueGold'
-                }}
-              />
-            </FormControl>
+            <Text fontWeight="bold">Input Text</Text>
+            <Textarea
+              value={inputText}
+              onChange={(e) => setInputText(e.target.value)}
+              placeholder="Enter your text here..."
+              minH="200px"
+              bg="brand.agedParchment"
+              border="1px"
+              borderColor="brand.leatherBrown"
+              _focus={{
+                borderColor: 'brand.antiqueGold',
+                boxShadow: '0 0 0 1px brand.antiqueGold'
+              }}
+            />
 
-            <HStack spacing={4} align="flex-start">
-              <FormControl flex={1}>
-                <FormLabel fontWeight="medium" color="brand.oxfordBlue">
-                  Verbosity Level
-                </FormLabel>
-                <Select
-                  value={verbosity}
-                  onChange={(e) => setVerbosity(e.target.value)}
-                  bg="white"
-                  borderColor="brand.leatherBrown"
-                  size="md"
-                  _hover={{
-                    borderColor: 'brand.antiqueGold'
-                  }}
-                  _focus={{
-                    borderColor: 'brand.antiqueGold',
-                    boxShadow: '0 0 0 1px brand.antiqueGold'
-                  }}
-                >
-                  <option value="1">Concise</option>
-                  <option value="2">Moderate</option>
-                  <option value="3">Verbose</option>
-                </Select>
-              </FormControl>
-
-              <FormControl flex={1}>
-                <FormLabel fontWeight="medium" color="brand.oxfordBlue">
-                  Style Intensity
-                </FormLabel>
-                <Box pt={2}>
-                  <Slider
-                    id="style-intensity"
-                    defaultValue={1}
-                    min={1}
-                    max={3}
-                    step={1}
-                    onChange={(v) => setStyleIntensity(v)}
-                    onMouseEnter={() => setShowTooltip(true)}
-                    onMouseLeave={() => setShowTooltip(false)}
-                  >
-                    <SliderTrack bg="brand.fadedSepia">
-                      <SliderFilledTrack bg="brand.deepBurgundy" />
-                    </SliderTrack>
-                    <Tooltip
-                      hasArrow
-                      bg="brand.deepBurgundy"
-                      color="white"
-                      placement="top"
-                      isOpen={showTooltip}
-                      label={`${
-                        styleIntensity === 1 ? 'Subtle' :
-                        styleIntensity === 2 ? 'Balanced' : 'Pronounced'
-                      }`}
-                    >
-                      <SliderThumb 
-                        boxSize={6} 
-                        bg="white"
-                        borderColor="brand.deepBurgundy"
-                        borderWidth="2px"
-                      />
-                    </Tooltip>
-                  </Slider>
-                  <Flex justify="space-between" mt={2}>
-                    <Text fontSize="sm" color="brand.oxfordBlue">Subtle</Text>
-                    <Text fontSize="sm" color="brand.oxfordBlue">Balanced</Text>
-                    <Text fontSize="sm" color="brand.oxfordBlue">Pronounced</Text>
-                  </Flex>
-                </Box>
-              </FormControl>
-            </HStack>
+            <Select
+              value={verbosity}
+              onChange={(e) => setVerbosity(e.target.value)}
+              bg="white"
+            >
+              <option value="1">Concise</option>
+              <option value="2">Moderate</option>
+              <option value="3">Verbose</option>
+            </Select>
 
             <HStack spacing={4}>
               <Button
