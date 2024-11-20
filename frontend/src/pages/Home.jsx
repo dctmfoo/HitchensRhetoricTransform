@@ -431,7 +431,7 @@ const TextTransformer = () => {
                 id="typewriter-toggle"
                 isChecked={typewriterEnabled}
                 onChange={(e) => setTypewriterEnabled(e.target.checked)}
-                colorScheme="brand"
+                colorScheme="blue"
                 size="lg"
               />
             </FormControl>
@@ -472,7 +472,7 @@ const TextTransformer = () => {
                 }}
                 transition="all 0.2s"
               >
-                Retry
+                Retry Transformation
               </Button>
               <Button
                 onClick={handleClear}
