@@ -21,7 +21,7 @@ import {
 } from '@chakra-ui/react';
 import { useEffect, useState, useRef } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import * as htmlToImage from 'html-to-image';
 import { SearchIcon } from '@chakra-ui/icons';
 
@@ -32,6 +32,7 @@ function History() {
   const toast = useToast();
   const { authFetch } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const transformedTextRef = useRef(null);
 
@@ -43,7 +44,7 @@ function History() {
 
   useEffect(() => {
     fetchTransformations();
-  }, []);
+  }, [location.pathname]); // Refresh when navigating to the page
 
   const generateFilename = (text) => {
     if (!text) {
@@ -86,6 +87,7 @@ function History() {
         throw new Error('Failed to fetch transformations');
       }
       const data = await response.json();
+      console.log('Fetched transformations:', data); // Debug log
       setTransformations(data);
     } catch (error) {
       if (error.message === 'Unauthorized') {
