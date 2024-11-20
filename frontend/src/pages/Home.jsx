@@ -112,18 +112,31 @@ const TextTransformer = () => {
   };
 
   const generateFilename = (text) => {
-    // Take first 5 words of the text, clean them, and join with hyphens
-    const cleanText = text
+    // Take first 5 meaningful words (exclude common words)
+    const commonWords = new Set(['the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for']);
+    const words = text
       .trim()
-      .split(/\s+/)
-      .slice(0, 5)
-      .join('-')
       .toLowerCase()
+      .split(/\s+/)
+      .filter(word => word.length > 2 && !commonWords.has(word))
+      .slice(0, 5);
+
+    // Clean the words and join with hyphens
+    const cleanText = words
+      .join('-')
       .replace(/[^a-z0-9-]/g, '')
-      .replace(/-+/g, '-');
-    
-    const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-    return `hitchens-${cleanText}-${timestamp}.png`;
+      .replace(/-+/g, '-')
+      .substring(0, 50); // Limit length
+
+    // Format date in a readable way
+    const date = new Date();
+    const formattedDate = date.toISOString()
+      .split('T')[0];
+  
+    // Add random suffix for uniqueness
+    const randomSuffix = Math.random().toString(36).substring(2, 6);
+
+    return `hitchens-${cleanText}-${formattedDate}-${randomSuffix}.png`;
   };
 
   const handleTransform = async () => {
