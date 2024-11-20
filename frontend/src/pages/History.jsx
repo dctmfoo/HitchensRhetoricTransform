@@ -39,6 +39,55 @@ function History() {
     fetchTransformations();
   }, []);
 
+  const generateFilename = (text) => {
+    console.log('Starting filename generation...');
+  
+    if (!text) {
+      console.warn('No text provided for filename generation');
+      return 'hitchens-transformed.png';
+    }
+
+    // Common words to filter out for better filename creation
+    const commonWords = new Set([
+      'the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for',
+      'of', 'with', 'by', 'from', 'up', 'about', 'into', 'over', 'after'
+    ]);
+  
+    // Take first sentence or up to 100 characters for processing
+    const textSample = text.split('.')[0].substring(0, 100);
+    console.log('Text sample for filename:', textSample);
+  
+    // Process the text into clean words
+    const words = textSample
+      .toLowerCase()
+      .replace(/[^a-z0-9\s-]/g, '') // Remove special characters
+      .split(/\s+/)
+      .filter(word => 
+        word.length > 2 && // Keep words longer than 2 characters
+        !commonWords.has(word) && // Remove common words
+        !/^\d+$/.test(word) // Remove pure numbers
+      )
+      .slice(0, 3); // Take only first 3 meaningful words
+  
+    console.log('Selected words for filename:', words);
+  
+    // Generate timestamp in a more compact format
+    const timestamp = new Date()
+      .toISOString()
+      .replace(/[-:]/g, '')
+      .split('.')[0]
+      .substring(0, 12);
+  
+    // Create a short random suffix
+    const randomSuffix = Math.random().toString(36).substring(2, 6);
+  
+    // Combine elements into final filename
+    const filename = `hitchens-${words.join('-')}-${timestamp}-${randomSuffix}.png`;
+    console.log('Generated filename:', filename);
+  
+    return filename;
+  };
+
   const fetchTransformations = async () => {
     try {
       const response = await authFetch('/api/history');
@@ -92,7 +141,8 @@ function History() {
       canvas.toBlob((blob) => {
         const url = URL.createObjectURL(blob);
         const link = document.createElement('a');
-        link.download = `hitchens-transformation-${transformation.id}.png`;
+        const filename = generateFilename(transformation.output_text);
+        link.download = filename;
         link.href = url;
         link.click();
         URL.revokeObjectURL(url);
