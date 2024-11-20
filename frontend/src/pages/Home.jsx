@@ -220,7 +220,7 @@ const TextTransformer = () => {
       console.log('No output text available for screenshot');
       return;
     }
-
+    
     try {
       console.log('Starting screenshot capture...');
       const element = outputRef.current;
@@ -230,48 +230,19 @@ const TextTransformer = () => {
         return;
       }
       
-      console.log('Waiting for any pending renders...');
-      await new Promise(resolve => setTimeout(resolve, 100));
-      
-      console.log('Capturing element to canvas...');
-      const canvas = await htmlToImage.toCanvas(element, {
-        quality: 1,
-        backgroundColor: '#FFFFFF',
-        width: element.offsetWidth,
-        height: Math.max(element.scrollHeight, element.offsetHeight),
-        style: {
-          transform: 'scale(1)',
-          transformOrigin: 'top left'
-        }
+      const dataUrl = await htmlToImage.toPng(element, {
+        quality: 1.0,
+        backgroundColor: '#FFFFFF'
       });
-
-      console.log('Converting canvas to blob...');
-      canvas.toBlob((blob) => {
-        if (!blob) {
-          console.error('Failed to create blob from canvas');
-          return;
-        }
-
-        console.log('Creating blob URL...');
-        const url = URL.createObjectURL(blob);
-        console.log('Blob URL created:', url);
-
-        const filename = generateFilename(outputText);
-        console.log('Generated filename:', filename);
-
-        const link = document.createElement('a');
-        link.download = filename;
-        link.href = url;
-        
-        console.log('Triggering download...');
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        
-        console.log('Cleaning up blob URL...');
-        URL.revokeObjectURL(url);
-      }, 'image/png', 1.0);
-
+      
+      const filename = generateFilename(outputText);
+      console.log('Generated filename:', filename);
+      
+      const link = document.createElement('a');
+      link.download = filename;
+      link.href = dataUrl;
+      link.click();
+      
       toast({
         title: 'Screenshot saved',
         description: 'The image has been downloaded successfully',
