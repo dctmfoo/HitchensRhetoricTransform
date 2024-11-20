@@ -339,7 +339,17 @@ const TextTransformer = () => {
               </Select>
             </FormControl>
 
-            <FormControl>
+            <FormControl 
+              isRequired 
+              mb={4}
+              position="relative"
+              zIndex={2}
+              bg="white"
+              p={4}
+              borderRadius="md"
+              border="1px solid"
+              borderColor="brand.fadedSepia"
+            >
               <FormLabel>Style Intensity</FormLabel>
               <Slider
                 id="style-intensity"
@@ -351,7 +361,7 @@ const TextTransformer = () => {
                 onMouseEnter={() => setShowTooltip(true)}
                 onMouseLeave={() => setShowTooltip(false)}
               >
-                <SliderTrack bg="brand.fadedSepia">
+                <SliderTrack bg="gray.200">
                   <SliderFilledTrack bg="brand.deepBurgundy" />
                 </SliderTrack>
                 <Tooltip
@@ -365,7 +375,7 @@ const TextTransformer = () => {
                     styleIntensity === 2 ? 'Balanced' : 'Pronounced'
                   }`}
                 >
-                  <SliderThumb />
+                  <SliderThumb boxSize={6} />
                 </Tooltip>
               </Slider>
             </FormControl>
