@@ -111,6 +111,21 @@ const TextTransformer = () => {
     });
   };
 
+  const generateFilename = (text) => {
+    // Take first 5 words of the text, clean them, and join with hyphens
+    const cleanText = text
+      .trim()
+      .split(/\s+/)
+      .slice(0, 5)
+      .join('-')
+      .toLowerCase()
+      .replace(/[^a-z0-9-]/g, '')
+      .replace(/-+/g, '-');
+    
+    const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+    return `hitchens-${cleanText}-${timestamp}.png`;
+  };
+
   const handleTransform = async () => {
     if (!inputText.trim()) {
       toast({
@@ -201,11 +216,18 @@ const TextTransformer = () => {
       canvas.toBlob((blob) => {
         const url = URL.createObjectURL(blob);
         const link = document.createElement('a');
-        link.download = 'hitchens-response.png';
+        link.download = generateFilename(outputText);
         link.href = url;
         link.click();
         URL.revokeObjectURL(url);
       }, 'image/png', 1.0);
+
+      toast({
+        title: 'Screenshot saved',
+        description: 'The image has been downloaded successfully',
+        status: 'success',
+        duration: 2000
+      });
     } catch (error) {
       console.error('Screenshot error:', error);
       toast({
