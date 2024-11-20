@@ -7,11 +7,17 @@ MODEL = "gpt-4o"
 
 client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
 
-def transform_text(text, verbosity_level=1):
+def transform_text(text, verbosity_level=1, style_intensity=1):
     verbosity_map = {
         1: "concise but intellectually potent",
         2: "moderately elaborate with scholarly depth",
         3: "extensively detailed with full rhetorical flourish"
+    }
+    
+    intensity_map = {
+        1: "subtle and measured, while maintaining",
+        2: "balanced and characteristic, embodying",
+        3: "pronounced and intense, fully embracing"
     }
     
     try:
@@ -67,7 +73,7 @@ def transform_text(text, verbosity_level=1):
         Transform the input while maintaining these elements. Even at lower verbosity levels, preserve the essential Hitchens characteristics: intellectual rigor, stylistic precision, and moral clarity. Your goal is not just to sound like Hitchens, but to think and argue as he did."""
 
         prompt = f"""Transform the following text, channeling not just my style but my intellectual approach. 
-        Make it {verbosity_map[verbosity_level]}, while maintaining my signature blend of erudition, wit, 
+        Make it {verbosity_map[verbosity_level]} and {intensity_map[style_intensity]} my signature blend of erudition, wit, 
         and uncompromising analytical rigor:\n\n{text}"""
         
         response = client.chat.completions.create(
@@ -77,7 +83,7 @@ def transform_text(text, verbosity_level=1):
                 {"role": "user", "content": prompt}
             ],
             max_tokens=5000,
-            temperature=0.85
+            temperature=0.85 + (style_intensity * 0.05)  # Slightly increase variation with intensity
         )
         
         return response.choices[0].message.content

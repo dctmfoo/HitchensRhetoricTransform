@@ -11,7 +11,14 @@ import {
   HStack,
   Container,
   Image,
-  Stack
+  Stack,
+  FormControl,
+  FormLabel,
+  Slider,
+  SliderTrack,
+  SliderFilledTrack,
+  SliderThumb,
+  Tooltip,
 } from '@chakra-ui/react';
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
@@ -81,6 +88,8 @@ const TextTransformer = () => {
   const [inputText, setInputText] = useState('');
   const [outputText, setOutputText] = useState('');
   const [verbosity, setVerbosity] = useState('1');
+  const [styleIntensity, setStyleIntensity] = useState(1);
+  const [showTooltip, setShowTooltip] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const typewriterRef = useRef(null);
   const outputRef = useRef(null);
@@ -178,7 +187,8 @@ const TextTransformer = () => {
         method: 'POST',
         body: JSON.stringify({
           text: inputText,
-          verbosity: verbosity
+          verbosity: verbosity,
+          style_intensity: styleIntensity
         })
       });
 
@@ -316,15 +326,49 @@ const TextTransformer = () => {
               }}
             />
 
-            <Select
-              value={verbosity}
-              onChange={(e) => setVerbosity(e.target.value)}
-              bg="white"
-            >
-              <option value="1">Concise</option>
-              <option value="2">Moderate</option>
-              <option value="3">Verbose</option>
-            </Select>
+            <FormControl>
+              <FormLabel>Verbosity Level</FormLabel>
+              <Select
+                value={verbosity}
+                onChange={(e) => setVerbosity(e.target.value)}
+                bg="white"
+              >
+                <option value="1">Concise</option>
+                <option value="2">Moderate</option>
+                <option value="3">Verbose</option>
+              </Select>
+            </FormControl>
+
+            <FormControl>
+              <FormLabel>Style Intensity</FormLabel>
+              <Slider
+                id="style-intensity"
+                defaultValue={1}
+                min={1}
+                max={3}
+                step={1}
+                onChange={(v) => setStyleIntensity(v)}
+                onMouseEnter={() => setShowTooltip(true)}
+                onMouseLeave={() => setShowTooltip(false)}
+              >
+                <SliderTrack bg="brand.fadedSepia">
+                  <SliderFilledTrack bg="brand.deepBurgundy" />
+                </SliderTrack>
+                <Tooltip
+                  hasArrow
+                  bg="brand.deepBurgundy"
+                  color="white"
+                  placement="top"
+                  isOpen={showTooltip}
+                  label={`Intensity: ${
+                    styleIntensity === 1 ? 'Subtle' :
+                    styleIntensity === 2 ? 'Balanced' : 'Pronounced'
+                  }`}
+                >
+                  <SliderThumb />
+                </Tooltip>
+              </Slider>
+            </FormControl>
 
             <HStack spacing={4}>
               <Button

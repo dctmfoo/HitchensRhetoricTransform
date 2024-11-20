@@ -51,16 +51,18 @@ def transform():
         data = request.get_json()
         input_text = data.get('text', '')
         verbosity_level = int(data.get('verbosity', 1))
+        style_intensity = int(data.get('style_intensity', 1))
         
         if not input_text:
             return jsonify({'error': 'No text provided'}), 400
             
-        transformed_text = transform_text(input_text, verbosity_level)
+        transformed_text = transform_text(input_text, verbosity_level, style_intensity)
         
         transformation = Transformation(
             input_text=input_text,
             output_text=transformed_text,
             verbosity_level=verbosity_level,
+            style_intensity=style_intensity,
             user_id=current_user.id
         )
         db.session.add(transformation)
