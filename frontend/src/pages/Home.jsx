@@ -96,6 +96,21 @@ const TextTransformer = () => {
     };
   }, []);
 
+  const handleClear = () => {
+    setInputText('');
+    setOutputText('');
+    if (typewriterRef.current) {
+      clearInterval(typewriterRef.current);
+    }
+    toast({
+      title: 'Cleared',
+      description: 'Input and output fields have been reset',
+      status: 'info',
+      duration: 2000,
+      isClosable: true
+    });
+  };
+
   const handleTransform = async () => {
     if (!inputText.trim()) {
       toast({
@@ -255,18 +270,34 @@ const TextTransformer = () => {
               <option value="3">Verbose</option>
             </Select>
 
-            <Button
-              onClick={handleTransform}
-              isLoading={isLoading}
-              loadingText="Transforming..."
-              bgGradient="linear(145deg, brand.deepBurgundy, brand.mutedCrimson)"
-              color="white"
-              _hover={{
-                bgGradient: "linear(145deg, brand.mutedCrimson, brand.deepBurgundy)"
-              }}
-            >
-              Transform
-            </Button>
+            <HStack spacing={4}>
+              <Button
+                onClick={handleTransform}
+                isLoading={isLoading}
+                loadingText="Transforming..."
+                flex="1"
+                bgGradient="linear(145deg, brand.deepBurgundy, brand.mutedCrimson)"
+                color="white"
+                _hover={{
+                  bgGradient: "linear(145deg, brand.mutedCrimson, brand.deepBurgundy)"
+                }}
+              >
+                Transform
+              </Button>
+              <Button
+                onClick={handleClear}
+                isDisabled={isLoading || (!inputText && !outputText)}
+                flex="1"
+                variant="outline"
+                borderColor="brand.deepBurgundy"
+                color="brand.deepBurgundy"
+                _hover={{
+                  bg: 'brand.agedParchment'
+                }}
+              >
+                Clear All
+              </Button>
+            </HStack>
           </VStack>
 
           <VStack flex={1} spacing={4} align="stretch">
