@@ -332,6 +332,7 @@ const TextTransformer = () => {
                 value={verbosity}
                 onChange={(e) => setVerbosity(e.target.value)}
                 bg="white"
+                mb={4}
               >
                 <option value="1">Concise</option>
                 <option value="2">Moderate</option>
@@ -339,30 +340,11 @@ const TextTransformer = () => {
               </Select>
             </FormControl>
 
-            <FormControl 
-              isRequired 
-              mb={4}
-              position="relative"
-              zIndex={2}
-              bg="brand.agedParchment"
-              p={6}
-              borderRadius="md"
-              border="2px solid"
-              borderColor="brand.deepBurgundy"
-              boxShadow="0 2px 4px rgba(0,0,0,0.1)"
-              _hover={{
-                borderColor: "brand.mutedCrimson"
-              }}
-            >
-              <FormLabel 
-                color="brand.deepBurgundy" 
-                fontSize="lg" 
-                fontWeight="bold"
-                mb={3}
-              >
+            <FormControl mb={4}>
+              <FormLabel color="brand.deepBurgundy" fontSize="lg" fontWeight="bold">
                 Style Intensity
               </FormLabel>
-              <Box px={2} py={4}>
+              <Box bg="brand.agedParchment" p={4} borderRadius="md" border="1px solid" borderColor="brand.deepBurgundy">
                 <Slider
                   id="style-intensity"
                   defaultValue={1}
@@ -373,10 +355,7 @@ const TextTransformer = () => {
                   onMouseEnter={() => setShowTooltip(true)}
                   onMouseLeave={() => setShowTooltip(false)}
                 >
-                  <SliderTrack 
-                    bg="brand.fadedSepia"
-                    h="4px"
-                  >
+                  <SliderTrack bg="brand.fadedSepia" h="4px">
                     <SliderFilledTrack bg="brand.deepBurgundy" />
                   </SliderTrack>
                   <Tooltip
