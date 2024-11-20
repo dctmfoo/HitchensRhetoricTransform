@@ -28,7 +28,7 @@ function History() {
   const { authFetch } = useAuth();
   const navigate = useNavigate();
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const modalContentRef = useRef(null);
+  const transformedTextRef = useRef(null);
 
   useEffect(() => {
     fetchTransformations();
@@ -66,8 +66,10 @@ function History() {
   };
 
   const handleScreenshot = async (transformation) => {
+    if (!transformation.output_text) return;
+
     try {
-      const element = modalContentRef.current;
+      const element = transformedTextRef.current;
       
       await new Promise(resolve => setTimeout(resolve, 100));
       
@@ -214,77 +216,89 @@ function History() {
           <ModalCloseButton />
           <ModalBody pb={6}>
             {selectedTransformation && (
-              <Box ref={modalContentRef} bg="white" p={6}>
-                <VStack align="stretch" spacing={6}>
-                  <Box>
-                    <HStack justify="space-between" mb={4}>
-                      <Text fontSize="sm" fontStyle="italic" color="brand.forestGreen">
-                        {new Date(selectedTransformation.created_at).toLocaleString()}
-                      </Text>
-                      <Badge colorScheme="purple">
-                        Verbosity: {selectedTransformation.verbosity_level}
-                      </Badge>
-                    </HStack>
+              <VStack align="stretch" spacing={6}>
+                <Box>
+                  <HStack justify="space-between" mb={4}>
+                    <Text fontSize="sm" fontStyle="italic" color="brand.forestGreen">
+                      {new Date(selectedTransformation.created_at).toLocaleString()}
+                    </Text>
+                    <Badge colorScheme="purple">
+                      Verbosity: {selectedTransformation.verbosity_level}
+                    </Badge>
+                  </HStack>
 
-                    <Text fontWeight="bold" mb={2}>Original Text</Text>
-                    <Box
-                      position="relative"
-                      bg="brand.agedParchment"
-                      p={4}
-                      borderRadius="md"
-                      mb={4}
+                  <Text fontWeight="bold" mb={2}>Original Text</Text>
+                  <Box
+                    position="relative"
+                    bg="brand.agedParchment"
+                    p={4}
+                    borderRadius="md"
+                    mb={4}
+                  >
+                    <Text whiteSpace="pre-wrap">{selectedTransformation.input_text}</Text>
+                    <Button
+                      size="sm"
+                      position="absolute"
+                      top={2}
+                      right={2}
+                      onClick={() => handleCopy(selectedTransformation.input_text)}
                     >
-                      <Text whiteSpace="pre-wrap">{selectedTransformation.input_text}</Text>
-                      <Button
-                        size="sm"
-                        position="absolute"
-                        top={2}
-                        right={2}
-                        onClick={() => handleCopy(selectedTransformation.input_text)}
-                      >
-                        Copy
-                      </Button>
-                    </Box>
+                      Copy
+                    </Button>
+                  </Box>
 
-                    <Box
-                      h="2px"
-                      bgGradient="linear(to-r, transparent, brand.antiqueGold, transparent)"
-                      my={4}
-                    />
+                  <Box
+                    h="2px"
+                    bgGradient="linear(to-r, transparent, brand.antiqueGold, transparent)"
+                    my={4}
+                  />
 
-                    <Text fontWeight="bold" mb={2}>Hitchens' Version</Text>
+                  <Box
+                    ref={transformedTextRef}
+                    data-screenshot="true"
+                    bg="white"
+                    p={8}
+                    width="600px"
+                    minHeight="auto"
+                    display="flex"
+                    flexDirection="column"
+                    justifyContent="space-between"
+                    border="1px solid #e2e8f0"
+                    borderRadius="md"
+                    mx="auto"
+                    position="relative"
+                    _before={{
+                      content: '""',
+                      position: 'absolute',
+                      top: 0,
+                      left: 0,
+                      right: 0,
+                      bottom: 0,
+                      opacity: 0.1,
+                      zIndex: 0,
+                      bg: 'url("/static/images/paper-texture.svg")'
+                    }}
+                  >
                     <Box
                       position="relative"
-                      bg="brand.agedParchment"
-                      p={4}
-                      borderRadius="md"
-                      mb={4}
+                      zIndex={1}
+                      fontFamily="Georgia, serif"
+                      fontSize="18px"
+                      lineHeight="1.8"
+                      color="black"
+                      whiteSpace="pre-wrap"
+                      mb={12}
                     >
-                      <Text
-                        whiteSpace="pre-wrap"
-                        fontFamily="Georgia, serif"
-                        fontSize="18px"
-                        lineHeight="1.8"
-                      >
-                        {selectedTransformation.output_text}
-                      </Text>
-                      <Button
-                        size="sm"
-                        position="absolute"
-                        top={2}
-                        right={2}
-                        onClick={() => handleCopy(selectedTransformation.output_text)}
-                      >
-                        Copy
-                      </Button>
+                      {selectedTransformation.output_text}
                     </Box>
-
+                    
                     <Box
-                      position="relative"
+                      position="absolute"
+                      bottom={8}
+                      right={8}
                       width="150px"
                       height="50px"
-                      ml="auto"
-                      mr={0}
+                      zIndex={1}
                     >
                       <img
                         src="/static/images/hitchens-signature.png"
@@ -299,15 +313,23 @@ function History() {
                     </Box>
                   </Box>
 
-                  <Button
-                    onClick={() => handleScreenshot(selectedTransformation)}
-                    colorScheme="blue"
-                    width="full"
-                  >
-                    Download as Image
-                  </Button>
-                </VStack>
-              </Box>
+                  <HStack spacing={4} mt={4}>
+                    <Button
+                      onClick={() => handleCopy(selectedTransformation.output_text)}
+                      flex={1}
+                    >
+                      Copy Text
+                    </Button>
+                    <Button
+                      onClick={() => handleScreenshot(selectedTransformation)}
+                      colorScheme="blue"
+                      flex={1}
+                    >
+                      Download as Image
+                    </Button>
+                  </HStack>
+                </Box>
+              </VStack>
             )}
           </ModalBody>
         </ModalContent>
