@@ -35,8 +35,9 @@ function History() {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const transformedTextRef = useRef(null);
 
-  // Helper function to capitalize first letter
+  // Helper function to capitalize first letter with null check
   const capitalizeFirstLetter = (string) => {
+    if (!string) return ''; // Add null check
     return string.charAt(0).toUpperCase() + string.slice(1);
   };
 
@@ -45,10 +46,7 @@ function History() {
   }, []);
 
   const generateFilename = (text) => {
-    console.log('Starting filename generation...');
-  
     if (!text) {
-      console.warn('No text provided for filename generation');
       return 'transformed.png';
     }
 
@@ -58,7 +56,6 @@ function History() {
     ]);
   
     const textSample = text.split('.')[0].substring(0, 100);
-    console.log('Text sample for filename:', textSample);
   
     const words = textSample
       .toLowerCase()
@@ -71,8 +68,6 @@ function History() {
       )
       .slice(0, 3);
   
-    console.log('Selected words for filename:', words);
-  
     const timestamp = new Date()
       .toISOString()
       .replace(/[-:]/g, '')
@@ -81,10 +76,7 @@ function History() {
   
     const randomSuffix = Math.random().toString(36).substring(2, 6);
   
-    const filename = `transformed-${words.join('-')}-${timestamp}-${randomSuffix}.png`;
-    console.log('Generated filename:', filename);
-  
-    return filename;
+    return `transformed-${words.join('-')}-${timestamp}-${randomSuffix}.png`;
   };
 
   const fetchTransformations = async () => {
@@ -236,7 +228,7 @@ function History() {
                     Verbosity: {transformation.verbosity_level}
                   </Badge>
                   <Badge colorScheme="green">
-                    {capitalizeFirstLetter(transformation.persona)}
+                    {capitalizeFirstLetter(transformation.persona || 'hitchens')}
                   </Badge>
                 </HStack>
               </Box>
@@ -262,7 +254,7 @@ function History() {
 
               <Box>
                 <Text fontWeight="bold" mb={2}>
-                  {capitalizeFirstLetter(transformation.persona)}'s Version
+                  {capitalizeFirstLetter(transformation.persona || 'hitchens')}'s Version
                 </Text>
                 <Box
                   position="relative"
@@ -313,7 +305,7 @@ function History() {
                         Verbosity: {selectedTransformation.verbosity_level}
                       </Badge>
                       <Badge colorScheme="green">
-                        {capitalizeFirstLetter(selectedTransformation.persona)}
+                        {capitalizeFirstLetter(selectedTransformation.persona || 'hitchens')}
                       </Badge>
                     </HStack>
                   </HStack>
