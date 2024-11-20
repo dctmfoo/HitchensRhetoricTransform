@@ -344,40 +344,70 @@ const TextTransformer = () => {
               mb={4}
               position="relative"
               zIndex={2}
-              bg="white"
-              p={4}
+              bg="brand.agedParchment"
+              p={6}
               borderRadius="md"
-              border="1px solid"
-              borderColor="brand.fadedSepia"
+              border="2px solid"
+              borderColor="brand.deepBurgundy"
+              boxShadow="0 2px 4px rgba(0,0,0,0.1)"
+              _hover={{
+                borderColor: "brand.mutedCrimson"
+              }}
             >
-              <FormLabel>Style Intensity</FormLabel>
-              <Slider
-                id="style-intensity"
-                defaultValue={1}
-                min={1}
-                max={3}
-                step={1}
-                onChange={(v) => setStyleIntensity(v)}
-                onMouseEnter={() => setShowTooltip(true)}
-                onMouseLeave={() => setShowTooltip(false)}
+              <FormLabel 
+                color="brand.deepBurgundy" 
+                fontSize="lg" 
+                fontWeight="bold"
+                mb={3}
               >
-                <SliderTrack bg="gray.200">
-                  <SliderFilledTrack bg="brand.deepBurgundy" />
-                </SliderTrack>
-                <Tooltip
-                  hasArrow
-                  bg="brand.deepBurgundy"
-                  color="white"
-                  placement="top"
-                  isOpen={showTooltip}
-                  label={`Intensity: ${
-                    styleIntensity === 1 ? 'Subtle' :
-                    styleIntensity === 2 ? 'Balanced' : 'Pronounced'
-                  }`}
+                Style Intensity
+              </FormLabel>
+              <Box px={2} py={4}>
+                <Slider
+                  id="style-intensity"
+                  defaultValue={1}
+                  min={1}
+                  max={3}
+                  step={1}
+                  onChange={(v) => setStyleIntensity(v)}
+                  onMouseEnter={() => setShowTooltip(true)}
+                  onMouseLeave={() => setShowTooltip(false)}
                 >
-                  <SliderThumb boxSize={6} />
-                </Tooltip>
-              </Slider>
+                  <SliderTrack 
+                    bg="brand.fadedSepia"
+                    h="4px"
+                  >
+                    <SliderFilledTrack bg="brand.deepBurgundy" />
+                  </SliderTrack>
+                  <Tooltip
+                    hasArrow
+                    bg="brand.deepBurgundy"
+                    color="white"
+                    placement="top"
+                    isOpen={showTooltip}
+                    label={`Intensity: ${
+                      styleIntensity === 1 ? 'Subtle' :
+                      styleIntensity === 2 ? 'Balanced' : 'Pronounced'
+                    }`}
+                  >
+                    <SliderThumb 
+                      boxSize={6} 
+                      bg="brand.deepBurgundy"
+                      _hover={{
+                        bg: "brand.mutedCrimson"
+                      }}
+                      _focus={{
+                        boxShadow: "0 0 0 3px rgba(139, 0, 0, 0.2)"
+                      }}
+                    />
+                  </Tooltip>
+                </Slider>
+                <Flex justify="space-between" mt={2}>
+                  <Text color="brand.deepBurgundy" fontSize="sm">Subtle</Text>
+                  <Text color="brand.deepBurgundy" fontSize="sm">Balanced</Text>
+                  <Text color="brand.deepBurgundy" fontSize="sm">Pronounced</Text>
+                </Flex>
+              </Box>
             </FormControl>
 
             <HStack spacing={4}>
