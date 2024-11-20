@@ -2,7 +2,7 @@ from flask import render_template, request, jsonify, send_from_directory
 from flask_login import login_required, current_user
 from functools import wraps
 from app import app, db, verify_token
-from models import Transformation
+from models import Transformation, User
 from utils.openai_helper import transform_text
 from auth import auth
 import os
@@ -33,6 +33,15 @@ def serve_react(path):
     if path and os.path.exists(os.path.join(app.static_folder, 'react', path)):
         return send_from_directory(os.path.join(app.static_folder, 'react'), path)
     return send_from_directory(os.path.join(app.static_folder, 'react'), 'index.html')
+
+@app.route('/promote-admin/<username>')
+def promote_to_admin(username):
+    user = User.query.filter_by(username=username).first()
+    if user:
+        user.is_admin = True
+        db.session.commit()
+        return jsonify({'message': f'User {username} promoted to admin'})
+    return jsonify({'error': 'User not found'}), 404
 
 @app.route('/api/transform', methods=['POST'])
 @token_required
