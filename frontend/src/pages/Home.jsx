@@ -91,7 +91,7 @@ const TextTransformer = () => {
   const [persona, setPersona] = useState('hitchens');
   const [isLoading, setIsLoading] = useState(false);
   const [lastTransformedText, setLastTransformedText] = useState('');
-  const [typewriterEnabled, setTypewriterEnabled] = useState(true);
+  const [typewriterEnabled, setTypewriterEnabled] = useState(false);
   const typewriterRef = useRef(null);
   const outputRef = useRef(null);
   const toast = useToast();
@@ -459,7 +459,7 @@ const TextTransformer = () => {
                   id="typewriter-toggle"
                   isChecked={typewriterEnabled}
                   onChange={(e) => setTypewriterEnabled(e.target.checked)}
-                  colorScheme="brand"
+                  colorScheme="green"
                   size="lg"
                 />
               </FormControl>
@@ -534,41 +534,13 @@ const TextTransformer = () => {
                   whiteSpace="pre-wrap"
                   mb={12}
                   sx={{
-                    '&::after': {
-                      content: '"|"',
-                      animation: 'blink 1s step-end infinite',
-                      display: isLoading ? 'none' : 'inline'
-                    },
-                    '@keyframes blink': {
-                      'from, to': { opacity: 1 },
-                      '50%': { opacity: 0 }
+                    '& p': {
+                      mb: 4
                     }
                   }}
                 >
                   {outputText}
                 </Box>
-                
-                {outputText && (
-                  <Box
-                    position="absolute"
-                    bottom={8}
-                    right={8}
-                    width="150px"
-                    height="50px"
-                  >
-                    <img
-                      src="/static/images/hitchens-signature.png"
-                      alt="Christopher Hitchens Signature"
-                      style={{
-                        width: '100%',
-                        height: '100%',
-                        objectFit: 'contain',
-                        objectPosition: 'right bottom',
-                        opacity: persona === 'hitchens' ? 1 : 0
-                      }}
-                    />
-                  </Box>
-                )}
               </Box>
             </Box>
           </VStack>
@@ -578,4 +550,7 @@ const TextTransformer = () => {
   );
 };
 
-export default TextTransformer;
+export default function Home() {
+  const { isAuthenticated } = useAuth();
+  return isAuthenticated ? <TextTransformer /> : <LandingPage />;
+}
