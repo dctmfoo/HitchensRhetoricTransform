@@ -35,9 +35,9 @@ function History() {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const transformedTextRef = useRef(null);
 
-  // Helper function to capitalize first letter with null check
+  // Helper function to capitalize first letter with default value
   const capitalizeFirstLetter = (string) => {
-    if (!string) return ''; // Add null check
+    if (!string) return 'Hitchens'; // Return default value instead of empty string
     return string.charAt(0).toUpperCase() + string.slice(1);
   };
 
@@ -228,7 +228,7 @@ function History() {
                     Verbosity: {transformation.verbosity_level}
                   </Badge>
                   <Badge colorScheme="green">
-                    {capitalizeFirstLetter(transformation.persona || 'hitchens')}
+                    {capitalizeFirstLetter(transformation?.persona ?? 'hitchens')}
                   </Badge>
                 </HStack>
               </Box>
@@ -254,7 +254,7 @@ function History() {
 
               <Box>
                 <Text fontWeight="bold" mb={2}>
-                  {capitalizeFirstLetter(transformation.persona || 'hitchens')}'s Version
+                  {capitalizeFirstLetter(transformation?.persona ?? 'hitchens')}'s Version
                 </Text>
                 <Box
                   position="relative"
@@ -305,7 +305,7 @@ function History() {
                         Verbosity: {selectedTransformation.verbosity_level}
                       </Badge>
                       <Badge colorScheme="green">
-                        {capitalizeFirstLetter(selectedTransformation.persona || 'hitchens')}
+                        {capitalizeFirstLetter(selectedTransformation?.persona ?? 'hitchens')}
                       </Badge>
                     </HStack>
                   </HStack>
