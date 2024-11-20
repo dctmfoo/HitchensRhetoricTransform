@@ -187,8 +187,8 @@ const TextTransformer = () => {
         method: 'POST',
         body: JSON.stringify({
           text: inputText,
-          verbosity: verbosity,
-          style_intensity: styleIntensity
+          verbosity: parseInt(verbosity),
+          style_intensity: parseInt(styleIntensity)
         })
       });
 
@@ -309,31 +309,36 @@ const TextTransformer = () => {
           Hitchens Style Transformer
         </Heading>
 
-        <Flex w="100%" gap={8} direction={{ base: 'column', md: 'row' }}>
+        <Flex w="100%" gap={8} direction={{ base: "column", md: "row" }}>
           <VStack flex={1} spacing={4} align="stretch">
-            <Text fontWeight="bold">Input Text</Text>
-            <Textarea
-              value={inputText}
-              onChange={(e) => setInputText(e.target.value)}
-              placeholder="Enter your text here..."
-              minH="200px"
-              bg="brand.agedParchment"
-              border="1px"
-              borderColor="brand.leatherBrown"
-              _focus={{
-                borderColor: 'brand.antiqueGold',
-                boxShadow: '0 0 0 1px brand.antiqueGold'
-              }}
-            />
+            <FormControl>
+              <FormLabel fontWeight="bold">Input Text</FormLabel>
+              <Textarea
+                value={inputText}
+                onChange={(e) => setInputText(e.target.value)}
+                placeholder="Enter your text here..."
+                minH="200px"
+                bg="brand.agedParchment"
+                border="1px"
+                borderColor="brand.leatherBrown"
+                _focus={{
+                  borderColor: 'brand.antiqueGold',
+                  boxShadow: '0 0 0 1px brand.antiqueGold'
+                }}
+              />
+            </FormControl>
 
-            <HStack spacing={6} align="end">
+            <HStack spacing={4} align="flex-start">
               <FormControl flex={1}>
-                <FormLabel fontWeight="medium" color="brand.oxfordBlue">Verbosity Level</FormLabel>
+                <FormLabel fontWeight="medium" color="brand.oxfordBlue">
+                  Verbosity Level
+                </FormLabel>
                 <Select
                   value={verbosity}
                   onChange={(e) => setVerbosity(e.target.value)}
                   bg="white"
                   borderColor="brand.leatherBrown"
+                  size="md"
                   _hover={{
                     borderColor: 'brand.antiqueGold'
                   }}
@@ -349,8 +354,10 @@ const TextTransformer = () => {
               </FormControl>
 
               <FormControl flex={1}>
-                <FormLabel fontWeight="medium" color="brand.oxfordBlue">Style Intensity</FormLabel>
-                <Box>
+                <FormLabel fontWeight="medium" color="brand.oxfordBlue">
+                  Style Intensity
+                </FormLabel>
+                <Box pt={2}>
                   <Slider
                     id="style-intensity"
                     defaultValue={1}
@@ -370,7 +377,7 @@ const TextTransformer = () => {
                       color="white"
                       placement="top"
                       isOpen={showTooltip}
-                      label={`Intensity: ${
+                      label={`${
                         styleIntensity === 1 ? 'Subtle' :
                         styleIntensity === 2 ? 'Balanced' : 'Pronounced'
                       }`}
@@ -380,9 +387,6 @@ const TextTransformer = () => {
                         bg="white"
                         borderColor="brand.deepBurgundy"
                         borderWidth="2px"
-                        _hover={{
-                          boxSize: 7
-                        }}
                       />
                     </Tooltip>
                   </Slider>
@@ -395,7 +399,7 @@ const TextTransformer = () => {
               </FormControl>
             </HStack>
 
-            <HStack spacing={4} mt={4}>
+            <HStack spacing={4}>
               <Button
                 onClick={handleTransform}
                 isLoading={isLoading}
