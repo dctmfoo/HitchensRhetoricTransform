@@ -112,14 +112,18 @@ const TextTransformer = () => {
   };
 
   const generateFilename = (text) => {
+    console.log('Generating filename from text:', text?.substring(0, 50) + '...');
+    
     // Take first 5 meaningful words (exclude common words)
     const commonWords = new Set(['the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for']);
     const words = text
-      .trim()
-      .toLowerCase()
-      .split(/\s+/)
-      .filter(word => word.length > 2 && !commonWords.has(word))
-      .slice(0, 5);
+      ?.trim()
+      ?.toLowerCase()
+      ?.split(/\s+/)
+      ?.filter(word => word.length > 2 && !commonWords.has(word))
+      ?.slice(0, 5) || [];
+    
+    console.log('Filtered words:', words);
 
     // Clean the words and join with hyphens
     const cleanText = words
@@ -127,16 +131,20 @@ const TextTransformer = () => {
       .replace(/[^a-z0-9-]/g, '')
       .replace(/-+/g, '-')
       .substring(0, 50); // Limit length
+    
+    console.log('Cleaned text:', cleanText);
 
     // Format date in a readable way
     const date = new Date();
-    const formattedDate = date.toISOString()
-      .split('T')[0];
-  
+    const formattedDate = date.toISOString().split('T')[0];
+    
     // Add random suffix for uniqueness
     const randomSuffix = Math.random().toString(36).substring(2, 6);
-
-    return `hitchens-${cleanText}-${formattedDate}-${randomSuffix}.png`;
+    
+    const finalFilename = `hitchens-${cleanText}-${formattedDate}-${randomSuffix}.png`;
+    console.log('Final filename:', finalFilename);
+    
+    return finalFilename;
   };
 
   const handleTransform = async () => {
@@ -208,13 +216,24 @@ const TextTransformer = () => {
   };
 
   const handleScreenshot = async () => {
-    if (!outputText) return;
+    if (!outputText) {
+      console.log('No output text available for screenshot');
+      return;
+    }
 
     try {
+      console.log('Starting screenshot capture...');
       const element = outputRef.current;
       
+      if (!element) {
+        console.error('Output element reference not found');
+        return;
+      }
+      
+      console.log('Waiting for any pending renders...');
       await new Promise(resolve => setTimeout(resolve, 100));
       
+      console.log('Capturing element to canvas...');
       const canvas = await htmlToImage.toCanvas(element, {
         quality: 1,
         backgroundColor: '#FFFFFF',
@@ -226,12 +245,30 @@ const TextTransformer = () => {
         }
       });
 
+      console.log('Converting canvas to blob...');
       canvas.toBlob((blob) => {
+        if (!blob) {
+          console.error('Failed to create blob from canvas');
+          return;
+        }
+
+        console.log('Creating blob URL...');
         const url = URL.createObjectURL(blob);
+        console.log('Blob URL created:', url);
+
+        const filename = generateFilename(outputText);
+        console.log('Generated filename:', filename);
+
         const link = document.createElement('a');
-        link.download = generateFilename(outputText);
+        link.download = filename;
         link.href = url;
+        
+        console.log('Triggering download...');
+        document.body.appendChild(link);
         link.click();
+        document.body.removeChild(link);
+        
+        console.log('Cleaning up blob URL...');
         URL.revokeObjectURL(url);
       }, 'image/png', 1.0);
 
