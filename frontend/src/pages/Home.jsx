@@ -14,7 +14,8 @@ import {
   Stack,
   Switch,
   FormControl,
-  FormLabel
+  FormLabel,
+  Icon
 } from '@chakra-ui/react';
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
@@ -84,6 +85,7 @@ const TextTransformer = () => {
   const [inputText, setInputText] = useState('');
   const [outputText, setOutputText] = useState('');
   const [verbosity, setVerbosity] = useState('1');
+  const [persona, setPersona] = useState('hitchens');
   const [isLoading, setIsLoading] = useState(false);
   const [lastTransformedText, setLastTransformedText] = useState('');
   const [typewriterEnabled, setTypewriterEnabled] = useState(true);
@@ -215,7 +217,8 @@ const TextTransformer = () => {
         method: 'POST',
         body: JSON.stringify({
           text: inputText,
-          verbosity: verbosity
+          verbosity: verbosity,
+          persona: persona
         })
       });
 
@@ -314,7 +317,7 @@ const TextTransformer = () => {
     >
       <VStack spacing={6} position="relative" zIndex={1}>
         <Heading textAlign="center" color="brand.oxfordBlue">
-          Hitchens Style Transformer
+          Style Transformer
         </Heading>
 
         <Flex w="100%" gap={8} direction={{ base: 'column', md: 'row' }}>
@@ -334,15 +337,29 @@ const TextTransformer = () => {
               }}
             />
 
-            <Select
-              value={verbosity}
-              onChange={(e) => setVerbosity(e.target.value)}
-              bg="white"
-            >
-              <option value="1">Concise</option>
-              <option value="2">Moderate</option>
-              <option value="3">Verbose</option>
-            </Select>
+            <HStack spacing={4}>
+              <Select
+                value={persona}
+                onChange={(e) => setPersona(e.target.value)}
+                bg="white"
+                flex={1}
+              >
+                <option value="hitchens">Christopher Hitchens</option>
+                <option value="trump">Donald Trump</option>
+                <option value="friedman">Milton Friedman</option>
+              </Select>
+
+              <Select
+                value={verbosity}
+                onChange={(e) => setVerbosity(e.target.value)}
+                bg="white"
+                flex={1}
+              >
+                <option value="1">Concise</option>
+                <option value="2">Moderate</option>
+                <option value="3">Verbose</option>
+              </Select>
+            </HStack>
 
             <FormControl display="flex" alignItems="center" justifyContent="space-between">
               <FormLabel htmlFor="typewriter-toggle" mb="0">
@@ -454,7 +471,8 @@ const TextTransformer = () => {
                         width: '100%',
                         height: '100%',
                         objectFit: 'contain',
-                        objectPosition: 'right bottom'
+                        objectPosition: 'right bottom',
+                        display: persona === 'hitchens' ? 'block' : 'none'
                       }}
                     />
                   </Box>

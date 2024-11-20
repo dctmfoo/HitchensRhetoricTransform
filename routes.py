@@ -51,11 +51,12 @@ def transform():
         data = request.get_json()
         input_text = data.get('text', '')
         verbosity_level = int(data.get('verbosity', 1))
+        persona = data.get('persona', 'hitchens').lower()
         
         if not input_text:
             return jsonify({'error': 'No text provided'}), 400
             
-        transformed_text = transform_text(input_text, verbosity_level)
+        transformed_text = transform_text(input_text, persona, verbosity_level)
         
         transformation = Transformation(
             input_text=input_text,
