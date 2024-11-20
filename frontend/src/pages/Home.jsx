@@ -112,39 +112,52 @@ const TextTransformer = () => {
   };
 
   const generateFilename = (text) => {
-    console.log('Generating filename from text:', text?.substring(0, 50) + '...');
-    
-    // Take first 5 meaningful words (exclude common words)
-    const commonWords = new Set(['the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for']);
-    const words = text
-      ?.trim()
-      ?.toLowerCase()
-      ?.split(/\s+/)
-      ?.filter(word => word.length > 2 && !commonWords.has(word))
-      ?.slice(0, 5) || [];
-    
-    console.log('Filtered words:', words);
+    console.log('Starting filename generation...');
+  
+    if (!text) {
+      console.warn('No text provided for filename generation');
+      return 'hitchens-transformed.png';
+    }
 
-    // Clean the words and join with hyphens
-    const cleanText = words
-      .join('-')
-      .replace(/[^a-z0-9-]/g, '')
-      .replace(/-+/g, '-')
-      .substring(0, 50); // Limit length
-    
-    console.log('Cleaned text:', cleanText);
-
-    // Format date in a readable way
-    const date = new Date();
-    const formattedDate = date.toISOString().split('T')[0];
-    
-    // Add random suffix for uniqueness
+    // Common words to filter out for better filename creation
+    const commonWords = new Set([
+      'the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for',
+      'of', 'with', 'by', 'from', 'up', 'about', 'into', 'over', 'after'
+    ]);
+  
+    // Take first sentence or up to 100 characters for processing
+    const textSample = text.split('.')[0].substring(0, 100);
+    console.log('Text sample for filename:', textSample);
+  
+    // Process the text into clean words
+    const words = textSample
+      .toLowerCase()
+      .replace(/[^a-z0-9\s-]/g, '') // Remove special characters
+      .split(/\s+/)
+      .filter(word => 
+        word.length > 2 && // Keep words longer than 2 characters
+        !commonWords.has(word) && // Remove common words
+        !/^\d+$/.test(word) // Remove pure numbers
+      )
+      .slice(0, 3); // Take only first 3 meaningful words
+  
+    console.log('Selected words for filename:', words);
+  
+    // Generate timestamp in a more compact format
+    const timestamp = new Date()
+      .toISOString()
+      .replace(/[-:]/g, '')
+      .split('.')[0]
+      .substring(0, 12);
+  
+    // Create a short random suffix
     const randomSuffix = Math.random().toString(36).substring(2, 6);
-    
-    const finalFilename = `hitchens-${cleanText}-${formattedDate}-${randomSuffix}.png`;
-    console.log('Final filename:', finalFilename);
-    
-    return finalFilename;
+  
+    // Combine elements into final filename
+    const filename = `hitchens-${words.join('-')}-${timestamp}-${randomSuffix}.png`;
+    console.log('Generated filename:', filename);
+  
+    return filename;
   };
 
   const handleTransform = async () => {
