@@ -35,9 +35,9 @@ function History() {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const transformedTextRef = useRef(null);
 
-  // Helper function to capitalize first letter with default value
+  // Helper function to capitalize first letter without default value
   const capitalizeFirstLetter = (string) => {
-    if (!string) return 'Hitchens'; // Return default value instead of empty string
+    if (!string) return ''; // Don't provide a default, let the null coalescing handle it
     return string.charAt(0).toUpperCase() + string.slice(1);
   };
 
@@ -228,7 +228,7 @@ function History() {
                     Verbosity: {transformation.verbosity_level}
                   </Badge>
                   <Badge colorScheme="green">
-                    {capitalizeFirstLetter(transformation?.persona ?? 'hitchens')}
+                    {capitalizeFirstLetter(transformation.persona) ?? 'Hitchens'}
                   </Badge>
                 </HStack>
               </Box>
@@ -254,7 +254,7 @@ function History() {
 
               <Box>
                 <Text fontWeight="bold" mb={2}>
-                  {capitalizeFirstLetter(transformation?.persona ?? 'hitchens')}'s Version
+                  {capitalizeFirstLetter(transformation.persona) ?? 'Hitchens'}'s Version
                 </Text>
                 <Box
                   position="relative"
@@ -305,7 +305,7 @@ function History() {
                         Verbosity: {selectedTransformation.verbosity_level}
                       </Badge>
                       <Badge colorScheme="green">
-                        {capitalizeFirstLetter(selectedTransformation?.persona ?? 'hitchens')}
+                        {capitalizeFirstLetter(selectedTransformation.persona) ?? 'Hitchens'}
                       </Badge>
                     </HStack>
                   </HStack>
@@ -384,8 +384,8 @@ function History() {
                       zIndex={1}
                     >
                       <img
-                        src="/static/images/hitchens-signature.png"
-                        alt="Christopher Hitchens Signature"
+                        src={`/static/images/${selectedTransformation.persona ?? 'hitchens'}-signature.png`}
+                        alt={`${capitalizeFirstLetter(selectedTransformation.persona ?? 'hitchens')} Signature`}
                         style={{
                           width: '100%',
                           height: '100%',
