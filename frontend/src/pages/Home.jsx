@@ -341,10 +341,8 @@ const TextTransformer = () => {
             </FormControl>
 
             <FormControl mb={4}>
-              <FormLabel color="brand.deepBurgundy" fontSize="lg" fontWeight="bold">
-                Style Intensity
-              </FormLabel>
-              <Box bg="brand.agedParchment" p={4} borderRadius="md" border="1px solid" borderColor="brand.deepBurgundy">
+              <FormLabel>Style Intensity</FormLabel>
+              <Box p={4} borderRadius="md" bg="white" border="1px" borderColor="gray.200">
                 <Slider
                   id="style-intensity"
                   defaultValue={1}
@@ -355,7 +353,7 @@ const TextTransformer = () => {
                   onMouseEnter={() => setShowTooltip(true)}
                   onMouseLeave={() => setShowTooltip(false)}
                 >
-                  <SliderTrack bg="brand.fadedSepia" h="4px">
+                  <SliderTrack bg="gray.200">
                     <SliderFilledTrack bg="brand.deepBurgundy" />
                   </SliderTrack>
                   <Tooltip
@@ -369,22 +367,13 @@ const TextTransformer = () => {
                       styleIntensity === 2 ? 'Balanced' : 'Pronounced'
                     }`}
                   >
-                    <SliderThumb 
-                      boxSize={6} 
-                      bg="brand.deepBurgundy"
-                      _hover={{
-                        bg: "brand.mutedCrimson"
-                      }}
-                      _focus={{
-                        boxShadow: "0 0 0 3px rgba(139, 0, 0, 0.2)"
-                      }}
-                    />
+                    <SliderThumb boxSize={4} />
                   </Tooltip>
                 </Slider>
                 <Flex justify="space-between" mt={2}>
-                  <Text color="brand.deepBurgundy" fontSize="sm">Subtle</Text>
-                  <Text color="brand.deepBurgundy" fontSize="sm">Balanced</Text>
-                  <Text color="brand.deepBurgundy" fontSize="sm">Pronounced</Text>
+                  <Text fontSize="sm">Subtle</Text>
+                  <Text fontSize="sm">Balanced</Text>
+                  <Text fontSize="sm">Pronounced</Text>
                 </Flex>
               </Box>
             </FormControl>
