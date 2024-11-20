@@ -16,12 +16,14 @@ import {
   FormControl,
   FormLabel,
   Icon,
-  Divider
+  Divider,
+  Badge
 } from '@chakra-ui/react';
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
 import * as htmlToImage from 'html-to-image';
 import { useAuth } from '../context/AuthContext';
+import { FaUserTie, FaUserAlt, FaChartLine } from 'react-icons/fa';
 
 const LandingPage = () => (
   <Container maxW="container.xl" py={20}>
@@ -317,13 +319,82 @@ const TextTransformer = () => {
       }}
     >
       <VStack spacing={6} position="relative" zIndex={1}>
-        <Heading textAlign="center" color="brand.oxfordBlue">
+        <Heading textAlign="center" color="brand.oxfordBlue" mb={4}>
           Style Transformer
         </Heading>
 
+        <FormControl 
+          mb={6}
+          p={4}
+          bg="brand.agedParchment"
+          borderRadius="lg"
+          border="2px"
+          borderColor="brand.leatherBrown"
+          _hover={{
+            borderColor: 'brand.antiqueGold'
+          }}
+        >
+          <FormLabel 
+            htmlFor="persona-select"
+            fontSize="xl"
+            fontWeight="bold"
+            color="brand.deepBurgundy"
+            mb={4}
+          >
+            Choose Your Writing Persona
+          </FormLabel>
+          <Select
+            id="persona-select"
+            value={persona}
+            onChange={(e) => setPersona(e.target.value)}
+            size="lg"
+            bg="white"
+            border="2px"
+            borderColor="brand.leatherBrown"
+            h="70px"
+            fontSize="lg"
+            _hover={{
+              borderColor: 'brand.antiqueGold'
+            }}
+            _focus={{
+              borderColor: 'brand.antiqueGold',
+              boxShadow: '0 0 0 2px brand.antiqueGold'
+            }}
+            icon={<Icon as={persona === 'hitchens' ? FaUserTie : persona === 'trump' ? FaUserAlt : FaChartLine} />}
+            iconSize={24}
+          >
+            <option value="hitchens" style={{padding: '12px', fontSize: '16px'}}>
+              Christopher Hitchens - Intellectual & Literary Analysis
+            </option>
+            <option value="trump" style={{padding: '12px', fontSize: '16px'}}>
+              Donald Trump - Bold & Direct Communication
+            </option>
+            <option value="friedman" style={{padding: '12px', fontSize: '16px'}}>
+              Milton Friedman - Economic & Analytical Perspective
+            </option>
+          </Select>
+          <Box mt={2}>
+            {persona === 'hitchens' && (
+              <Badge colorScheme="purple" p={2} borderRadius="md">
+                <Icon as={FaUserTie} mr={2} /> Intellectual Style
+              </Badge>
+            )}
+            {persona === 'trump' && (
+              <Badge colorScheme="red" p={2} borderRadius="md">
+                <Icon as={FaUserAlt} mr={2} /> Direct Style
+              </Badge>
+            )}
+            {persona === 'friedman' && (
+              <Badge colorScheme="blue" p={2} borderRadius="md">
+                <Icon as={FaChartLine} mr={2} /> Analytical Style
+              </Badge>
+            )}
+          </Box>
+        </FormControl>
+
         <Flex w="100%" gap={8} direction={{ base: 'column', md: 'row' }}>
           <VStack flex={1} spacing={4} align="stretch">
-            <Text fontWeight="bold">Input Text</Text>
+            <Text fontWeight="bold" fontSize="lg">Input Text</Text>
             <Textarea
               value={inputText}
               onChange={(e) => setInputText(e.target.value)}
@@ -339,41 +410,6 @@ const TextTransformer = () => {
             />
 
             <VStack spacing={6} align="stretch">
-              <FormControl>
-                <FormLabel 
-                  htmlFor="persona-select"
-                  fontSize="lg"
-                  fontWeight="bold"
-                  color="brand.deepBurgundy"
-                >
-                  Choose Writing Style
-                </FormLabel>
-                <Select
-                  id="persona-select"
-                  value={persona}
-                  onChange={(e) => setPersona(e.target.value)}
-                  size="lg"
-                  bg="white"
-                  border="2px"
-                  borderColor="brand.leatherBrown"
-                  _hover={{
-                    borderColor: 'brand.antiqueGold'
-                  }}
-                  _focus={{
-                    borderColor: 'brand.antiqueGold',
-                    boxShadow: '0 0 0 1px brand.antiqueGold'
-                  }}
-                  icon={<Icon name="chevron-down" />}
-                  iconSize={24}
-                  h="60px"
-                  fontSize="md"
-                >
-                  <option value="hitchens" style={{padding: '10px'}}>Christopher Hitchens - Intellectual & Literary</option>
-                  <option value="trump" style={{padding: '10px'}}>Donald Trump - Bold & Direct</option>
-                  <option value="friedman" style={{padding: '10px'}}>Milton Friedman - Economic & Analytical</option>
-                </Select>
-              </FormControl>
-
               <FormControl>
                 <FormLabel 
                   htmlFor="verbosity-select"
@@ -470,9 +506,10 @@ const TextTransformer = () => {
                 </Button>
               </HStack>
             </VStack>
+          </VStack>
 
           <VStack flex={1} spacing={4} align="stretch">
-            <Text fontWeight="bold">Transformed Text</Text>
+            <Text fontWeight="bold" fontSize="lg">Transformed Text</Text>
             <Box position="relative">
               <Box
                 ref={outputRef}
@@ -527,35 +564,12 @@ const TextTransformer = () => {
                         height: '100%',
                         objectFit: 'contain',
                         objectPosition: 'right bottom',
-                        display: persona === 'hitchens' ? 'block' : 'none'
+                        opacity: persona === 'hitchens' ? 1 : 0
                       }}
                     />
                   </Box>
                 )}
               </Box>
-              <HStack position="absolute" top={2} right={2} spacing={2}>
-                <Button
-                  size="sm"
-                  onClick={() => {
-                    navigator.clipboard.writeText(outputText);
-                    toast({
-                      title: 'Copied!',
-                      status: 'success',
-                      duration: 2000
-                    });
-                  }}
-                >
-                  Copy
-                </Button>
-                <Button
-                  size="sm"
-                  onClick={handleScreenshot}
-                  colorScheme="blue"
-                  isDisabled={!outputText}
-                >
-                  Screenshot
-                </Button>
-              </HStack>
             </Box>
           </VStack>
         </Flex>
@@ -564,18 +578,4 @@ const TextTransformer = () => {
   );
 };
 
-function Home() {
-  const { isAuthenticated, loading } = useAuth();
-
-  if (loading) {
-    return (
-      <Container centerContent py={20}>
-        <Text>Loading...</Text>
-      </Container>
-    );
-  }
-
-  return isAuthenticated ? <TextTransformer /> : <LandingPage />;
-}
-
-export default Home;
+export default TextTransformer;
