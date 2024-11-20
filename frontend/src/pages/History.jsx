@@ -228,7 +228,7 @@ function History() {
                     Verbosity: {transformation.verbosity_level}
                   </Badge>
                   <Badge colorScheme="green">
-                    {capitalizeFirstLetter(transformation.persona) ?? 'Hitchens'}
+                    {capitalizeFirstLetter(transformation?.persona || 'hitchens')}
                   </Badge>
                 </HStack>
               </Box>
@@ -254,7 +254,7 @@ function History() {
 
               <Box>
                 <Text fontWeight="bold" mb={2}>
-                  {capitalizeFirstLetter(transformation.persona) ?? 'Hitchens'}'s Version
+                  {capitalizeFirstLetter(transformation?.persona || 'hitchens')}'s Version
                 </Text>
                 <Box
                   position="relative"
@@ -305,7 +305,7 @@ function History() {
                         Verbosity: {selectedTransformation.verbosity_level}
                       </Badge>
                       <Badge colorScheme="green">
-                        {capitalizeFirstLetter(selectedTransformation.persona) ?? 'Hitchens'}
+                        {capitalizeFirstLetter(selectedTransformation?.persona || 'hitchens')}
                       </Badge>
                     </HStack>
                   </HStack>
@@ -384,8 +384,8 @@ function History() {
                       zIndex={1}
                     >
                       <img
-                        src={`/static/images/${selectedTransformation.persona ?? 'hitchens'}-signature.png`}
-                        alt={`${capitalizeFirstLetter(selectedTransformation.persona ?? 'hitchens')} Signature`}
+                        src={`/static/images/${selectedTransformation?.persona || 'hitchens'}-signature.png`}
+                        alt={`${capitalizeFirstLetter(selectedTransformation?.persona || 'hitchens')} Signature`}
                         style={{
                           width: '100%',
                           height: '100%',
