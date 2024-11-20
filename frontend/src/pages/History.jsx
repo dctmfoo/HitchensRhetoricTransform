@@ -35,6 +35,11 @@ function History() {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const transformedTextRef = useRef(null);
 
+  // Helper function to capitalize first letter
+  const capitalizeFirstLetter = (string) => {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+  };
+
   useEffect(() => {
     fetchTransformations();
   }, []);
@@ -44,45 +49,39 @@ function History() {
   
     if (!text) {
       console.warn('No text provided for filename generation');
-      return 'hitchens-transformed.png';
+      return 'transformed.png';
     }
 
-    // Common words to filter out for better filename creation
     const commonWords = new Set([
       'the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for',
       'of', 'with', 'by', 'from', 'up', 'about', 'into', 'over', 'after'
     ]);
   
-    // Take first sentence or up to 100 characters for processing
     const textSample = text.split('.')[0].substring(0, 100);
     console.log('Text sample for filename:', textSample);
   
-    // Process the text into clean words
     const words = textSample
       .toLowerCase()
-      .replace(/[^a-z0-9\s-]/g, '') // Remove special characters
+      .replace(/[^a-z0-9\s-]/g, '')
       .split(/\s+/)
       .filter(word => 
-        word.length > 2 && // Keep words longer than 2 characters
-        !commonWords.has(word) && // Remove common words
-        !/^\d+$/.test(word) // Remove pure numbers
+        word.length > 2 &&
+        !commonWords.has(word) &&
+        !/^\d+$/.test(word)
       )
-      .slice(0, 3); // Take only first 3 meaningful words
+      .slice(0, 3);
   
     console.log('Selected words for filename:', words);
   
-    // Generate timestamp in a more compact format
     const timestamp = new Date()
       .toISOString()
       .replace(/[-:]/g, '')
       .split('.')[0]
       .substring(0, 12);
   
-    // Create a short random suffix
     const randomSuffix = Math.random().toString(36).substring(2, 6);
   
-    // Combine elements into final filename
-    const filename = `hitchens-${words.join('-')}-${timestamp}-${randomSuffix}.png`;
+    const filename = `transformed-${words.join('-')}-${timestamp}-${randomSuffix}.png`;
     console.log('Generated filename:', filename);
   
     return filename;
@@ -232,9 +231,14 @@ function History() {
                 <Text fontSize="sm" fontStyle="italic" color="brand.forestGreen">
                   {new Date(transformation.created_at).toLocaleString()}
                 </Text>
-                <Badge colorScheme="purple">
-                  Verbosity: {transformation.verbosity_level}
-                </Badge>
+                <HStack spacing={2}>
+                  <Badge colorScheme="purple">
+                    Verbosity: {transformation.verbosity_level}
+                  </Badge>
+                  <Badge colorScheme="green">
+                    {capitalizeFirstLetter(transformation.persona)}
+                  </Badge>
+                </HStack>
               </Box>
 
               <Box>
@@ -257,7 +261,9 @@ function History() {
               />
 
               <Box>
-                <Text fontWeight="bold" mb={2}>Hitchens' Version</Text>
+                <Text fontWeight="bold" mb={2}>
+                  {capitalizeFirstLetter(transformation.persona)}'s Version
+                </Text>
                 <Box
                   position="relative"
                   bg="brand.agedParchment"
@@ -302,9 +308,14 @@ function History() {
                     <Text fontSize="sm" fontStyle="italic" color="brand.forestGreen">
                       {new Date(selectedTransformation.created_at).toLocaleString()}
                     </Text>
-                    <Badge colorScheme="purple">
-                      Verbosity: {selectedTransformation.verbosity_level}
-                    </Badge>
+                    <HStack spacing={2}>
+                      <Badge colorScheme="purple">
+                        Verbosity: {selectedTransformation.verbosity_level}
+                      </Badge>
+                      <Badge colorScheme="green">
+                        {capitalizeFirstLetter(selectedTransformation.persona)}
+                      </Badge>
+                    </HStack>
                   </HStack>
 
                   <Text fontWeight="bold" mb={2}>Original Text</Text>

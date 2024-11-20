@@ -32,6 +32,7 @@ class Transformation(db.Model):
     input_text = db.Column(db.Text, nullable=False)
     output_text = db.Column(db.Text, nullable=False)
     verbosity_level = db.Column(db.Integer, nullable=False)
+    persona = db.Column(db.String(50), nullable=False, default='hitchens')
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     
@@ -41,6 +42,7 @@ class Transformation(db.Model):
             'input_text': self.input_text,
             'output_text': self.output_text,
             'verbosity_level': self.verbosity_level,
+            'persona': self.persona,
             'created_at': self.created_at.strftime('%Y-%m-%d %H:%M:%S'),
             'user_id': self.user_id,
             'username': self.user.username if self.user else None
