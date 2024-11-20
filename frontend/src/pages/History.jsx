@@ -14,15 +14,20 @@ import {
   ModalBody,
   ModalCloseButton,
   useDisclosure,
-  HStack
+  HStack,
+  Input,
+  InputGroup,
+  InputLeftElement
 } from '@chakra-ui/react';
 import { useEffect, useState, useRef } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import * as htmlToImage from 'html-to-image';
+import { SearchIcon } from '@chakra-ui/icons';
 
 function History() {
   const [transformations, setTransformations] = useState([]);
+  const [searchQuery, setSearchQuery] = useState('');
   const [selectedTransformation, setSelectedTransformation] = useState(null);
   const toast = useToast();
   const { authFetch } = useAuth();
@@ -115,17 +120,42 @@ function History() {
     onOpen();
   };
 
+  const filteredTransformations = transformations.filter(transformation => {
+    const searchLower = searchQuery.toLowerCase();
+    return (
+      transformation.input_text.toLowerCase().includes(searchLower) ||
+      transformation.output_text.toLowerCase().includes(searchLower) ||
+      new Date(transformation.created_at).toLocaleString().toLowerCase().includes(searchLower)
+    );
+  });
+
   return (
     <Box>
       <Heading textAlign="center" mb={8} color="brand.oxfordBlue">
         Transformation Gallery
       </Heading>
       
+      <Box mb={6} mx="auto" maxW="600px">
+        <InputGroup>
+          <InputLeftElement pointerEvents="none">
+            <SearchIcon color="gray.400" />
+          </InputLeftElement>
+          <Input
+            placeholder="Search transformations..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            borderColor="brand.antiqueGold"
+            _hover={{ borderColor: 'brand.forestGreen' }}
+            _focus={{ borderColor: 'brand.forestGreen', boxShadow: '0 0 0 1px brand.forestGreen' }}
+          />
+        </InputGroup>
+      </Box>
+      
       <Grid
         templateColumns={{ base: '1fr', md: 'repeat(auto-fill, minmax(320px, 1fr))' }}
         gap={6}
       >
-        {transformations.map((transformation) => (
+        {filteredTransformations.map((transformation) => (
           <Box
             key={transformation.id}
             bg="white"
