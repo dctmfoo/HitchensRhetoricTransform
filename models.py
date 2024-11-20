@@ -31,7 +31,7 @@ class Transformation(db.Model):
     output_text = db.Column(db.Text, nullable=False)
     verbosity_level = db.Column(db.Integer, nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     
     def to_dict(self):
         return {
