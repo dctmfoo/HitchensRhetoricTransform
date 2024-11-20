@@ -8,13 +8,76 @@ import {
   VStack,
   Text,
   useToast,
-  HStack
+  HStack,
+  Container,
+  Image,
+  Stack
 } from '@chakra-ui/react';
-import { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect, useRef, useContext } from 'react';
+import { useNavigate, Link as RouterLink } from 'react-router-dom';
 import * as htmlToImage from 'html-to-image';
+import { AuthContext } from '../context/AuthContext';
 
-function Home() {
+const LandingPage = () => (
+  <Container maxW="container.xl" py={20}>
+    <Stack spacing={8} align="center" textAlign="center">
+      <Heading
+        fontSize={{ base: '3xl', md: '4xl', lg: '5xl' }}
+        bgGradient="linear(145deg, brand.deepBurgundy, brand.mutedCrimson)"
+        bgClip="text"
+      >
+        Transform Your Writing into Hitchens' Style
+      </Heading>
+      
+      <Text fontSize={{ base: 'lg', md: 'xl' }} color="gray.600" maxW="2xl">
+        Experience the power of AI-driven text transformation that captures the essence
+        of Christopher Hitchens' distinctive writing style. Elevate your prose with
+        intellectual depth and rhetorical brilliance.
+      </Text>
+
+      <Box w="full" maxW="3xl" p={8} bg="white" borderRadius="lg" boxShadow="xl">
+        <VStack spacing={6}>
+          <Text fontSize="lg" fontStyle="italic" color="gray.700">
+            "The measure of a decent human being is how he or she treats the defenseless."
+          </Text>
+          <Text fontWeight="bold" color="brand.deepBurgundy">
+            — Christopher Hitchens
+          </Text>
+        </VStack>
+      </Box>
+
+      <Stack direction={{ base: 'column', md: 'row' }} spacing={4}>
+        <Button
+          as={RouterLink}
+          to="/login"
+          size="lg"
+          bgGradient="linear(145deg, brand.deepBurgundy, brand.mutedCrimson)"
+          color="white"
+          _hover={{
+            bgGradient: "linear(145deg, brand.mutedCrimson, brand.deepBurgundy)"
+          }}
+        >
+          Sign In to Transform
+        </Button>
+        <Button
+          as={RouterLink}
+          to="/register"
+          size="lg"
+          variant="outline"
+          borderColor="brand.deepBurgundy"
+          color="brand.deepBurgundy"
+          _hover={{
+            bg: 'brand.agedParchment'
+          }}
+        >
+          Create Account
+        </Button>
+      </Stack>
+    </Stack>
+  </Container>
+);
+
+const TextTransformer = () => {
   const [inputText, setInputText] = useState('');
   const [outputText, setOutputText] = useState('');
   const [verbosity, setVerbosity] = useState('1');
@@ -133,7 +196,6 @@ function Home() {
     try {
       const element = outputRef.current;
       
-      // Wait for content to be fully rendered
       await new Promise(resolve => setTimeout(resolve, 100));
       
       const canvas = await htmlToImage.toCanvas(element, {
@@ -323,6 +385,11 @@ function Home() {
       </VStack>
     </Box>
   );
+};
+
+function Home() {
+  const { isAuthenticated } = useContext(AuthContext);
+  return isAuthenticated ? <TextTransformer /> : <LandingPage />;
 }
 
 export default Home;
