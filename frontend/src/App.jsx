@@ -5,6 +5,7 @@ import Home from './pages/Home';
 import History from './pages/History';
 import Login from './pages/Login';
 import Register from './pages/Register';
+import AdminDashboard from './pages/AdminDashboard';
 import ProtectedRoute from './components/ProtectedRoute';
 import { AuthProvider } from './context/AuthContext';
 import theme from './theme';
@@ -25,6 +26,14 @@ function App() {
                 element={
                   <ProtectedRoute>
                     <History />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/admin"
+                element={
+                  <ProtectedRoute adminRequired>
+                    <AdminDashboard />
                   </ProtectedRoute>
                 }
               />

@@ -48,6 +48,16 @@ function Navigation() {
                 >
                   History
                 </ChakraLink>
+                {user.is_admin && (
+                  <ChakraLink
+                    as={RouterLink}
+                    to="/admin"
+                    color="white"
+                    _hover={{ color: 'brand.antiqueGold' }}
+                  >
+                    Admin Dashboard
+                  </ChakraLink>
+                )}
               </Flex>
             )}
           </Flex>

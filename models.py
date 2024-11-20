@@ -8,6 +8,7 @@ class User(UserMixin, db.Model):
     username = db.Column(db.String(80), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password_hash = db.Column(db.String(256), nullable=False)
+    is_admin = db.Column(db.Boolean, default=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     transformations = db.relationship('Transformation', backref='user', lazy=True)
 
@@ -22,6 +23,7 @@ class User(UserMixin, db.Model):
             'id': self.id,
             'username': self.username,
             'email': self.email,
+            'is_admin': self.is_admin,
             'created_at': self.created_at.strftime('%Y-%m-%d %H:%M:%S')
         }
 
@@ -40,5 +42,6 @@ class Transformation(db.Model):
             'output_text': self.output_text,
             'verbosity_level': self.verbosity_level,
             'created_at': self.created_at.strftime('%Y-%m-%d %H:%M:%S'),
-            'user_id': self.user_id
+            'user_id': self.user_id,
+            'username': self.user.username if self.user else None
         }

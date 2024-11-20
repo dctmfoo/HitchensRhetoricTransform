@@ -55,5 +55,8 @@ def load_user(user_id):
 # Import routes after app initialization to avoid circular imports
 with app.app_context():
     from routes import *
+    from admin import admin
     import models
+    
+    app.register_blueprint(admin)
     db.create_all()
