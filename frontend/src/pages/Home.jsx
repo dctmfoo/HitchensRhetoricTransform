@@ -17,7 +17,7 @@ import * as htmlToImage from 'html-to-image';
 export default function Home() {
   const [inputText, setInputText] = useState('');
   const [outputText, setOutputText] = useState('');
-  const [verbosityLevel, setVerbosityLevel] = useState('medium');
+  const [verbosityLevel, setVerbosityLevel] = useState('2'); // default to moderate
   const [selectedPersona, setSelectedPersona] = useState('hitchens');
   const [isLoading, setIsLoading] = useState(false);
   const { isAuthenticated, authFetch } = useAuth();
@@ -149,9 +149,9 @@ export default function Home() {
               value={verbosityLevel}
               onChange={(e) => setVerbosityLevel(e.target.value)}
             >
-              <option value="low">Concise</option>
-              <option value="medium">Moderate</option>
-              <option value="high">Verbose</option>
+              <option value="1">Concise</option>
+              <option value="2">Moderate</option>
+              <option value="3">Verbose</option>
             </Select>
 
             <HStack width="100%">
