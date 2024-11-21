@@ -12,7 +12,7 @@ import {
 import { useRef, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import * as htmlToImage from 'html-to-image';
-import LandingPage from './LandingPage';
+// Landing page import removed as it doesn't exist in the current directory
 
 export default function Home() {
   const [inputText, setInputText] = useState('');
@@ -220,5 +220,9 @@ export default function Home() {
     </Box>
   );
 
-  return isAuthenticated ? <TextTransformer /> : <LandingPage />;
+  return isAuthenticated ? <TextTransformer /> : (
+    <Box p={8} textAlign="center">
+      <Text>Please log in to use the text transformer.</Text>
+    </Box>
+  );
 }
