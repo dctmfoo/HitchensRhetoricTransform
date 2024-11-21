@@ -62,6 +62,7 @@ def transform():
             input_text=input_text,
             output_text=transformed_text,
             verbosity_level=verbosity_level,
+            persona=persona,
             user_id=current_user.id
         )
         db.session.add(transformation)
