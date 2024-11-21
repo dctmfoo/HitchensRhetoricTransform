@@ -168,6 +168,30 @@ export default function Home() {
 
         <VStack flex={1} spacing={4} align="stretch">
           <Text fontWeight="bold" fontSize="lg">Transformed Output</Text>
+          <HStack justify="flex-end" spacing={2} mb={2}>
+            <Button
+              size="sm"
+              onClick={() => {
+                navigator.clipboard.writeText(outputText);
+                toast({
+                  title: 'Copied!',
+                  status: 'success',
+                  duration: 2000
+                });
+              }}
+              isDisabled={!outputText}
+            >
+              Copy
+            </Button>
+            <Button
+              size="sm"
+              colorScheme="blue"
+              onClick={handleScreenshot}
+              isDisabled={!outputText}
+            >
+              Download as Image
+            </Button>
+          </HStack>
           <Box
             ref={outputRef}
             data-screenshot="true"
@@ -180,30 +204,6 @@ export default function Home() {
             position="relative"
             width="100%"
           >
-            <HStack position="absolute" top={2} right={2} spacing={2}>
-              <Button
-                size="sm"
-                onClick={() => {
-                  navigator.clipboard.writeText(outputText);
-                  toast({
-                    title: 'Copied!',
-                    status: 'success',
-                    duration: 2000
-                  });
-                }}
-                isDisabled={!outputText}
-              >
-                Copy
-              </Button>
-              <Button
-                size="sm"
-                colorScheme="blue"
-                onClick={handleScreenshot}
-                isDisabled={!outputText}
-              >
-                Download as Image
-              </Button>
-            </HStack>
             <Box
               fontFamily="Georgia, serif"
               fontSize="18px"
