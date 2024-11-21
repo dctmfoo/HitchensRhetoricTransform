@@ -534,6 +534,65 @@ const TextTransformer = () => {
               <HStack spacing={4}>
                 <Button
                   onClick={handleTransform}
+                  onClick={handleTransform}
+                  isLoading={isLoading}
+                  loadingText="Transforming..."
+                  colorScheme="blue"
+                  size="lg"
+                  flex={1}
+                >
+                  Transform
+                </Button>
+                <Button
+                  onClick={handleClear}
+                  variant="outline"
+                  size="lg"
+                  flex={1}
+                >
+                  Clear
+                </Button>
+              </HStack>
+            </VStack>
+          </VStack>
+
+          <VStack flex={1} spacing={4} align="stretch">
+            <Text fontWeight="bold" fontSize="lg">Transformed Output</Text>
+            <Box
+              ref={outputRef}
+              bg="brand.agedParchment"
+              p={4}
+              borderRadius="md"
+              minH="200px"
+              border="1px"
+              borderColor="brand.leatherBrown"
+              position="relative"
+            >
+              <Text whiteSpace="pre-wrap">{outputText}</Text>
+              {outputText && (
+                <HStack position="absolute" top={2} right={2} spacing={2}>
+                  <Button
+                    size="sm"
+                    onClick={() => {
+                      navigator.clipboard.writeText(outputText);
+                      toast({
+                        title: 'Copied!',
+                        status: 'success',
+                        duration: 2000
+                      });
+                    }}
+                  >
+                    Copy
+                  </Button>
+                  <Button
+                    size="sm"
+                    colorScheme="blue"
+                    onClick={handleScreenshot}
+                  >
+                    Download as Image
+                  </Button>
+                </HStack>
+              )}
+            </Box>
                   isLoading={isLoading}
                   loadingText="Transforming..."
                   flex="1"
