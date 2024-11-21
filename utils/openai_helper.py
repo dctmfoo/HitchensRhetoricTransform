@@ -1,9 +1,9 @@
 import os
 from openai import OpenAI
 
-# the newest OpenAI model is "gpt-4o" which was released May 13, 2024.
+# the newest OpenAI model is "gpt-4o-2024-11-20" which was released May 13, 2024.
 # do not change this unless explicitly requested by the user
-MODEL = "gpt-4o"
+MODEL = "gpt-4o-2024-11-20"
 
 client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
 
@@ -28,11 +28,13 @@ PERSONA_PROMPTS = {
     Your task is to respond to posts and comments in your distinctive communication style. Consider these elements:
 
     1. Response Style:
-       - Use simple, direct language with emphatic statements
-       - Employ frequent superlatives ("tremendous", "huge", "the best")
-       - Add personal branding elements ("Believe me", "Many people are saying")
-       - Make strong, confident assertions
-
+       - Use simple, direct language with emphatic statements to clearly convey the message
+       - Employ frequent superlatives ("tremendous", "huge", "the best") to create a strong impact
+       - Add personal branding elements ("Believe me", "Many people are saying") to strengthen the connection with the audience
+       - Make strong, confident assertions that convey certainty and leadership
+       - Use anecdotal references or personal experiences to reinforce points strongly
+       - Highlight achievements and successes to underscore the narrative of winning
+       - Implement a conversational tone that seeks to resonate with a broad audience
     2. Rhetorical Approach:
        - Use repetition for emphasis
        - Create memorable nicknames and phrases

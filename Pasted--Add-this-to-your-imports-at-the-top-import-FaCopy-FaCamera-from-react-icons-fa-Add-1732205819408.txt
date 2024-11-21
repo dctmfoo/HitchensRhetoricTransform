@@ -1,0 +1,106 @@
+// Add this to your imports at the top
+import { FaCopy, FaCamera } from 'react-icons/fa';
+
+// Add this function inside TextTransformer component
+const handleCopy = async () => {
+  if (!outputText) {
+    toast({
+      title: 'Nothing to copy',
+      description: 'Please transform some text first',
+      status: 'warning',
+      duration: 2000,
+      isClosable: true
+    });
+    return;
+  }
+  
+  try {
+    await navigator.clipboard.writeText(outputText);
+    toast({
+      title: 'Copied!',
+      description: 'Text copied to clipboard',
+      status: 'success',
+      duration: 2000,
+      isClosable: true
+    });
+  } catch (err) {
+    toast({
+      title: 'Failed to copy',
+      description: 'Please try again',
+      status: 'error',
+      duration: 2000,
+      isClosable: true
+    });
+  }
+};
+
+// Find the Box containing the transformed text output and add these buttons
+// Replace or update the existing Box component with this:
+<Box position="relative">
+  <Box
+    ref={outputRef}
+    data-screenshot="true"
+    bg="white"
+    p={8}
+    width="600px"
+    minHeight="auto"
+    display="flex"
+    flexDirection="column"
+    justifyContent="space-between"
+    border="1px solid #e2e8f0"
+    borderRadius="md"
+    mx="auto"
+    position="relative"
+  >
+    <Box
+      fontFamily="Georgia, serif"
+      fontSize="18px"
+      lineHeight="1.8"
+      color="black"
+      whiteSpace="pre-wrap"
+      mb={12}
+      sx={{
+        '& p': {
+          mb: 4
+        }
+      }}
+    >
+      {outputText}
+    </Box>
+    
+    {/* Add the action buttons */}
+    {outputText && (
+      <HStack 
+        position="absolute" 
+        bottom={2} 
+        right={2} 
+        spacing={2}
+      >
+        <Button
+          onClick={handleCopy}
+          size="sm"
+          leftIcon={<FaCopy />}
+          colorScheme="blue"
+          variant="ghost"
+          _hover={{
+            bg: 'brand.agedParchment'
+          }}
+        >
+          Copy
+        </Button>
+        <Button
+          onClick={handleScreenshot}
+          size="sm"
+          leftIcon={<FaCamera />}
+          colorScheme="blue"
+          variant="ghost"
+          _hover={{
+            bg: 'brand.agedParchment'
+          }}
+        >
+          Screenshot
+        </Button>
+      </HStack>
+    )}
+  </Box>
+</Box>
