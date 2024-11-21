@@ -18,6 +18,7 @@ export default function Home() {
   const [inputText, setInputText] = useState('');
   const [outputText, setOutputText] = useState('');
   const [verbosityLevel, setVerbosityLevel] = useState('medium');
+  const [selectedPersona, setSelectedPersona] = useState('hitchens');
   const [isLoading, setIsLoading] = useState(false);
   const { isAuthenticated, authFetch } = useAuth();
   const toast = useToast();
@@ -44,6 +45,7 @@ export default function Home() {
         body: JSON.stringify({
           text: inputText,
           verbosity: verbosityLevel,
+          persona: selectedPersona,
         }),
       });
 
@@ -134,6 +136,15 @@ export default function Home() {
           />
           
           <VStack spacing={4}>
+            <Select
+              value={selectedPersona}
+              onChange={(e) => setSelectedPersona(e.target.value)}
+              mb={2}
+            >
+              <option value="hitchens">Christopher Hitchens</option>
+              <option value="trump">Donald Trump</option>
+              <option value="friedman">Milton Friedman</option>
+            </Select>
             <Select
               value={verbosityLevel}
               onChange={(e) => setVerbosityLevel(e.target.value)}
