@@ -534,7 +534,6 @@ const TextTransformer = () => {
               <HStack spacing={4}>
                 <Button
                   onClick={handleTransform}
-                  onClick={handleTransform}
                   isLoading={isLoading}
                   loadingText="Transforming..."
                   colorScheme="blue"
@@ -559,15 +558,26 @@ const TextTransformer = () => {
             <Text fontWeight="bold" fontSize="lg">Transformed Output</Text>
             <Box
               ref={outputRef}
+              data-screenshot="true"
               bg="brand.agedParchment"
-              p={4}
+              p={8}
               borderRadius="md"
               minH="200px"
               border="1px"
               borderColor="brand.leatherBrown"
               position="relative"
+              width="100%"
             >
-              <Text whiteSpace="pre-wrap">{outputText}</Text>
+              <Box
+                fontFamily="Georgia, serif"
+                fontSize="18px"
+                lineHeight="1.8"
+                color="black"
+                whiteSpace="pre-wrap"
+                mb={12}
+              >
+                {outputText}
+              </Box>
               {outputText && (
                 <HStack position="absolute" top={2} right={2} spacing={2}>
                   <Button
@@ -593,88 +603,14 @@ const TextTransformer = () => {
                 </HStack>
               )}
             </Box>
-                  isLoading={isLoading}
-                  loadingText="Transforming..."
-                  flex="1"
-                  bgGradient="linear(145deg, brand.deepBurgundy, brand.mutedCrimson)"
-                  color="white"
-                  _hover={{
-                    bgGradient: "linear(145deg, brand.mutedCrimson, brand.deepBurgundy)"
-                  }}
-                >
-                  Transform
-                </Button>
-                <Button
-                  onClick={handleRetry}
-                  isDisabled={!lastTransformedText || isLoading}
-                  flex="1"
-                  variant="outline"
-                  borderColor="brand.deepBurgundy"
-                  color="brand.deepBurgundy"
-                  _hover={{
-                    bg: 'brand.agedParchment'
-                  }}
-                >
-                  Retry Effect
-                </Button>
-                <Button
-                  onClick={handleClear}
-                  isDisabled={isLoading || (!inputText && !outputText)}
-                  flex="1"
-                  variant="outline"
-                  borderColor="brand.deepBurgundy"
-                  color="brand.deepBurgundy"
-                  _hover={{
-                    bg: 'brand.agedParchment'
-                  }}
-                >
-                  Clear All
-                </Button>
-              </HStack>
-            </VStack>
           </VStack>
+        </VStack>
+      </Box>
+    );
+  };
 
-          <VStack flex={1} spacing={4} align="stretch">
-            <Text fontWeight="bold" fontSize="lg">Transformed Text</Text>
-            <Box position="relative">
-              <Box
-                ref={outputRef}
-                data-screenshot="true"
-                bg="white"
-                p={8}
-                width="600px"
-                minHeight="auto"
-                display="flex"
-                flexDirection="column"
-                justifyContent="space-between"
-                border="1px solid #e2e8f0"
-                borderRadius="md"
-                mx="auto"
-                position="relative"
-              >
-                <Box
-                  fontFamily="Georgia, serif"
-                  fontSize="18px"
-                  lineHeight="1.8"
-                  color="black"
-                  whiteSpace="pre-wrap"
-                  mb={12}
-                  sx={{
-                    '& p': {
-                      mb: 4
-                    }
-                  }}
-                >
-                  {outputText}
-                </Box>
-              </Box>
-            </Box>
-          </VStack>
-        </Flex>
-      </VStack>
-    </Box>
-  );
-};
+  return isAuthenticated ? <TextTransformer /> : <LandingPage />;
+}
 
 export default function Home() {
   const { isAuthenticated } = useAuth();
