@@ -568,6 +568,30 @@ const TextTransformer = () => {
               position="relative"
               width="100%"
             >
+              <HStack position="absolute" top={2} right={2} spacing={2}>
+                <Button
+                  size="sm"
+                  onClick={() => {
+                    navigator.clipboard.writeText(outputText);
+                    toast({
+                      title: 'Copied!',
+                      status: 'success',
+                      duration: 2000
+                    });
+                  }}
+                  isDisabled={!outputText}
+                >
+                  Copy
+                </Button>
+                <Button
+                  size="sm"
+                  colorScheme="blue"
+                  onClick={handleScreenshot}
+                  isDisabled={!outputText}
+                >
+                  Download as Image
+                </Button>
+              </HStack>
               <Box
                 fontFamily="Georgia, serif"
                 fontSize="18px"
@@ -578,30 +602,6 @@ const TextTransformer = () => {
               >
                 {outputText}
               </Box>
-              {outputText && (
-                <HStack position="absolute" top={2} right={2} spacing={2}>
-                  <Button
-                    size="sm"
-                    onClick={() => {
-                      navigator.clipboard.writeText(outputText);
-                      toast({
-                        title: 'Copied!',
-                        status: 'success',
-                        duration: 2000
-                      });
-                    }}
-                  >
-                    Copy
-                  </Button>
-                  <Button
-                    size="sm"
-                    colorScheme="blue"
-                    onClick={handleScreenshot}
-                  >
-                    Download as Image
-                  </Button>
-                </HStack>
-              )}
             </Box>
           </VStack>
         </Flex>
