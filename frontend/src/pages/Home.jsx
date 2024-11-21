@@ -1,4 +1,129 @@
-cription: error.message,
+import React, { useState, useRef } from 'react';
+import {
+  Box,
+  Button,
+  FormControl,
+  FormLabel,
+  Heading,
+  Select,
+  Textarea,
+  VStack,
+  HStack,
+  Text,
+  useToast,
+  Switch,
+  Flex,
+  Icon,
+  Badge,
+  Divider
+} from '@chakra-ui/react';
+import { FaUserTie, FaUserAlt, FaChartLine, FaCopy, FaCamera } from 'react-icons/fa';
+import { useAuth } from '../context/AuthContext';
+import * as htmlToImage from 'html-to-image';
+import LandingPage from './LandingPage';
+
+const TextTransformer = () => {
+  const [inputText, setInputText] = useState('');
+  const [outputText, setOutputText] = useState('');
+  const [persona, setPersona] = useState('hitchens');
+  const [verbosity, setVerbosity] = useState('2');
+  const [isLoading, setIsLoading] = useState(false);
+  const [typewriterEnabled, setTypewriterEnabled] = useState(true);
+  const [lastTransformedText, setLastTransformedText] = useState('');
+  const outputRef = useRef(null);
+  const toast = useToast();
+
+  const generateFilename = (text) => {
+    if (!text) return 'transformed.png';
+    
+    const commonWords = new Set([
+      'the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for',
+      'of', 'with', 'by', 'from', 'up', 'about', 'into', 'over', 'after'
+    ]);
+
+    const textSample = text.split('.')[0].substring(0, 100);
+    const words = textSample
+      .toLowerCase()
+      .replace(/[^a-z0-9\s-]/g, '')
+      .split(/\s+/)
+      .filter(word => word.length > 2 && !commonWords.has(word) && !/^\d+$/.test(word))
+      .slice(0, 3);
+
+    const timestamp = new Date()
+      .toISOString()
+      .replace(/[-:]/g, '')
+      .split('.')[0]
+      .substring(0, 12);
+
+    const randomSuffix = Math.random().toString(36).substring(2, 6);
+    return `transformed-${words.join('-')}-${timestamp}-${randomSuffix}.png`;
+  };
+
+  const handleClear = () => {
+    setInputText('');
+    setOutputText('');
+    setLastTransformedText('');
+  };
+
+  const typewriterEffect = (text) => {
+    if (!typewriterEnabled) {
+      setOutputText(text);
+      return;
+    }
+
+    setOutputText('');
+    let index = 0;
+    const speed = 30;
+
+    const type = () => {
+      if (index < text.length) {
+        setOutputText(prev => prev + text.charAt(index));
+        index++;
+        setTimeout(type, speed);
+      }
+    };
+
+    type();
+  };
+
+  const handleTransform = async () => {
+    if (!inputText.trim()) {
+      toast({
+        title: 'Error',
+        description: 'Please enter some text to transform',
+        status: 'error',
+        duration: 5000,
+        isClosable: true
+      });
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      const response = await fetch('/api/transform', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          text: inputText,
+          persona: persona,
+          verbosity_level: parseInt(verbosity)
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to transform text');
+      }
+
+      const data = await response.json();
+      setLastTransformedText(data.transformed_text);
+      typewriterEffect(data.transformed_text);
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description: error.message,
         status: 'error',
         duration: 5000,
         isClosable: true
@@ -14,19 +139,55 @@ cription: error.message,
     }
   };
 
+  const handleCopy = async () => {
+    if (!outputText) {
+      toast({
+        title: 'Error',
+        description: 'No text available to copy',
+        status: 'error',
+        duration: 2000,
+        isClosable: true
+      });
+      return;
+    }
+
+    try {
+      await navigator.clipboard.writeText(outputText);
+      toast({
+        title: 'Success',
+        description: 'Text copied to clipboard',
+        status: 'success',
+        duration: 2000,
+        isClosable: true
+      });
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description: 'Failed to copy text',
+        status: 'error',
+        duration: 2000,
+        isClosable: true
+      });
+    }
+  };
+
   const handleScreenshot = async () => {
     if (!outputText) {
-      console.log('No output text available for screenshot');
+      toast({
+        title: 'Error',
+        description: 'No text available for screenshot',
+        status: 'error',
+        duration: 2000,
+        isClosable: true
+      });
       return;
     }
     
     try {
-      console.log('Starting screenshot capture...');
       const element = outputRef.current;
       
       if (!element) {
-        console.error('Output element reference not found');
-        return;
+        throw new Error('Output element reference not found');
       }
       
       const dataUrl = await htmlToImage.toPng(element, {
@@ -35,18 +196,17 @@ cription: error.message,
       });
       
       const filename = generateFilename(outputText);
-      console.log('Generated filename:', filename);
-      
       const link = document.createElement('a');
       link.download = filename;
       link.href = dataUrl;
       link.click();
       
       toast({
-        title: 'Screenshot saved',
-        description: 'The image has been downloaded successfully',
+        title: 'Success',
+        description: 'Screenshot saved successfully',
         status: 'success',
-        duration: 2000
+        duration: 2000,
+        isClosable: true
       });
     } catch (error) {
       console.error('Screenshot error:', error);
@@ -54,7 +214,8 @@ cription: error.message,
         title: 'Error',
         description: 'Failed to capture screenshot',
         status: 'error',
-        duration: 2000
+        duration: 2000,
+        isClosable: true
       });
     }
   };
@@ -125,15 +286,9 @@ cription: error.message,
             icon={<Icon as={persona === 'hitchens' ? FaUserTie : persona === 'trump' ? FaUserAlt : FaChartLine} />}
             iconSize={24}
           >
-            <option value="hitchens" style={{padding: '12px', fontSize: '16px'}}>
-              Christopher Hitchens - Intellectual & Literary Analysis
-            </option>
-            <option value="trump" style={{padding: '12px', fontSize: '16px'}}>
-              Donald Trump - Bold & Direct Communication
-            </option>
-            <option value="friedman" style={{padding: '12px', fontSize: '16px'}}>
-              Milton Friedman - Economic & Analytical Perspective
-            </option>
+            <option value="hitchens">Christopher Hitchens - Intellectual & Literary Analysis</option>
+            <option value="trump">Donald Trump - Bold & Direct Communication</option>
+            <option value="friedman">Milton Friedman - Economic & Analytical Perspective</option>
           </Select>
           <Box mt={2}>
             {persona === 'hitchens' && (
@@ -271,24 +426,61 @@ cription: error.message,
           </VStack>
 
           <VStack flex={1} spacing={4} align="stretch">
-            <Text fontWeight="bold" fontSize="lg">Transformed Text</Text>
+            <HStack justify="space-between">
+              <Text fontWeight="bold" fontSize="lg">Transformed Text</Text>
+              <HStack spacing={2}>
+                <Button
+                  leftIcon={<Icon as={FaCopy} />}
+                  onClick={handleCopy}
+                  isDisabled={!outputText}
+                  size="sm"
+                  colorScheme="blue"
+                  variant="outline"
+                >
+                  Copy
+                </Button>
+                <Button
+                  leftIcon={<Icon as={FaCamera} />}
+                  onClick={handleScreenshot}
+                  isDisabled={!outputText}
+                  size="sm"
+                  colorScheme="green"
+                  variant="outline"
+                >
+                  Screenshot
+                </Button>
+              </HStack>
+            </HStack>
+            
             <Box position="relative">
               <Box
                 ref={outputRef}
                 data-screenshot="true"
                 bg="white"
                 p={8}
-                width="600px"
-                minHeight="auto"
+                width="100%"
+                minHeight="200px"
                 display="flex"
                 flexDirection="column"
                 justifyContent="space-between"
                 border="1px solid #e2e8f0"
                 borderRadius="md"
-                mx="auto"
                 position="relative"
+                _before={{
+                  content: '""',
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  opacity: 0.1,
+                  zIndex: 0,
+                  bg: 'url("/static/images/paper-texture.svg")'
+                }}
               >
                 <Box
+                  position="relative"
+                  zIndex={1}
                   fontFamily="Georgia, serif"
                   fontSize="18px"
                   lineHeight="1.8"
@@ -303,6 +495,27 @@ cription: error.message,
                 >
                   {outputText}
                 </Box>
+                {outputText && persona && (
+                  <Box
+                    position="absolute"
+                    bottom={8}
+                    right={8}
+                    width="150px"
+                    height="50px"
+                    zIndex={1}
+                  >
+                    <img
+                      src={`/static/images/${persona}-signature.png`}
+                      alt={`${persona.charAt(0).toUpperCase() + persona.slice(1)} Signature`}
+                      style={{
+                        width: '100%',
+                        height: '100%',
+                        objectFit: 'contain',
+                        objectPosition: 'right bottom'
+                      }}
+                    />
+                  </Box>
+                )}
               </Box>
             </Box>
           </VStack>
