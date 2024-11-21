@@ -604,15 +604,10 @@ const TextTransformer = () => {
               )}
             </Box>
           </VStack>
-        </VStack>
+        </Flex>
       </Box>
     );
   };
 
-  return isAuthenticated ? <TextTransformer /> : <LandingPage />;
-}
-
-export default function Home() {
-  const { isAuthenticated } = useAuth();
   return isAuthenticated ? <TextTransformer /> : <LandingPage />;
 }
