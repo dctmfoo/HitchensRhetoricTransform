@@ -104,11 +104,9 @@ def transform_text(text, persona="hitchens", verbosity_level=1):
         print("=====================")
 
         # Generate the response with search retrieval
+        full_prompt = f"{system_prompt}\n\n{prompt}"
         response = model.generate_content(
-            contents=[
-                {"role": "user", "parts": [{"text": system_prompt}]},
-                {"role": "user", "parts": [{"text": prompt}]}
-            ],
+            contents=full_prompt,
             tools={"google_search_retrieval": {}}
         )
         
@@ -116,13 +114,6 @@ def transform_text(text, persona="hitchens", verbosity_level=1):
         print("\n=== Gemini API Response ===")
         print("Response:")
         print(f"{response.text[:200]}...")  # Show first 200 chars
-        print("=====================")
-
-        # Log search context
-        print("\n=== Search Context ===")
-        print("Grounding Metadata:")
-        if hasattr(response, 'candidates') and response.candidates:
-            print(response.candidates[0].groundingMetadata)
         print("=====================\n")
         
         return response.text
