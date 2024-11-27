@@ -94,11 +94,26 @@ def transform_text(text, persona="hitchens", verbosity_level=1):
         3. Ensure the response matches the requested verbosity level
         4. Incorporate factual context and relevant examples naturally into your response"""
 
+        # Log the request details
+        print("\n=== Gemini API Request ===")
+        print(f"Input text: {text[:100]}...")  # Show first 100 chars
+        print(f"Persona: {persona}")
+        print(f"Verbosity: {verbosity_level}")
+        print("\nPrompt:")
+        print(prompt)
+        print("=====================")
+
         # Generate the response
         response = model.generate_content([
             {"role": "user", "parts": [{"text": system_prompt}]},
             {"role": "user", "parts": [{"text": prompt}]}
         ])
+        
+        # Log the response
+        print("\n=== Gemini API Response ===")
+        print("Response:")
+        print(f"{response.text[:200]}...")  # Show first 200 chars
+        print("=====================\n")
         
         return response.text
         
