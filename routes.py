@@ -3,7 +3,7 @@ from flask_login import login_required, current_user
 from functools import wraps
 from app import app, db, verify_token
 from models import Transformation, User
-from utils.openai_helper import transform_text
+from utils.gemini_helper import transform_text
 from auth import auth
 import os
 
