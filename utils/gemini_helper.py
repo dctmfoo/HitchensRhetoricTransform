@@ -76,19 +76,8 @@ def transform_text(text, persona="hitchens", verbosity_level=1):
             
         # Initialize Gemini API
         genai.configure(api_key=os.environ.get("GEMINI_API_KEY"))
-        model = genai.GenerativeModel(
-            'gemini-1.5-pro-002',
-            tools=[{
-                'googleSearchRetrieval': {
-                    'dynamicRetrievalConfig': {
-                        'mode': 'MODE_DYNAMIC',
-                        'dynamicThreshold': 0.7,
-                    },
-                },
-            }],
-            generation_config={'apiVersion': 'v1beta'}
-        )
-
+        model = genai.GenerativeModel('models/gemini-1.5-pro-002')
+        
         # Create the system prompt with the selected persona
         system_prompt = PERSONA_PROMPTS[persona]
         
@@ -114,11 +103,14 @@ def transform_text(text, persona="hitchens", verbosity_level=1):
         print(prompt)
         print("=====================")
 
-        # Generate the response
-        response = model.generate_content([
-            {"role": "user", "parts": [{"text": system_prompt}]},
-            {"role": "user", "parts": [{"text": prompt}]}
-        ])
+        # Generate the response with search retrieval
+        response = model.generate_content(
+            contents=[
+                {"role": "user", "parts": [{"text": system_prompt}]},
+                {"role": "user", "parts": [{"text": prompt}]}
+            ],
+            tools={"google_search_retrieval": {}}
+        )
         
         # Log the response
         print("\n=== Gemini API Response ===")
