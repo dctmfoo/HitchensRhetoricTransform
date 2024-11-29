@@ -1,3 +1,4 @@
+import StyledSignature from '../components/StyledSignature';
 import {
   Box,
   Grid,
@@ -381,20 +382,9 @@ function History() {
                       position="absolute"
                       bottom={8}
                       right={8}
-                      width="150px"
-                      height="50px"
                       zIndex={1}
                     >
-                      <img
-                        src={`/static/images/${selectedTransformation?.persona || 'hitchens'}-signature.png`}
-                        alt={`${capitalizeFirstLetter(selectedTransformation?.persona || 'hitchens')} Signature`}
-                        style={{
-                          width: '100%',
-                          height: '100%',
-                          objectFit: 'contain',
-                          objectPosition: 'right bottom'
-                        }}
-                      />
+                      <StyledSignature persona={selectedTransformation?.persona || 'hitchens'} />
                     </Box>
                   </Box>
 
