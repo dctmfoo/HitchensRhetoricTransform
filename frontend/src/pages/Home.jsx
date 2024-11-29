@@ -20,7 +20,7 @@ import {
 import { FaUserTie, FaUserAlt, FaChartLine, FaCopy, FaCamera } from 'react-icons/fa';
 import { useAuth } from '../context/AuthContext';
 import * as htmlToImage from 'html-to-image';
-import LandingPage from './LandingPage';
+
 
 const TextTransformer = () => {
   const [inputText, setInputText] = useState('');
@@ -283,9 +283,15 @@ const TextTransformer = () => {
               borderColor: 'brand.antiqueGold',
               boxShadow: '0 0 0 2px brand.antiqueGold'
             }}
-            icon={<Icon as={persona === 'hitchens' ? FaUserTie : persona === 'trump' ? FaUserAlt : FaChartLine} />}
+            icon={<Icon as={
+              persona === 'personal' ? FaUserAlt :
+              persona === 'hitchens' ? FaUserTie :
+              persona === 'trump' ? FaUserAlt :
+              FaChartLine
+            } />}
             iconSize={24}
           >
+            <option value="personal">Personal - Professional & Clear Communication</option>
             <option value="hitchens">Christopher Hitchens - Intellectual & Literary Analysis</option>
             <option value="trump">Donald Trump - Bold & Direct Communication</option>
             <option value="friedman">Milton Friedman - Economic & Analytical Perspective</option>
@@ -495,7 +501,7 @@ const TextTransformer = () => {
                 >
                   {outputText}
                 </Box>
-                {outputText && persona && (
+                {outputText && persona && persona !== 'personal' && (
                   <Box
                     position="absolute"
                     bottom={8}
@@ -527,5 +533,5 @@ const TextTransformer = () => {
 
 export default function Home() {
   const { isAuthenticated } = useAuth();
-  return isAuthenticated ? <TextTransformer /> : <LandingPage />;
+  return <TextTransformer />;
 }

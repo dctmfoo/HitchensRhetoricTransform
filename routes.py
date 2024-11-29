@@ -44,7 +44,6 @@ def promote_to_admin(username):
     return jsonify({'error': 'User not found'}), 404
 
 @app.route('/api/transform', methods=['POST'])
-@token_required
 @login_required
 def transform():
     try:
