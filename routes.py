@@ -16,11 +16,11 @@ def token_required(f):
         token = request.headers.get('Authorization')
         if not token:
             return jsonify({'error': 'Token is missing'}), 401
-
+        
         # Remove 'Bearer ' prefix if present
         if token.startswith('Bearer '):
             token = token[7:]
-
+        
         user_id = verify_token(token)
         if not user_id:
             return jsonify({'error': 'Invalid or expired token'}), 401
@@ -52,12 +52,12 @@ def transform():
         input_text = data.get('text', '')
         verbosity_level = int(data.get('verbosity', 1))
         persona = data.get('persona', 'hitchens').lower()
-
+        
         if not input_text:
             return jsonify({'error': 'No text provided'}), 400
-
+            
         transformed_text = transform_text(input_text, persona, verbosity_level)
-
+        
         transformation = Transformation(
             input_text=input_text,
             output_text=transformed_text,
@@ -67,7 +67,7 @@ def transform():
         )
         db.session.add(transformation)
         db.session.commit()
-
+        
         return jsonify({
             'transformed_text': transformed_text,
             'id': transformation.id

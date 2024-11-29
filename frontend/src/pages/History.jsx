@@ -55,9 +55,9 @@ function History() {
       'the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for',
       'of', 'with', 'by', 'from', 'up', 'about', 'into', 'over', 'after'
     ]);
-
+  
     const textSample = text.split('.')[0].substring(0, 100);
-
+  
     const words = textSample
       .toLowerCase()
       .replace(/[^a-z0-9\s-]/g, '')
@@ -68,15 +68,15 @@ function History() {
         !/^\d+$/.test(word)
       )
       .slice(0, 3);
-
+  
     const timestamp = new Date()
       .toISOString()
       .replace(/[-:]/g, '')
       .split('.')[0]
       .substring(0, 12);
-
+  
     const randomSuffix = Math.random().toString(36).substring(2, 6);
-
+  
     return `transformed-${words.join('-')}-${timestamp}-${randomSuffix}.png`;
   };
 
@@ -117,9 +117,9 @@ function History() {
 
     try {
       const element = transformedTextRef.current;
-
+      
       await new Promise(resolve => setTimeout(resolve, 100));
-
+      
       const canvas = await htmlToImage.toCanvas(element, {
         quality: 1,
         backgroundColor: '#FFFFFF',
@@ -139,7 +139,7 @@ function History() {
         link.href = url;
         link.click();
         URL.revokeObjectURL(url);
-
+        
         toast({
           title: 'Screenshot Saved',
           description: 'Your transformation has been saved as an image',
@@ -177,7 +177,7 @@ function History() {
       <Heading textAlign="center" mb={8} color="brand.oxfordBlue">
         Transformation Gallery
       </Heading>
-
+      
       <Box mb={6} mx="auto" maxW="600px">
         <InputGroup>
           <InputLeftElement pointerEvents="none">
@@ -193,7 +193,7 @@ function History() {
           />
         </InputGroup>
       </Box>
-
+      
       <Grid
         templateColumns={{ base: '1fr', md: 'repeat(auto-fill, minmax(320px, 1fr))' }}
         gap={6}
@@ -376,7 +376,7 @@ function History() {
                     >
                       {selectedTransformation.output_text}
                     </Box>
-
+                    
                     <Box
                       position="absolute"
                       bottom={8}

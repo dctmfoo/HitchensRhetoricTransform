@@ -35,7 +35,7 @@ const TextTransformer = () => {
 
   const generateFilename = (text) => {
     if (!text) return 'transformed.png';
-
+    
     const commonWords = new Set([
       'the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for',
       'of', 'with', 'by', 'from', 'up', 'about', 'into', 'over', 'after'
@@ -182,25 +182,25 @@ const TextTransformer = () => {
       });
       return;
     }
-
+    
     try {
       const element = outputRef.current;
-
+      
       if (!element) {
         throw new Error('Output element reference not found');
       }
-
+      
       const dataUrl = await htmlToImage.toPng(element, {
         quality: 1.0,
         backgroundColor: '#FFFFFF'
       });
-
+      
       const filename = generateFilename(outputText);
       const link = document.createElement('a');
       link.download = filename;
       link.href = dataUrl;
       link.click();
-
+      
       toast({
         title: 'Success',
         description: 'Screenshot saved successfully',
@@ -451,7 +451,7 @@ const TextTransformer = () => {
                 </Button>
               </HStack>
             </HStack>
-
+            
             <Box position="relative">
               <Box
                 ref={outputRef}
