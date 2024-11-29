@@ -1,5 +1,4 @@
 import React, { useState, useRef } from 'react';
-import StyledSignature from '../components/StyledSignature';
 import {
   Box,
   Button,
@@ -20,8 +19,8 @@ import {
 } from '@chakra-ui/react';
 import { FaUserTie, FaUserAlt, FaChartLine, FaCopy, FaCamera } from 'react-icons/fa';
 import { useAuth } from '../context/AuthContext';
-import { Navigate } from 'react-router-dom';
 import * as htmlToImage from 'html-to-image';
+import LandingPage from './LandingPage';
 
 const TextTransformer = () => {
   const [inputText, setInputText] = useState('');
@@ -36,7 +35,7 @@ const TextTransformer = () => {
 
   const generateFilename = (text) => {
     if (!text) return 'transformed.png';
-    
+
     const commonWords = new Set([
       'the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for',
       'of', 'with', 'by', 'from', 'up', 'about', 'into', 'over', 'after'
@@ -183,25 +182,25 @@ const TextTransformer = () => {
       });
       return;
     }
-    
+
     try {
       const element = outputRef.current;
-      
+
       if (!element) {
         throw new Error('Output element reference not found');
       }
-      
+
       const dataUrl = await htmlToImage.toPng(element, {
         quality: 1.0,
         backgroundColor: '#FFFFFF'
       });
-      
+
       const filename = generateFilename(outputText);
       const link = document.createElement('a');
       link.download = filename;
       link.href = dataUrl;
       link.click();
-      
+
       toast({
         title: 'Success',
         description: 'Screenshot saved successfully',
@@ -452,7 +451,7 @@ const TextTransformer = () => {
                 </Button>
               </HStack>
             </HStack>
-            
+
             <Box position="relative">
               <Box
                 ref={outputRef}
@@ -501,9 +500,20 @@ const TextTransformer = () => {
                     position="absolute"
                     bottom={8}
                     right={8}
+                    width="150px"
+                    height="50px"
                     zIndex={1}
                   >
-                    <StyledSignature persona={persona} />
+                    <img
+                      src={`/static/images/${persona}-signature.png`}
+                      alt={`${persona.charAt(0).toUpperCase() + persona.slice(1)} Signature`}
+                      style={{
+                        width: '100%',
+                        height: '100%',
+                        objectFit: 'contain',
+                        objectPosition: 'right bottom'
+                      }}
+                    />
                   </Box>
                 )}
               </Box>
@@ -517,8 +527,5 @@ const TextTransformer = () => {
 
 export default function Home() {
   const { isAuthenticated } = useAuth();
-  if (!isAuthenticated) {
-    return <Navigate to="/login" replace />;
-  }
-  return <TextTransformer />;
+  return isAuthenticated ? <TextTransformer /> : <LandingPage />;
 }
