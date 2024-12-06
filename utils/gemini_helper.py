@@ -91,7 +91,7 @@ def transform_text(text, persona="hitchens", verbosity_level=1):
             
         # Initialize Gemini API
         genai.configure(api_key=os.environ.get("GEMINI_API_KEY"))
-        model = genai.GenerativeModel('models/gemini-1.5-pro-002')
+        model = genai.GenerativeModel('models/gemini-1.5-flash')
         
         # Create the system prompt with the selected persona
         system_prompt = PERSONA_PROMPTS[persona]
