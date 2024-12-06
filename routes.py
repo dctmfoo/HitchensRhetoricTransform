@@ -1,14 +1,13 @@
-from flask import render_template, request, jsonify, send_from_directory
+from flask import render_template, request, jsonify, send_from_directory, current_app
 from flask_login import login_required, current_user
 from functools import wraps
-from app import app, db, verify_token
+import os
+from database import db
 from models import Transformation, User
 from utils.gemini_helper import transform_text
-from auth import auth
-import os
+from utils.token_helper import verify_token
 
-# Register the auth blueprint
-app.register_blueprint(auth)
+routes = Blueprint('routes', __name__)
 
 def token_required(f):
     @wraps(f)
@@ -27,14 +26,14 @@ def token_required(f):
         return f(*args, **kwargs)
     return decorated
 
-@app.route('/', defaults={'path': ''})
-@app.route('/<path:path>')
+@routes.route('/', defaults={'path': ''})
+@routes.route('/<path:path>')
 def serve_react(path):
-    if path and os.path.exists(os.path.join(app.static_folder, 'react', path)):
-        return send_from_directory(os.path.join(app.static_folder, 'react'), path)
-    return send_from_directory(os.path.join(app.static_folder, 'react'), 'index.html')
+    if path and os.path.exists(os.path.join(current_app.static_folder, 'react', path)):
+        return send_from_directory(os.path.join(current_app.static_folder, 'react'), path)
+    return send_from_directory(os.path.join(current_app.static_folder, 'react'), 'index.html')
 
-@app.route('/promote-admin/<username>')
+@routes.route('/promote-admin/<username>')
 def promote_to_admin(username):
     user = User.query.filter_by(username=username).first()
     if user:
@@ -43,7 +42,7 @@ def promote_to_admin(username):
         return jsonify({'message': f'User {username} promoted to admin'})
     return jsonify({'error': 'User not found'}), 404
 
-@app.route('/api/transform', methods=['POST'])
+@routes.route('/api/transform', methods=['POST'])
 @login_required
 def transform():
     try:
@@ -67,13 +66,13 @@ def transform():
             return jsonify({'error': 'Invalid persona selected'}), 400
             
         try:
-            transformed_text = transform_text(input_text, persona, verbosity_level)
-            if not transformed_text:
+            result = transform_text(input_text, persona, verbosity_level)
+            if not result or 'text' not in result:
                 return jsonify({'error': 'Failed to generate transformed text'}), 500
                 
             transformation = Transformation(
                 input_text=input_text,
-                output_text=transformed_text,
+                output_text=result['text'],
                 verbosity_level=verbosity_level,
                 persona=persona,
                 user_id=current_user.id
@@ -82,8 +81,10 @@ def transform():
             db.session.commit()
             
             return jsonify({
-                'transformed_text': transformed_text,
-                'id': transformation.id
+                'transformed_text': result['text'],
+                'id': transformation.id,
+                'grounding': result.get('grounding', {}),  # Include grounding information in response
+                'search_suggestions_ui': result.get('grounding', {}).get('search_suggestions_ui', '')
             })
             
         except ValueError as ve:
@@ -96,7 +97,7 @@ def transform():
         print(f"Server error: {str(e)}")
         return jsonify({'error': 'Internal server error'}), 500
 
-@app.route('/api/history')
+@routes.route('/api/history')
 @token_required
 @login_required
 def history():

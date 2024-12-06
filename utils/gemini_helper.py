@@ -70,7 +70,8 @@ PERSONA_PROMPTS = {
 
 def transform_text(text, persona="hitchens", verbosity_level=1):
     """
-    Transform input text using Gemini API with enhanced context and persona-based styling.
+    Transform input text using Gemini API with enhanced context, persona-based styling,
+    and Google Search grounding for improved accuracy and context.
     
     Args:
         text (str): Input text to transform
@@ -78,7 +79,12 @@ def transform_text(text, persona="hitchens", verbosity_level=1):
         verbosity_level (int): Level of detail (1-3)
         
     Returns:
-        str: Transformed text in the selected persona's style
+        dict: A dictionary containing:
+            - text (str): Transformed text in the selected persona's style
+            - grounding (dict): Grounding information including:
+                - search_queries (list): Related search queries used
+                - supports (list): Source citations and confidence scores
+                - search_suggestions_ui (str): HTML/CSS for search suggestions UI
         
     Raises:
         ValueError: If API key is missing or invalid parameters are provided
@@ -113,10 +119,11 @@ def transform_text(text, persona="hitchens", verbosity_level=1):
                 "max_output_tokens": 1024,
             },
             tools=[{
-                "googleSearchRetrieval": {
-                    "dynamicRetrievalConfig": {
-                        "mode": "MODE_DYNAMIC",
-                        "dynamicThreshold": 0.7
+                "google_search": {
+                    "enabled": True,
+                    "dynamic_retrieval": {
+                        "enabled": True,
+                        "threshold": 0.7  # Higher threshold means fewer grounded responses
                     }
                 }
             }],
@@ -168,16 +175,43 @@ def transform_text(text, persona="hitchens", verbosity_level=1):
             print("Response:")
             print(f"{response.text[:200]}...")  # Show first 200 chars
             
-            # Log grounding metadata if available
+            # Extract grounding metadata if available
+            grounding_info = {}
             if hasattr(response.candidates[0], 'groundingMetadata'):
                 metadata = response.candidates[0].groundingMetadata
-                print("\nGrounding Metadata:")
-                if hasattr(metadata, 'webSearchQueries'):
-                    print(f"Search Queries: {metadata.webSearchQueries}")
+                grounding_info['search_queries'] = getattr(metadata, 'webSearchQueries', [])
+                
+                # Extract grounding supports (sources and citations)
+                supports = []
                 if hasattr(metadata, 'groundingSupports'):
-                    print("Grounding Supports:")
                     for support in metadata.groundingSupports:
-                        print(f"- {support.segment.text}")
+                        supports.append({
+                            'text': support.segment.text,
+                            'confidence': support.confidenceScores[0] if support.confidenceScores else None,
+                            'sources': [
+                                metadata.groundingChunks[i].web.uri 
+                                for i in support.groundingChunkIndices
+                            ] if hasattr(support, 'groundingChunkIndices') else []
+                        })
+                grounding_info['supports'] = supports
+                
+                # Extract search suggestions UI code
+                if hasattr(metadata, 'searchEntryPoint'):
+                    grounding_info['search_suggestions_ui'] = metadata.searchEntryPoint.renderedContent
+                
+                print("\nGrounding Metadata:")
+                print(f"Search Queries: {grounding_info['search_queries']}")
+                print("Grounding Supports:")
+                for support in grounding_info['supports']:
+                    print(f"- Text: {support['text']}")
+                    print(f"  Confidence: {support['confidence']}")
+                    print(f"  Sources: {support['sources']}")
+                    
+            # Return both the transformed text and grounding information
+            return {
+                'text': response.text.strip(),
+                'grounding': grounding_info
+            }
             
             print("=====================\n")
             
