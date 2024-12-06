@@ -1,8 +1,7 @@
 from flask import Blueprint, request, jsonify
 from flask_login import login_user, logout_user, login_required, current_user
-from models import User
-from database import db
-from utils.token_helper import generate_token
+from models import User, db
+from app import generate_token
 
 auth = Blueprint('auth', __name__)
 

@@ -28,7 +28,7 @@ const TextTransformer = () => {
   const [persona, setPersona] = useState('hitchens');
   const [verbosity, setVerbosity] = useState('2');
   const [isLoading, setIsLoading] = useState(false);
-  const [typewriterEnabled, setTypewriterEnabled] = useState(false);
+  const [typewriterEnabled, setTypewriterEnabled] = useState(true);
   const [lastTransformedText, setLastTransformedText] = useState('');
   const outputRef = useRef(null);
   const toast = useToast();
@@ -412,7 +412,7 @@ const TextTransformer = () => {
                     bg: 'brand.agedParchment'
                   }}
                 >
-                  Retry
+                  Retry Effect
                 </Button>
                 <Button
                   onClick={handleClear}

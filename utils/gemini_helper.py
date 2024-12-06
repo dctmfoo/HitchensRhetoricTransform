@@ -1,5 +1,4 @@
 import os
-from typing import Optional, Dict, Any
 import google.generativeai as genai
 
 # Copy PERSONA_PROMPTS from openai_helper.py
@@ -70,32 +69,16 @@ PERSONA_PROMPTS = {
 
 def transform_text(text, persona="hitchens", verbosity_level=1):
     """
-    Transform input text using Gemini API with enhanced context, persona-based styling,
-    and Google Search grounding for improved accuracy and context.
+    Transform input text using Gemini API with enhanced context and persona-based styling.
     
     Args:
         text (str): Input text to transform
-        persona (str): Selected persona ('hitchens', 'trump', 'friedman', or 'personal')
+        persona (str): Selected persona ('hitchens', 'trump', or 'friedman')
         verbosity_level (int): Level of detail (1-3)
         
     Returns:
-        dict: A dictionary containing:
-            - text (str): Transformed text in the selected persona's style
-            - grounding (dict): Grounding information including:
-                - search_queries (list): Related search queries used
-                - supports (list): Source citations and confidence scores
-                - search_suggestions_ui (str): HTML/CSS for search suggestions UI
-        
-    Raises:
-        ValueError: If API key is missing or invalid parameters are provided
-        Exception: For API errors or other unexpected issues
+        str: Transformed text in the selected persona's style
     """
-    
-    if not text or not isinstance(text, str):
-        raise ValueError("Input text must be a non-empty string")
-        
-    if not isinstance(verbosity_level, int) or verbosity_level not in [1, 2, 3]:
-        raise ValueError("Verbosity level must be 1, 2, or 3")
     verbosity_map = {
         1: "brief yet intellectually engaging response",
         2: "moderately detailed response with proper depth",
@@ -108,27 +91,7 @@ def transform_text(text, persona="hitchens", verbosity_level=1):
             
         # Initialize Gemini API
         genai.configure(api_key=os.environ.get("GEMINI_API_KEY"))
-        
-        # Configure model with Google Search grounding
-        model = genai.GenerativeModel(
-            model_name='models/gemini-1.5-pro-002',
-            generation_config={
-                "temperature": 0.7,
-                "top_p": 1,
-                "top_k": 40,
-                "max_output_tokens": 1024,
-            },
-            tools=[{
-                "google_search": {
-                    "enabled": True,
-                    "dynamic_retrieval": {
-                        "enabled": True,
-                        "threshold": 0.7  # Higher threshold means fewer grounded responses
-                    }
-                }
-            }],
-            api_version="v1beta"
-        )
+        model = genai.GenerativeModel('models/gemini-1.5-pro-002')
         
         # Create the system prompt with the selected persona
         system_prompt = PERSONA_PROMPTS[persona]
@@ -155,71 +118,20 @@ def transform_text(text, persona="hitchens", verbosity_level=1):
         print(prompt)
         print("=====================")
 
-        # Validate API key
-        api_key = os.environ.get("GEMINI_API_KEY")
-        if not api_key:
-            raise ValueError("GEMINI_API_KEY environment variable is not set")
-
-        # Generate the response
+        # Generate the response with search retrieval
         full_prompt = f"{system_prompt}\n\n{prompt}"
-        try:
-            response = model.generate_content(
-                contents=full_prompt
-            )
-            
-            if not response.text:
-                raise ValueError("Empty response received from Gemini API")
-
-            # Log the response and any grounding metadata
-            print("\n=== Gemini API Response ===")
-            print("Response:")
-            print(f"{response.text[:200]}...")  # Show first 200 chars
-            
-            # Extract grounding metadata if available
-            grounding_info = {}
-            if hasattr(response.candidates[0], 'groundingMetadata'):
-                metadata = response.candidates[0].groundingMetadata
-                grounding_info['search_queries'] = getattr(metadata, 'webSearchQueries', [])
-                
-                # Extract grounding supports (sources and citations)
-                supports = []
-                if hasattr(metadata, 'groundingSupports'):
-                    for support in metadata.groundingSupports:
-                        supports.append({
-                            'text': support.segment.text,
-                            'confidence': support.confidenceScores[0] if support.confidenceScores else None,
-                            'sources': [
-                                metadata.groundingChunks[i].web.uri 
-                                for i in support.groundingChunkIndices
-                            ] if hasattr(support, 'groundingChunkIndices') else []
-                        })
-                grounding_info['supports'] = supports
-                
-                # Extract search suggestions UI code
-                if hasattr(metadata, 'searchEntryPoint'):
-                    grounding_info['search_suggestions_ui'] = metadata.searchEntryPoint.renderedContent
-                
-                print("\nGrounding Metadata:")
-                print(f"Search Queries: {grounding_info['search_queries']}")
-                print("Grounding Supports:")
-                for support in grounding_info['supports']:
-                    print(f"- Text: {support['text']}")
-                    print(f"  Confidence: {support['confidence']}")
-                    print(f"  Sources: {support['sources']}")
-                    
-            # Return both the transformed text and grounding information
-            return {
-                'text': response.text.strip(),
-                'grounding': grounding_info
-            }
-            
-            print("=====================\n")
-            
-            return response.text.strip()
-            
-        except Exception as e:
-            print(f"Error generating content: {str(e)}")
-            raise Exception(f"Failed to generate content: {str(e)}")
+        response = model.generate_content(
+            contents=full_prompt,
+            tools={"google_search_retrieval": {}}
+        )
+        
+        # Log the response
+        print("\n=== Gemini API Response ===")
+        print("Response:")
+        print(f"{response.text[:200]}...")  # Show first 200 chars
+        print("=====================\n")
+        
+        return response.text
         
     except Exception as e:
         raise Exception(f"Failed to transform text: {str(e)}")
