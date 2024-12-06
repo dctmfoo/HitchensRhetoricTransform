@@ -1,4 +1,5 @@
 import os
+from typing import Optional, Dict, Any
 import google.generativeai as genai
 
 # Copy PERSONA_PROMPTS from openai_helper.py
@@ -101,7 +102,26 @@ def transform_text(text, persona="hitchens", verbosity_level=1):
             
         # Initialize Gemini API
         genai.configure(api_key=os.environ.get("GEMINI_API_KEY"))
-        model = genai.GenerativeModel('models/gemini-1.5-flash')
+        
+        # Configure model with Google Search grounding
+        model = genai.GenerativeModel(
+            model_name='models/gemini-1.5-pro-002',
+            generation_config={
+                "temperature": 0.7,
+                "top_p": 1,
+                "top_k": 40,
+                "max_output_tokens": 1024,
+            },
+            tools=[{
+                "googleSearchRetrieval": {
+                    "dynamicRetrievalConfig": {
+                        "mode": "MODE_DYNAMIC",
+                        "dynamicThreshold": 0.7
+                    }
+                }
+            }],
+            api_version="v1beta"
+        )
         
         # Create the system prompt with the selected persona
         system_prompt = PERSONA_PROMPTS[persona]
@@ -137,22 +157,28 @@ def transform_text(text, persona="hitchens", verbosity_level=1):
         full_prompt = f"{system_prompt}\n\n{prompt}"
         try:
             response = model.generate_content(
-                contents=full_prompt,
-                generation_config={
-                    "temperature": 0.7,
-                    "top_p": 1,
-                    "top_k": 40,
-                    "max_output_tokens": 1024,
-                }
+                contents=full_prompt
             )
             
             if not response.text:
                 raise ValueError("Empty response received from Gemini API")
 
-            # Log the response
+            # Log the response and any grounding metadata
             print("\n=== Gemini API Response ===")
             print("Response:")
             print(f"{response.text[:200]}...")  # Show first 200 chars
+            
+            # Log grounding metadata if available
+            if hasattr(response.candidates[0], 'groundingMetadata'):
+                metadata = response.candidates[0].groundingMetadata
+                print("\nGrounding Metadata:")
+                if hasattr(metadata, 'webSearchQueries'):
+                    print(f"Search Queries: {metadata.webSearchQueries}")
+                if hasattr(metadata, 'groundingSupports'):
+                    print("Grounding Supports:")
+                    for support in metadata.groundingSupports:
+                        print(f"- {support.segment.text}")
+            
             print("=====================\n")
             
             return response.text.strip()
