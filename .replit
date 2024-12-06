@@ -19,6 +19,10 @@ args = "Flask App"
 task = "workflow.run"
 args = "Build React"
 
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "Flask Server"
+
 [[workflows.workflow]]
 name = "Flask App"
 author = "agent"
@@ -31,7 +35,7 @@ task = "packager.installForAll"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "python main.py"
+args = "python -u main.py"
 waitForPort = 5000
 
 [[workflows.workflow]]
@@ -48,8 +52,23 @@ task = "packager.installForAll"
 task = "shell.exec"
 args = "cd frontend && npm run build"
 
+[[workflows.workflow]]
+name = "Flask Server"
+author = "agent"
+
+[workflows.workflow.metadata]
+agentRequireRestartOnSave = false
+
+[[workflows.workflow.tasks]]
+task = "packager.installForAll"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "python3 main.py"
+waitForPort = 5000
+
 [deployment]
-run = ["sh", "-c", "python main.py"]
+run = ["sh", "-c", "python -u main.py"]
 deploymentTarget = "cloudrun"
 
 [[ports]]
