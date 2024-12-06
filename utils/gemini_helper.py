@@ -73,12 +73,22 @@ def transform_text(text, persona="hitchens", verbosity_level=1):
     
     Args:
         text (str): Input text to transform
-        persona (str): Selected persona ('hitchens', 'trump', or 'friedman')
+        persona (str): Selected persona ('hitchens', 'trump', 'friedman', or 'personal')
         verbosity_level (int): Level of detail (1-3)
         
     Returns:
         str: Transformed text in the selected persona's style
+        
+    Raises:
+        ValueError: If API key is missing or invalid parameters are provided
+        Exception: For API errors or other unexpected issues
     """
+    
+    if not text or not isinstance(text, str):
+        raise ValueError("Input text must be a non-empty string")
+        
+    if not isinstance(verbosity_level, int) or verbosity_level not in [1, 2, 3]:
+        raise ValueError("Verbosity level must be 1, 2, or 3")
     verbosity_map = {
         1: "brief yet intellectually engaging response",
         2: "moderately detailed response with proper depth",
@@ -118,20 +128,38 @@ def transform_text(text, persona="hitchens", verbosity_level=1):
         print(prompt)
         print("=====================")
 
-        # Generate the response with search retrieval
+        # Validate API key
+        api_key = os.environ.get("GEMINI_API_KEY")
+        if not api_key:
+            raise ValueError("GEMINI_API_KEY environment variable is not set")
+
+        # Generate the response
         full_prompt = f"{system_prompt}\n\n{prompt}"
-        response = model.generate_content(
-            contents=full_prompt,
-            tools={"google_search_retrieval": {}}
-        )
-        
-        # Log the response
-        print("\n=== Gemini API Response ===")
-        print("Response:")
-        print(f"{response.text[:200]}...")  # Show first 200 chars
-        print("=====================\n")
-        
-        return response.text
+        try:
+            response = model.generate_content(
+                contents=full_prompt,
+                generation_config={
+                    "temperature": 0.7,
+                    "top_p": 1,
+                    "top_k": 40,
+                    "max_output_tokens": 1024,
+                }
+            )
+            
+            if not response.text:
+                raise ValueError("Empty response received from Gemini API")
+
+            # Log the response
+            print("\n=== Gemini API Response ===")
+            print("Response:")
+            print(f"{response.text[:200]}...")  # Show first 200 chars
+            print("=====================\n")
+            
+            return response.text.strip()
+            
+        except Exception as e:
+            print(f"Error generating content: {str(e)}")
+            raise Exception(f"Failed to generate content: {str(e)}")
         
     except Exception as e:
         raise Exception(f"Failed to transform text: {str(e)}")

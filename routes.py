@@ -48,31 +48,53 @@ def promote_to_admin(username):
 def transform():
     try:
         data = request.get_json()
-        input_text = data.get('text', '')
-        verbosity_level = int(data.get('verbosity', 1))
-        persona = data.get('persona', 'hitchens').lower()
-        
+        if not data:
+            return jsonify({'error': 'Invalid JSON data'}), 400
+            
+        input_text = data.get('text', '').strip()
         if not input_text:
             return jsonify({'error': 'No text provided'}), 400
             
-        transformed_text = transform_text(input_text, persona, verbosity_level)
-        
-        transformation = Transformation(
-            input_text=input_text,
-            output_text=transformed_text,
-            verbosity_level=verbosity_level,
-            persona=persona,
-            user_id=current_user.id
-        )
-        db.session.add(transformation)
-        db.session.commit()
-        
-        return jsonify({
-            'transformed_text': transformed_text,
-            'id': transformation.id
-        })
+        try:
+            verbosity_level = int(data.get('verbosity', 1))
+            if verbosity_level not in [1, 2, 3]:
+                return jsonify({'error': 'Invalid verbosity level. Must be 1, 2, or 3'}), 400
+        except ValueError:
+            return jsonify({'error': 'Verbosity level must be a number'}), 400
+            
+        persona = data.get('persona', 'hitchens').lower()
+        if persona not in ['hitchens', 'trump', 'friedman', 'personal']:
+            return jsonify({'error': 'Invalid persona selected'}), 400
+            
+        try:
+            transformed_text = transform_text(input_text, persona, verbosity_level)
+            if not transformed_text:
+                return jsonify({'error': 'Failed to generate transformed text'}), 500
+                
+            transformation = Transformation(
+                input_text=input_text,
+                output_text=transformed_text,
+                verbosity_level=verbosity_level,
+                persona=persona,
+                user_id=current_user.id
+            )
+            db.session.add(transformation)
+            db.session.commit()
+            
+            return jsonify({
+                'transformed_text': transformed_text,
+                'id': transformation.id
+            })
+            
+        except ValueError as ve:
+            return jsonify({'error': str(ve)}), 400
+        except Exception as e:
+            print(f"Transformation error: {str(e)}")
+            return jsonify({'error': 'An error occurred during text transformation'}), 500
+            
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        print(f"Server error: {str(e)}")
+        return jsonify({'error': 'Internal server error'}), 500
 
 @app.route('/api/history')
 @token_required
