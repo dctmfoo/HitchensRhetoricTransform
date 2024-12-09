@@ -16,8 +16,6 @@ import {
   Icon,
   Badge,
   Divider,
-  Radio,
-  RadioGroup
 } from '@chakra-ui/react';
 import { FaUserTie, FaUserAlt, FaChartLine, FaCopy, FaCamera } from 'react-icons/fa';
 import { useAuth } from '../context/AuthContext';
@@ -273,17 +271,7 @@ const TextTransformer = () => {
           Style Transformer
         </Heading>
 
-        <FormControl 
-          mb={6}
-          p={4}
-          bg="brand.agedParchment"
-          borderRadius="lg"
-          border="2px"
-          borderColor="brand.leatherBrown"
-          _hover={{
-            borderColor: 'brand.antiqueGold'
-          }}
-        >
+        <FormControl>
           <FormLabel 
             htmlFor="persona-select"
             fontSize="xl"
@@ -293,69 +281,55 @@ const TextTransformer = () => {
           >
             Choose Your Writing Persona
           </FormLabel>
-          <HStack spacing={4} width="100%">
-            <Box flex="1">
-              <VStack spacing={4} align="stretch">
-                <FormLabel
-                  htmlFor="persona-select"
-                  fontSize="lg"
-                  fontWeight="bold"
-                  color="brand.deepBurgundy"
-                >
-                  Writing Persona
-                </FormLabel>
-                <Select
-                  id="persona-select"
-                  value={persona}
-                  onChange={(e) => setPersona(e.target.value)}
-                  size="lg"
-                  bg="white"
-                  border="2px"
-                  borderColor="brand.leatherBrown"
-                  h="70px"
-                  fontSize="lg"
-                  _hover={{
-                    borderColor: 'brand.antiqueGold'
-                  }}
-                  _focus={{
-                    borderColor: 'brand.antiqueGold',
-                    boxShadow: '0 0 0 2px brand.antiqueGold'
-                  }}
-                  icon={<Icon as={
-                    persona === 'personal' ? FaUserAlt :
-                    persona === 'hitchens' ? FaUserTie :
-                    persona === 'trump' ? FaUserAlt :
-                    FaChartLine
-                  } />}
-                  iconSize={24}
-                >
-                  <option value="personal">Personal - Professional & Clear Communication</option>
-                  <option value="hitchens">Christopher Hitchens - Intellectual & Literary Analysis</option>
-                  <option value="trump">Donald Trump - Bold & Direct Communication</option>
-                  <option value="friedman">Milton Friedman - Economic & Analytical Perspective</option>
-                </Select>
-              </VStack>
-            </Box>
-            
-          </HStack>
-          <Box mt={2}>
-            {persona === 'hitchens' && (
-              <Badge colorScheme="purple" p={2} borderRadius="md">
-                <Icon as={FaUserTie} mr={2} /> Intellectual Style
-              </Badge>
-            )}
-            {persona === 'trump' && (
-              <Badge colorScheme="red" p={2} borderRadius="md">
-                <Icon as={FaUserAlt} mr={2} /> Direct Style
-              </Badge>
-            )}
-            {persona === 'friedman' && (
-              <Badge colorScheme="blue" p={2} borderRadius="md">
-                <Icon as={FaChartLine} mr={2} /> Analytical Style
-              </Badge>
-            )}
-          </Box>
+          <Select
+            id="persona-select"
+            value={persona}
+            onChange={(e) => setPersona(e.target.value)}
+            size="lg"
+            bg="white"
+            border="2px"
+            borderColor="brand.leatherBrown"
+            h="70px"
+            fontSize="lg"
+            _hover={{
+              borderColor: 'brand.antiqueGold'
+            }}
+            _focus={{
+              borderColor: 'brand.antiqueGold',
+              boxShadow: '0 0 0 1px brand.antiqueGold'
+            }}
+            icon={<Icon as={
+              persona === 'personal' ? FaUserAlt :
+              persona === 'hitchens' ? FaUserTie :
+              persona === 'trump' ? FaUserAlt :
+              FaChartLine
+            } />}
+            iconSize={24}
+          >
+            <option value="personal">Personal - Professional & Clear Communication</option>
+            <option value="hitchens">Christopher Hitchens - Intellectual & Literary Analysis</option>
+            <option value="trump">Donald Trump - Bold & Direct Communication</option>
+            <option value="friedman">Milton Friedman - Economic & Analytical Perspective</option>
+          </Select>
         </FormControl>
+
+        <Box mt={2}>
+          {persona === 'hitchens' && (
+            <Badge colorScheme="purple" p={2} borderRadius="md">
+              <Icon as={FaUserTie} mr={2} /> Intellectual Style
+            </Badge>
+          )}
+          {persona === 'trump' && (
+            <Badge colorScheme="red" p={2} borderRadius="md">
+              <Icon as={FaUserAlt} mr={2} /> Direct Style
+            </Badge>
+          )}
+          {persona === 'friedman' && (
+            <Badge colorScheme="blue" p={2} borderRadius="md">
+              <Icon as={FaChartLine} mr={2} /> Analytical Style
+            </Badge>
+          )}
+        </Box>
 
         <Flex w="100%" gap={8} direction={{ base: 'column', md: 'row' }}>
           <VStack flex={1} spacing={4} align="stretch">
@@ -375,73 +349,75 @@ const TextTransformer = () => {
             />
 
             <VStack spacing={6} align="stretch">
-              <FormControl>
-                <FormLabel 
-                  htmlFor="verbosity-select"
-                  fontSize="lg"
-                  fontWeight="bold"
-                  color="brand.deepBurgundy"
-                >
-                  Response Length
-                </FormLabel>
-                <Select
-                  id="verbosity-select"
-                  value={verbosity}
-                  onChange={(e) => setVerbosity(e.target.value)}
-                  size="lg"
-                  bg="white"
-                  border="2px"
-                  borderColor="brand.leatherBrown"
-                  _hover={{
-                    borderColor: 'brand.antiqueGold'
-                  }}
-                  _focus={{
-                    borderColor: 'brand.antiqueGold',
-                    boxShadow: '0 0 0 1px brand.antiqueGold'
-                  }}
-                  h="60px"
-                  fontSize="md"
-                >
-                  <option value="1">Concise - Brief Response</option>
-                  <option value="2">Moderate - Balanced Length</option>
-                  <option value="3">Verbose - Detailed Analysis</option>
-                </Select>
-              </FormControl>
+              <VStack spacing={4} align="stretch">
+                <FormControl>
+                  <FormLabel 
+                    htmlFor="verbosity-select"
+                    fontSize="lg"
+                    fontWeight="bold"
+                    color="brand.deepBurgundy"
+                  >
+                    Response Length
+                  </FormLabel>
+                  <Select
+                    id="verbosity-select"
+                    value={verbosity}
+                    onChange={(e) => setVerbosity(e.target.value)}
+                    size="lg"
+                    bg="white"
+                    border="2px"
+                    borderColor="brand.leatherBrown"
+                    _hover={{
+                      borderColor: 'brand.antiqueGold'
+                    }}
+                    _focus={{
+                      borderColor: 'brand.antiqueGold',
+                      boxShadow: '0 0 0 1px brand.antiqueGold'
+                    }}
+                    h="60px"
+                    fontSize="md"
+                  >
+                    <option value="1">Concise - Brief Response</option>
+                    <option value="2">Moderate - Balanced Length</option>
+                    <option value="3">Verbose - Detailed Analysis</option>
+                  </Select>
+                </FormControl>
 
-              <FormControl>
-                <FormLabel 
-                  htmlFor="api-provider-select"
-                  fontSize="lg"
-                  fontWeight="bold"
-                  color="brand.deepBurgundy"
-                >
-                  API Provider
-                </FormLabel>
-                <Select
-                  id="api-provider-select"
-                  value={apiProvider}
-                  onChange={(e) => setApiProvider(e.target.value)}
-                  size="lg"
-                  bg="white"
-                  border="2px"
-                  borderColor="brand.leatherBrown"
-                  _hover={{
-                    borderColor: 'brand.antiqueGold'
-                  }}
-                  _focus={{
-                    borderColor: 'brand.antiqueGold',
-                    boxShadow: '0 0 0 1px brand.antiqueGold'
-                  }}
-                  h="60px"
-                  fontSize="md"
-                >
-                  {availableProviders.map(provider => (
-                    <option key={provider} value={provider}>
-                      {provider.charAt(0).toUpperCase() + provider.slice(1)} API
-                    </option>
-                  ))}
-                </Select>
-              </FormControl>
+                <FormControl>
+                  <FormLabel 
+                    htmlFor="api-provider-select"
+                    fontSize="lg"
+                    fontWeight="bold"
+                    color="brand.deepBurgundy"
+                  >
+                    API Provider
+                  </FormLabel>
+                  <Select
+                    id="api-provider-select"
+                    value={apiProvider}
+                    onChange={(e) => setApiProvider(e.target.value)}
+                    size="lg"
+                    bg="white"
+                    border="2px"
+                    borderColor="brand.leatherBrown"
+                    _hover={{
+                      borderColor: 'brand.antiqueGold'
+                    }}
+                    _focus={{
+                      borderColor: 'brand.antiqueGold',
+                      boxShadow: '0 0 0 1px brand.antiqueGold'
+                    }}
+                    h="60px"
+                    fontSize="md"
+                  >
+                    {availableProviders.map(provider => (
+                      <option key={provider} value={provider}>
+                        {provider.charAt(0).toUpperCase() + provider.slice(1)} API
+                      </option>
+                    ))}
+                  </Select>
+                </FormControl>
+              </VStack>
 
               <Divider my={2} borderColor="brand.leatherBrown" />
 

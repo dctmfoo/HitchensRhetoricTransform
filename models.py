@@ -36,6 +36,8 @@ class Transformation(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     
+    api_provider = db.Column(db.String(50), nullable=False, default='openai')
+    
     def to_dict(self):
         return {
             'id': self.id,
@@ -43,6 +45,7 @@ class Transformation(db.Model):
             'output_text': self.output_text,
             'verbosity_level': self.verbosity_level,
             'persona': self.persona,
+            'api_provider': self.api_provider,
             'created_at': self.created_at.strftime('%Y-%m-%d %H:%M:%S'),
             'user_id': self.user_id,
             'username': self.user.username if self.user else None
