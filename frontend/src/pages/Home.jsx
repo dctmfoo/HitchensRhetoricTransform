@@ -401,8 +401,6 @@ const TextTransformer = () => {
                 </Select>
               </FormControl>
 
-              {/* Typewriter Effect Toggle */}
-
               {/* API Provider Selection */}
               <FormControl>
                 <FormLabel 
