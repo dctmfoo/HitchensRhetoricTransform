@@ -11,11 +11,8 @@ import {
   HStack,
   Text,
   useToast,
-  Switch,
-  Flex,
   Icon,
-  Badge,
-  Divider,
+  Flex,
 } from '@chakra-ui/react';
 import { FaUserTie, FaUserAlt, FaChartLine, FaCopy, FaCamera } from 'react-icons/fa';
 import { useAuth } from '../context/AuthContext';
@@ -362,42 +359,6 @@ const TextTransformer = () => {
                   <option value="1">Concise - Brief Response</option>
                   <option value="2">Moderate - Balanced Length</option>
                   <option value="3">Verbose - Detailed Analysis</option>
-                </Select>
-              </FormControl>
-
-              {/* API Provider Control */}
-              <FormControl>
-                <FormLabel 
-                  htmlFor="api-provider-select"
-                  fontSize="lg"
-                  fontWeight="bold"
-                  color="brand.deepBurgundy"
-                >
-                  Select API Provider
-                </FormLabel>
-                <Select
-                  id="api-provider-select"
-                  value={apiProvider}
-                  onChange={(e) => setApiProvider(e.target.value)}
-                  size="lg"
-                  bg="white"
-                  border="2px"
-                  borderColor="brand.leatherBrown"
-                  _hover={{
-                    borderColor: 'brand.antiqueGold'
-                  }}
-                  _focus={{
-                    borderColor: 'brand.antiqueGold',
-                    boxShadow: '0 0 0 1px brand.antiqueGold'
-                  }}
-                  h="60px"
-                  fontSize="md"
-                >
-                  {availableProviders && availableProviders.map(provider => (
-                    <option key={provider} value={provider}>
-                      {provider.charAt(0).toUpperCase() + provider.slice(1)} API
-                    </option>
-                  ))}
                 </Select>
               </FormControl>
 
