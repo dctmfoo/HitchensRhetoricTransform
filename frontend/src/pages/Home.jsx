@@ -277,7 +277,6 @@ const TextTransformer = () => {
             fontSize="xl"
             fontWeight="bold"
             color="brand.deepBurgundy"
-            mb={4}
           >
             Choose Your Writing Persona
           </FormLabel>
@@ -289,8 +288,8 @@ const TextTransformer = () => {
             bg="white"
             border="2px"
             borderColor="brand.leatherBrown"
-            h="70px"
-            fontSize="lg"
+            h="60px"
+            fontSize="md"
             _hover={{
               borderColor: 'brand.antiqueGold'
             }}
@@ -313,24 +312,6 @@ const TextTransformer = () => {
           </Select>
         </FormControl>
 
-        <Box mt={2}>
-          {persona === 'hitchens' && (
-            <Badge colorScheme="purple" p={2} borderRadius="md">
-              <Icon as={FaUserTie} mr={2} /> Intellectual Style
-            </Badge>
-          )}
-          {persona === 'trump' && (
-            <Badge colorScheme="red" p={2} borderRadius="md">
-              <Icon as={FaUserAlt} mr={2} /> Direct Style
-            </Badge>
-          )}
-          {persona === 'friedman' && (
-            <Badge colorScheme="blue" p={2} borderRadius="md">
-              <Icon as={FaChartLine} mr={2} /> Analytical Style
-            </Badge>
-          )}
-        </Box>
-
         <Flex w="100%" gap={8} direction={{ base: 'column', md: 'row' }}>
           <VStack flex={1} spacing={4} align="stretch">
             <Text fontWeight="bold" fontSize="lg">Input Text</Text>
@@ -348,79 +329,79 @@ const TextTransformer = () => {
               }}
             />
 
-            <VStack spacing={6} align="stretch">
-              <VStack spacing={4} align="stretch">
-                <FormControl>
-                  <FormLabel 
-                    htmlFor="verbosity-select"
-                    fontSize="lg"
-                    fontWeight="bold"
-                    color="brand.deepBurgundy"
-                  >
-                    Response Length
-                  </FormLabel>
-                  <Select
-                    id="verbosity-select"
-                    value={verbosity}
-                    onChange={(e) => setVerbosity(e.target.value)}
-                    size="lg"
-                    bg="white"
-                    border="2px"
-                    borderColor="brand.leatherBrown"
-                    _hover={{
-                      borderColor: 'brand.antiqueGold'
-                    }}
-                    _focus={{
-                      borderColor: 'brand.antiqueGold',
-                      boxShadow: '0 0 0 1px brand.antiqueGold'
-                    }}
-                    h="60px"
-                    fontSize="md"
-                  >
-                    <option value="1">Concise - Brief Response</option>
-                    <option value="2">Moderate - Balanced Length</option>
-                    <option value="3">Verbose - Detailed Analysis</option>
-                  </Select>
-                </FormControl>
+            {/* Controls Section */}
+            <VStack spacing={4} align="stretch">
+              {/* Response Length Control */}
+              <FormControl>
+                <FormLabel 
+                  htmlFor="verbosity-select"
+                  fontSize="lg"
+                  fontWeight="bold"
+                  color="brand.deepBurgundy"
+                >
+                  Response Length
+                </FormLabel>
+                <Select
+                  id="verbosity-select"
+                  value={verbosity}
+                  onChange={(e) => setVerbosity(e.target.value)}
+                  size="lg"
+                  bg="white"
+                  border="2px"
+                  borderColor="brand.leatherBrown"
+                  _hover={{
+                    borderColor: 'brand.antiqueGold'
+                  }}
+                  _focus={{
+                    borderColor: 'brand.antiqueGold',
+                    boxShadow: '0 0 0 1px brand.antiqueGold'
+                  }}
+                  h="60px"
+                  fontSize="md"
+                >
+                  <option value="1">Concise - Brief Response</option>
+                  <option value="2">Moderate - Balanced Length</option>
+                  <option value="3">Verbose - Detailed Analysis</option>
+                </Select>
+              </FormControl>
 
-                <FormControl>
-                  <FormLabel 
-                    htmlFor="api-provider-select"
-                    fontSize="lg"
-                    fontWeight="bold"
-                    color="brand.deepBurgundy"
-                  >
-                    API Provider
-                  </FormLabel>
-                  <Select
-                    id="api-provider-select"
-                    value={apiProvider}
-                    onChange={(e) => setApiProvider(e.target.value)}
-                    size="lg"
-                    bg="white"
-                    border="2px"
-                    borderColor="brand.leatherBrown"
-                    _hover={{
-                      borderColor: 'brand.antiqueGold'
-                    }}
-                    _focus={{
-                      borderColor: 'brand.antiqueGold',
-                      boxShadow: '0 0 0 1px brand.antiqueGold'
-                    }}
-                    h="60px"
-                    fontSize="md"
-                  >
-                    {availableProviders.map(provider => (
-                      <option key={provider} value={provider}>
-                        {provider.charAt(0).toUpperCase() + provider.slice(1)} API
-                      </option>
-                    ))}
-                  </Select>
-                </FormControl>
-              </VStack>
+              {/* API Provider Control */}
+              <FormControl>
+                <FormLabel 
+                  htmlFor="api-provider-select"
+                  fontSize="lg"
+                  fontWeight="bold"
+                  color="brand.deepBurgundy"
+                >
+                  API Provider
+                </FormLabel>
+                <Select
+                  id="api-provider-select"
+                  value={apiProvider}
+                  onChange={(e) => setApiProvider(e.target.value)}
+                  size="lg"
+                  bg="white"
+                  border="2px"
+                  borderColor="brand.leatherBrown"
+                  _hover={{
+                    borderColor: 'brand.antiqueGold'
+                  }}
+                  _focus={{
+                    borderColor: 'brand.antiqueGold',
+                    boxShadow: '0 0 0 1px brand.antiqueGold'
+                  }}
+                  h="60px"
+                  fontSize="md"
+                >
+                  {availableProviders.map(provider => (
+                    <option key={provider} value={provider}>
+                      {provider.charAt(0).toUpperCase() + provider.slice(1)} API
+                    </option>
+                  ))}
+                </Select>
+              </FormControl>
 
-              <Divider my={2} borderColor="brand.leatherBrown" />
-
+              {/* Typewriter Effect Toggle */}
               <FormControl display="flex" alignItems="center" justifyContent="space-between">
                 <FormLabel 
                   htmlFor="typewriter-toggle" 
@@ -440,6 +421,7 @@ const TextTransformer = () => {
                 />
               </FormControl>
 
+              {/* Action Buttons */}
               <HStack spacing={4}>
                 <Button
                   onClick={handleTransform}
@@ -484,6 +466,7 @@ const TextTransformer = () => {
             </VStack>
           </VStack>
 
+          {/* Output Section */}
           <VStack flex={1} spacing={4} align="stretch">
             <HStack justify="space-between">
               <Text fontWeight="bold" fontSize="lg">Transformed Text</Text>
