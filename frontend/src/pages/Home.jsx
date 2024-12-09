@@ -402,6 +402,8 @@ const TextTransformer = () => {
               </FormControl>
 
               {/* Typewriter Effect Toggle */}
+
+              {/* Typewriter Effect Toggle */}
               <FormControl display="flex" alignItems="center" justifyContent="space-between">
                 <FormLabel 
                   htmlFor="typewriter-toggle" 
