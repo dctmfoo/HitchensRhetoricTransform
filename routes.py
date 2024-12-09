@@ -6,8 +6,13 @@ from models import Transformation, User
 from utils.openai_helper import transform_text as openai_transform
 from utils.gemini_helper import transform_text as gemini_transform
 
-# Default to using OpenAI
-transform_text = openai_transform
+# Configure transform functions
+TRANSFORM_FUNCTIONS = {
+    'openai': openai_transform,
+    'gemini': gemini_transform
+}
+DEFAULT_API = 'openai'
+
 from auth import auth
 import os
 
@@ -55,17 +60,23 @@ def transform():
         input_text = data.get('text', '')
         verbosity_level = int(data.get('verbosity', 1))
         persona = data.get('persona', 'hitchens').lower()
+        api_provider = data.get('api_provider', DEFAULT_API).lower()
         
         if not input_text:
             return jsonify({'error': 'No text provided'}), 400
             
-        transformed_text = transform_text(input_text, persona, verbosity_level)
+        if api_provider not in TRANSFORM_FUNCTIONS:
+            return jsonify({'error': f'Invalid API provider: {api_provider}'}), 400
+            
+        transform_func = TRANSFORM_FUNCTIONS[api_provider]
+        transformed_text = transform_func(input_text, persona, verbosity_level)
         
         transformation = Transformation(
             input_text=input_text,
             output_text=transformed_text,
             verbosity_level=verbosity_level,
             persona=persona,
+            api_provider=api_provider,
             user_id=current_user.id
         )
         db.session.add(transformation)
@@ -73,13 +84,23 @@ def transform():
         
         return jsonify({
             'transformed_text': transformed_text,
-            'id': transformation.id
+            'id': transformation.id,
+            'api_provider': api_provider
         })
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
 @app.route('/api/history')
 @token_required
+@app.route('/api/config/providers', methods=['GET'])
+@token_required
+@login_required
+def get_api_providers():
+    return jsonify({
+        'providers': list(TRANSFORM_FUNCTIONS.keys()),
+        'default': DEFAULT_API
+    })
+
 @login_required
 def history():
     try:
