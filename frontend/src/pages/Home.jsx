@@ -341,6 +341,40 @@ const TextTransformer = () => {
                 fontSize="lg"
                 fontWeight="bold"
                 color="brand.deepBurgundy"
+                mb={4}
+              >
+                API Provider
+              </FormLabel>
+              <RadioGroup
+                value={apiProvider}
+                onChange={setApiProvider}
+                display="flex"
+                flexDirection="column"
+                gap={3}
+              >
+                {availableProviders.map(provider => (
+                  <Radio
+                    key={provider}
+                    value={provider}
+                    size="lg"
+                    borderColor="brand.leatherBrown"
+                    _checked={{
+                      borderColor: 'brand.antiqueGold',
+                      bg: 'brand.agedParchment'
+                    }}
+                  >
+                    <Text fontSize="lg" color="brand.deepBurgundy">
+                      {provider.charAt(0).toUpperCase() + provider.slice(1)} API
+                    </Text>
+                  </Radio>
+                ))}
+              </RadioGroup>
+            </Box>
+            <Box flex="1">
+              <FormLabel
+                fontSize="lg"
+                fontWeight="bold"
+                color="brand.deepBurgundy"
                 mb={2}
               >
                 API Provider
