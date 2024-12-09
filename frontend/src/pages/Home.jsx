@@ -373,7 +373,7 @@ const TextTransformer = () => {
                   fontWeight="bold"
                   color="brand.deepBurgundy"
                 >
-                  API Provider
+                  Select API Provider
                 </FormLabel>
                 <Select
                   id="api-provider-select"
@@ -393,7 +393,7 @@ const TextTransformer = () => {
                   h="60px"
                   fontSize="md"
                 >
-                  {availableProviders.map(provider => (
+                  {availableProviders && availableProviders.map(provider => (
                     <option key={provider} value={provider}>
                       {provider.charAt(0).toUpperCase() + provider.slice(1)} API
                     </option>
