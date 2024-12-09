@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
   Box,
   Button,
@@ -23,7 +23,6 @@ import { FaUserTie, FaUserAlt, FaChartLine, FaCopy, FaCamera } from 'react-icons
 import { useAuth } from '../context/AuthContext';
 import * as htmlToImage from 'html-to-image';
 
-
 const TextTransformer = () => {
   const [inputText, setInputText] = useState('');
   const [outputText, setOutputText] = useState('');
@@ -37,11 +36,6 @@ const TextTransformer = () => {
   const outputRef = useRef(null);
   const toast = useToast();
 
-  const generateFilename = (text) => {
-    if (!text) return 'transformed.png';
-    
-    const commonWords = new Set([
-      'the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for',
   useEffect(() => {
     const fetchProviders = async () => {
       try {
@@ -63,7 +57,13 @@ const TextTransformer = () => {
       }
     };
     fetchProviders();
-  }, []);
+  }, [toast]);
+
+  const generateFilename = (text) => {
+    if (!text) return 'transformed.png';
+    
+    const commonWords = new Set([
+      'the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for',
       'of', 'with', 'by', 'from', 'up', 'about', 'into', 'over', 'after'
     ]);
 
@@ -295,73 +295,83 @@ const TextTransformer = () => {
           </FormLabel>
           <HStack spacing={4} width="100%">
             <Box flex="1">
-              <Select
-                id="persona-select"
-                value={persona}
-                onChange={(e) => setPersona(e.target.value)}
-                size="lg"
-                bg="white"
-                border="2px"
-                borderColor="brand.leatherBrown"
-                h="70px"
+              <VStack spacing={4} align="stretch">
+                <FormLabel
+                  htmlFor="persona-select"
+                  fontSize="lg"
+                  fontWeight="bold"
+                  color="brand.deepBurgundy"
+                >
+                  Writing Persona
+                </FormLabel>
+                <Select
+                  id="persona-select"
+                  value={persona}
+                  onChange={(e) => setPersona(e.target.value)}
+                  size="lg"
+                  bg="white"
+                  border="2px"
+                  borderColor="brand.leatherBrown"
+                  h="70px"
+                  fontSize="lg"
+                  _hover={{
+                    borderColor: 'brand.antiqueGold'
+                  }}
+                  _focus={{
+                    borderColor: 'brand.antiqueGold',
+                    boxShadow: '0 0 0 2px brand.antiqueGold'
+                  }}
+                  icon={<Icon as={
+                    persona === 'personal' ? FaUserAlt :
+                    persona === 'hitchens' ? FaUserTie :
+                    persona === 'trump' ? FaUserAlt :
+                    FaChartLine
+                  } />}
+                  iconSize={24}
+                >
+                  <option value="personal">Personal - Professional & Clear Communication</option>
+                  <option value="hitchens">Christopher Hitchens - Intellectual & Literary Analysis</option>
+                  <option value="trump">Donald Trump - Bold & Direct Communication</option>
+                  <option value="friedman">Milton Friedman - Economic & Analytical Perspective</option>
+                </Select>
+              </VStack>
+            </Box>
+            <Box flex="1">
+              <FormLabel
                 fontSize="lg"
-                _hover={{
-                  borderColor: 'brand.antiqueGold'
-                }}
-                _focus={{
-                  borderColor: 'brand.antiqueGold',
-                  boxShadow: '0 0 0 2px brand.antiqueGold'
-                }}
-                icon={<Icon as={
-                  persona === 'personal' ? FaUserAlt :
-                  persona === 'hitchens' ? FaUserTie :
-                  persona === 'trump' ? FaUserAlt :
-                  FaChartLine
-                } />}
-                iconSize={24}
+                fontWeight="bold"
+                color="brand.deepBurgundy"
+                mb={2}
               >
-            <option value="personal">Personal - Professional & Clear Communication</option>
-            <option value="hitchens">Christopher Hitchens - Intellectual & Literary Analysis</option>
-            <option value="trump">Donald Trump - Bold & Direct Communication</option>
-            <option value="friedman">Milton Friedman - Economic & Analytical Perspective</option>
-          </Select>
-        </Box>
-        <Box flex="1">
-          <FormLabel
-            fontSize="lg"
-            fontWeight="bold"
-            color="brand.deepBurgundy"
-            mb={2}
-          >
-            API Provider
-          </FormLabel>
-          <RadioGroup
-            value={apiProvider}
-            onChange={setApiProvider}
-            display="flex"
-            flexDirection="column"
-            gap={3}
-          >
-            {availableProviders.map(provider => (
-              <Radio
-                key={provider}
-                value={provider}
-                size="lg"
-                borderColor="brand.leatherBrown"
-                _checked={{
-                  borderColor: 'brand.antiqueGold',
-                  bg: 'brand.agedParchment'
-                }}
+                API Provider
+              </FormLabel>
+              <RadioGroup
+                value={apiProvider}
+                onChange={setApiProvider}
+                display="flex"
+                flexDirection="column"
+                gap={3}
               >
-                <Text fontSize="lg" color="brand.deepBurgundy">
-                  {provider.charAt(0).toUpperCase() + provider.slice(1)} API
-                </Text>
-              </Radio>
-            ))}
-          </RadioGroup>
-        </Box>
-      </HStack>
-      <Box mt={2}>
+                {availableProviders.map(provider => (
+                  <Radio
+                    key={provider}
+                    value={provider}
+                    size="lg"
+                    borderColor="brand.leatherBrown"
+                    _checked={{
+                      borderColor: 'brand.antiqueGold',
+                      bg: 'brand.agedParchment'
+                    }}
+                  >
+                    <Text fontSize="lg" color="brand.deepBurgundy">
+                      {provider.charAt(0).toUpperCase() + provider.slice(1)} API
+                    </Text>
+                  </Radio>
+                ))}
+              </RadioGroup>
+            </Box>
+          </HStack>
+          <Box mt={2}>
             {persona === 'hitchens' && (
               <Badge colorScheme="purple" p={2} borderRadius="md">
                 <Icon as={FaUserTie} mr={2} /> Intellectual Style
