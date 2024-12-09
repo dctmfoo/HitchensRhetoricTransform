@@ -27,7 +27,7 @@ const TextTransformer = () => {
   const [persona, setPersona] = useState('hitchens');
   const [verbosity, setVerbosity] = useState('2');
   const [isLoading, setIsLoading] = useState(false);
-  const [typewriterEnabled, setTypewriterEnabled] = useState(true);
+  const [typewriterEnabled, setTypewriterEnabled] = useState(false);
   const [lastTransformedText, setLastTransformedText] = useState('');
   const [apiProvider, setApiProvider] = useState('openai');
   const [availableProviders, setAvailableProviders] = useState([]);
@@ -403,24 +403,40 @@ const TextTransformer = () => {
 
               {/* Typewriter Effect Toggle */}
 
-              {/* Typewriter Effect Toggle */}
-              <FormControl display="flex" alignItems="center" justifyContent="space-between">
+              {/* API Provider Selection */}
+              <FormControl>
                 <FormLabel 
-                  htmlFor="typewriter-toggle" 
-                  mb="0"
+                  htmlFor="api-provider-select"
                   fontSize="lg"
                   fontWeight="bold"
                   color="brand.deepBurgundy"
                 >
-                  Typewriter Effect
+                  Select API Provider
                 </FormLabel>
-                <Switch
-                  id="typewriter-toggle"
-                  isChecked={typewriterEnabled}
-                  onChange={(e) => setTypewriterEnabled(e.target.checked)}
-                  colorScheme="green"
+                <Select
+                  id="api-provider-select"
+                  value={apiProvider}
+                  onChange={(e) => setApiProvider(e.target.value)}
                   size="lg"
-                />
+                  bg="white"
+                  border="2px"
+                  borderColor="brand.leatherBrown"
+                  _hover={{
+                    borderColor: 'brand.antiqueGold'
+                  }}
+                  _focus={{
+                    borderColor: 'brand.antiqueGold',
+                    boxShadow: '0 0 0 1px brand.antiqueGold'
+                  }}
+                  h="60px"
+                  fontSize="md"
+                >
+                  {availableProviders && availableProviders.map(provider => (
+                    <option key={provider} value={provider}>
+                      {provider.charAt(0).toUpperCase() + provider.slice(1)} API
+                    </option>
+                  ))}
+                </Select>
               </FormControl>
 
               {/* Action Buttons */}
