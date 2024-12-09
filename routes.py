@@ -94,10 +94,14 @@ def transform():
 @app.route('/api/config/providers', methods=['GET'])
 @login_required
 def get_api_providers():
-    return jsonify({
-        'providers': list(TRANSFORM_FUNCTIONS.keys()),
-        'default': DEFAULT_API
-    })
+    """Get available API providers and default provider"""
+    try:
+        return jsonify({
+            'providers': list(TRANSFORM_FUNCTIONS.keys()),
+            'default': DEFAULT_API
+        })
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 @app.route('/api/history')
 @login_required

@@ -15,7 +15,9 @@ import {
   Flex,
   Icon,
   Badge,
-  Divider
+  Divider,
+  Radio,
+  RadioGroup
 } from '@chakra-ui/react';
 import { FaUserTie, FaUserAlt, FaChartLine, FaCopy, FaCamera } from 'react-icons/fa';
 import { useAuth } from '../context/AuthContext';
@@ -326,7 +328,6 @@ const TextTransformer = () => {
         </Box>
         <Box flex="1">
           <FormLabel
-            htmlFor="api-select"
             fontSize="lg"
             fontWeight="bold"
             color="brand.deepBurgundy"
@@ -334,30 +335,30 @@ const TextTransformer = () => {
           >
             API Provider
           </FormLabel>
-          <Select
-            id="api-select"
+          <RadioGroup
             value={apiProvider}
-            onChange={(e) => setApiProvider(e.target.value)}
-            size="lg"
-            bg="white"
-            border="2px"
-            borderColor="brand.leatherBrown"
-            h="70px"
-            fontSize="lg"
-            _hover={{
-              borderColor: 'brand.antiqueGold'
-            }}
-            _focus={{
-              borderColor: 'brand.antiqueGold',
-              boxShadow: '0 0 0 2px brand.antiqueGold'
-            }}
+            onChange={setApiProvider}
+            display="flex"
+            flexDirection="column"
+            gap={3}
           >
             {availableProviders.map(provider => (
-              <option key={provider} value={provider}>
-                {provider.charAt(0).toUpperCase() + provider.slice(1)} API
-              </option>
+              <Radio
+                key={provider}
+                value={provider}
+                size="lg"
+                borderColor="brand.leatherBrown"
+                _checked={{
+                  borderColor: 'brand.antiqueGold',
+                  bg: 'brand.agedParchment'
+                }}
+              >
+                <Text fontSize="lg" color="brand.deepBurgundy">
+                  {provider.charAt(0).toUpperCase() + provider.slice(1)} API
+                </Text>
+              </Radio>
             ))}
-          </Select>
+          </RadioGroup>
         </Box>
       </HStack>
       <Box mt={2}>
