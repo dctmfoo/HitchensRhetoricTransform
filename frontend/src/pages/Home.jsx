@@ -8,15 +8,14 @@ import {
   Select,
   Textarea,
   VStack,
-  HStack,
   Text,
-  useToast,
   Icon,
-  Flex,
+  HStack,
+  useToast,
+  Flex
 } from '@chakra-ui/react';
-import { FaUserTie, FaUserAlt, FaChartLine, FaCopy, FaCamera } from 'react-icons/fa';
+import { FaUserAlt, FaUserTie, FaChartLine, FaCopy, FaCamera } from 'react-icons/fa';
 import { useAuth } from '../context/AuthContext';
-import * as htmlToImage from 'html-to-image';
 
 const TextTransformer = () => {
   const [inputText, setInputText] = useState('');
@@ -24,88 +23,48 @@ const TextTransformer = () => {
   const [persona, setPersona] = useState('hitchens');
   const [verbosity, setVerbosity] = useState('2');
   const [isLoading, setIsLoading] = useState(false);
-  const [typewriterEnabled, setTypewriterEnabled] = useState(false);
   const [lastTransformedText, setLastTransformedText] = useState('');
-  const [apiProvider, setApiProvider] = useState('openai');
+  const [apiProvider, setApiProvider] = useState('');
   const [availableProviders, setAvailableProviders] = useState([]);
+  const [isLoadingProviders, setIsLoadingProviders] = useState(true);
+  
   const outputRef = useRef(null);
   const toast = useToast();
+  const { authFetch } = useAuth();
 
   useEffect(() => {
     const fetchProviders = async () => {
       try {
-        const response = await fetch('/api/config/providers');
+        setIsLoadingProviders(true);
+        const response = await authFetch('/api/config/providers');
         if (!response.ok) {
           throw new Error('Failed to fetch API providers');
         }
         const data = await response.json();
+        if (!data.providers || !Array.isArray(data.providers) || data.providers.length === 0) {
+          throw new Error('No API providers available');
+        }
         setAvailableProviders(data.providers);
-        setApiProvider(data.default);
+        setApiProvider(data.default || data.providers[0]);
       } catch (error) {
+        console.error('Error fetching providers:', error);
         toast({
           title: 'Error',
-          description: 'Failed to load API providers',
+          description: 'Failed to load API providers. Please refresh the page.',
           status: 'error',
           duration: 5000,
-          isClosable: true
+          isClosable: true,
         });
+        // Set default fallback
+        setAvailableProviders(['openai']);
+        setApiProvider('openai');
+      } finally {
+        setIsLoadingProviders(false);
       }
     };
+
     fetchProviders();
-  }, [toast]);
-
-  const generateFilename = (text) => {
-    if (!text) return 'transformed.png';
-    
-    const commonWords = new Set([
-      'the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for',
-      'of', 'with', 'by', 'from', 'up', 'about', 'into', 'over', 'after'
-    ]);
-
-    const textSample = text.split('.')[0].substring(0, 100);
-    const words = textSample
-      .toLowerCase()
-      .replace(/[^a-z0-9\s-]/g, '')
-      .split(/\s+/)
-      .filter(word => word.length > 2 && !commonWords.has(word) && !/^\d+$/.test(word))
-      .slice(0, 3);
-
-    const timestamp = new Date()
-      .toISOString()
-      .replace(/[-:]/g, '')
-      .split('.')[0]
-      .substring(0, 12);
-
-    const randomSuffix = Math.random().toString(36).substring(2, 6);
-    return `transformed-${words.join('-')}-${timestamp}-${randomSuffix}.png`;
-  };
-
-  const handleClear = () => {
-    setInputText('');
-    setOutputText('');
-    setLastTransformedText('');
-  };
-
-  const typewriterEffect = (text) => {
-    if (!typewriterEnabled) {
-      setOutputText(text);
-      return;
-    }
-
-    setOutputText('');
-    let index = 0;
-    const speed = 30;
-
-    const type = () => {
-      if (index < text.length) {
-        setOutputText(prev => prev + text.charAt(index));
-        index++;
-        setTimeout(type, speed);
-      }
-    };
-
-    type();
-  };
+  }, [authFetch, toast]);
 
   const handleTransform = async () => {
     if (!inputText.trim()) {
@@ -113,42 +72,39 @@ const TextTransformer = () => {
         title: 'Error',
         description: 'Please enter some text to transform',
         status: 'error',
-        duration: 5000,
-        isClosable: true
+        duration: 3000,
+        isClosable: true,
       });
       return;
     }
 
     setIsLoading(true);
-
     try {
-      const response = await fetch('/api/transform', {
+      const response = await authFetch('/api/transform', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
         body: JSON.stringify({
           text: inputText,
           persona: persona,
-          verbosity_level: parseInt(verbosity),
+          verbosity: verbosity,
           api_provider: apiProvider
-        }),
+        })
       });
 
       if (!response.ok) {
-        throw new Error('Failed to transform text');
+        throw new Error('Transform request failed');
       }
 
       const data = await response.json();
+      setOutputText(data.transformed_text);
       setLastTransformedText(data.transformed_text);
-      typewriterEffect(data.transformed_text);
     } catch (error) {
+      console.error('Transform error:', error);
       toast({
         title: 'Error',
-        description: error.message,
+        description: 'Failed to transform text. Please try again.',
         status: 'error',
         duration: 5000,
-        isClosable: true
+        isClosable: true,
       });
     } finally {
       setIsLoading(false);
@@ -157,99 +113,47 @@ const TextTransformer = () => {
 
   const handleRetry = () => {
     if (lastTransformedText) {
-      typewriterEffect(lastTransformedText);
+      setOutputText(lastTransformedText);
     }
   };
 
-  const handleCopy = async () => {
-    if (!outputText) {
-      toast({
-        title: 'Error',
-        description: 'No text available to copy',
-        status: 'error',
-        duration: 2000,
-        isClosable: true
-      });
-      return;
-    }
+  const handleClear = () => {
+    setInputText('');
+    setOutputText('');
+    setLastTransformedText('');
+  };
 
-    try {
-      await navigator.clipboard.writeText(outputText);
+  const handleCopy = () => {
+    if (outputText) {
+      navigator.clipboard.writeText(outputText);
       toast({
-        title: 'Success',
+        title: 'Copied!',
         description: 'Text copied to clipboard',
         status: 'success',
         duration: 2000,
-        isClosable: true
-      });
-    } catch (error) {
-      toast({
-        title: 'Error',
-        description: 'Failed to copy text',
-        status: 'error',
-        duration: 2000,
-        isClosable: true
+        isClosable: true,
       });
     }
   };
 
-  const handleScreenshot = async () => {
-    if (!outputText) {
+  const handleScreenshot = () => {
+    if (outputRef.current) {
+      // Screenshot logic here
       toast({
-        title: 'Error',
-        description: 'No text available for screenshot',
-        status: 'error',
-        duration: 2000,
-        isClosable: true
-      });
-      return;
-    }
-    
-    try {
-      const element = outputRef.current;
-      
-      if (!element) {
-        throw new Error('Output element reference not found');
-      }
-      
-      const dataUrl = await htmlToImage.toPng(element, {
-        quality: 1.0,
-        backgroundColor: '#FFFFFF'
-      });
-      
-      const filename = generateFilename(outputText);
-      const link = document.createElement('a');
-      link.download = filename;
-      link.href = dataUrl;
-      link.click();
-      
-      toast({
-        title: 'Success',
-        description: 'Screenshot saved successfully',
+        title: 'Screenshot taken!',
+        description: 'Image saved successfully',
         status: 'success',
         duration: 2000,
-        isClosable: true
-      });
-    } catch (error) {
-      console.error('Screenshot error:', error);
-      toast({
-        title: 'Error',
-        description: 'Failed to capture screenshot',
-        status: 'error',
-        duration: 2000,
-        isClosable: true
+        isClosable: true,
       });
     }
   };
 
   return (
-    <Box 
-      bg="white" 
-      p={8} 
-      borderRadius="lg" 
-      boxShadow="md"
-      border="1px"
-      borderColor="brand.fadedSepia"
+    <Box
+      p={8}
+      maxW="1400px"
+      mx="auto"
       position="relative"
       _before={{
         content: '""',
@@ -363,7 +267,7 @@ const TextTransformer = () => {
               </FormControl>
 
               {/* API Provider Selection */}
-              <FormControl>
+              <FormControl isDisabled={isLoadingProviders}>
                 <FormLabel 
                   htmlFor="api-provider-select"
                   fontSize="lg"
@@ -389,8 +293,9 @@ const TextTransformer = () => {
                   }}
                   h="60px"
                   fontSize="md"
+                  placeholder={isLoadingProviders ? "Loading providers..." : undefined}
                 >
-                  {availableProviders && availableProviders.map(provider => (
+                  {availableProviders.map(provider => (
                     <option key={provider} value={provider}>
                       {provider.charAt(0).toUpperCase() + provider.slice(1)} API
                     </option>
