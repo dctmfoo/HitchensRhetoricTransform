@@ -44,6 +44,7 @@ def serve_react(path):
     return send_from_directory(os.path.join(app.static_folder, 'react'), 'index.html')
 
 @app.route('/promote-admin/<username>')
+@login_required
 def promote_to_admin(username):
     user = User.query.filter_by(username=username).first()
     if user:
@@ -90,10 +91,7 @@ def transform():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-@app.route('/api/history')
-@token_required
 @app.route('/api/config/providers', methods=['GET'])
-@token_required
 @login_required
 def get_api_providers():
     return jsonify({
@@ -101,6 +99,7 @@ def get_api_providers():
         'default': DEFAULT_API
     })
 
+@app.route('/api/history')
 @login_required
 def history():
     try:

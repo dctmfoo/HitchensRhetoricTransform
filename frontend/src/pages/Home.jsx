@@ -30,6 +30,8 @@ const TextTransformer = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [typewriterEnabled, setTypewriterEnabled] = useState(true);
   const [lastTransformedText, setLastTransformedText] = useState('');
+  const [apiProvider, setApiProvider] = useState('openai');
+  const [availableProviders, setAvailableProviders] = useState([]);
   const outputRef = useRef(null);
   const toast = useToast();
 
@@ -38,6 +40,28 @@ const TextTransformer = () => {
     
     const commonWords = new Set([
       'the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for',
+  useEffect(() => {
+    const fetchProviders = async () => {
+      try {
+        const response = await fetch('/api/config/providers');
+        if (!response.ok) {
+          throw new Error('Failed to fetch API providers');
+        }
+        const data = await response.json();
+        setAvailableProviders(data.providers);
+        setApiProvider(data.default);
+      } catch (error) {
+        toast({
+          title: 'Error',
+          description: 'Failed to load API providers',
+          status: 'error',
+          duration: 5000,
+          isClosable: true
+        });
+      }
+    };
+    fetchProviders();
+  }, []);
       'of', 'with', 'by', 'from', 'up', 'about', 'into', 'over', 'after'
     ]);
 
@@ -109,7 +133,8 @@ const TextTransformer = () => {
         body: JSON.stringify({
           text: inputText,
           persona: persona,
-          verbosity_level: parseInt(verbosity)
+          verbosity_level: parseInt(verbosity),
+          api_provider: apiProvider
         }),
       });
 
@@ -266,10 +291,53 @@ const TextTransformer = () => {
           >
             Choose Your Writing Persona
           </FormLabel>
+          <HStack spacing={4} width="100%">
+            <Box flex="1">
+              <Select
+                id="persona-select"
+                value={persona}
+                onChange={(e) => setPersona(e.target.value)}
+                size="lg"
+                bg="white"
+                border="2px"
+                borderColor="brand.leatherBrown"
+                h="70px"
+                fontSize="lg"
+                _hover={{
+                  borderColor: 'brand.antiqueGold'
+                }}
+                _focus={{
+                  borderColor: 'brand.antiqueGold',
+                  boxShadow: '0 0 0 2px brand.antiqueGold'
+                }}
+                icon={<Icon as={
+                  persona === 'personal' ? FaUserAlt :
+                  persona === 'hitchens' ? FaUserTie :
+                  persona === 'trump' ? FaUserAlt :
+                  FaChartLine
+                } />}
+                iconSize={24}
+              >
+            <option value="personal">Personal - Professional & Clear Communication</option>
+            <option value="hitchens">Christopher Hitchens - Intellectual & Literary Analysis</option>
+            <option value="trump">Donald Trump - Bold & Direct Communication</option>
+            <option value="friedman">Milton Friedman - Economic & Analytical Perspective</option>
+          </Select>
+        </Box>
+        <Box flex="1">
+          <FormLabel
+            htmlFor="api-select"
+            fontSize="lg"
+            fontWeight="bold"
+            color="brand.deepBurgundy"
+            mb={2}
+          >
+            API Provider
+          </FormLabel>
           <Select
-            id="persona-select"
-            value={persona}
-            onChange={(e) => setPersona(e.target.value)}
+            id="api-select"
+            value={apiProvider}
+            onChange={(e) => setApiProvider(e.target.value)}
             size="lg"
             bg="white"
             border="2px"
@@ -283,20 +351,16 @@ const TextTransformer = () => {
               borderColor: 'brand.antiqueGold',
               boxShadow: '0 0 0 2px brand.antiqueGold'
             }}
-            icon={<Icon as={
-              persona === 'personal' ? FaUserAlt :
-              persona === 'hitchens' ? FaUserTie :
-              persona === 'trump' ? FaUserAlt :
-              FaChartLine
-            } />}
-            iconSize={24}
           >
-            <option value="personal">Personal - Professional & Clear Communication</option>
-            <option value="hitchens">Christopher Hitchens - Intellectual & Literary Analysis</option>
-            <option value="trump">Donald Trump - Bold & Direct Communication</option>
-            <option value="friedman">Milton Friedman - Economic & Analytical Perspective</option>
+            {availableProviders.map(provider => (
+              <option key={provider} value={provider}>
+                {provider.charAt(0).toUpperCase() + provider.slice(1)} API
+              </option>
+            ))}
           </Select>
-          <Box mt={2}>
+        </Box>
+      </HStack>
+      <Box mt={2}>
             {persona === 'hitchens' && (
               <Badge colorScheme="purple" p={2} borderRadius="md">
                 <Icon as={FaUserTie} mr={2} /> Intellectual Style
