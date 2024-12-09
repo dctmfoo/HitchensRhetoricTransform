@@ -336,74 +336,7 @@ const TextTransformer = () => {
                 </Select>
               </VStack>
             </Box>
-            <Box flex="1">
-              <FormLabel
-                fontSize="lg"
-                fontWeight="bold"
-                color="brand.deepBurgundy"
-                mb={4}
-              >
-                API Provider
-              </FormLabel>
-              <RadioGroup
-                value={apiProvider}
-                onChange={setApiProvider}
-                display="flex"
-                flexDirection="column"
-                gap={3}
-              >
-                {availableProviders.map(provider => (
-                  <Radio
-                    key={provider}
-                    value={provider}
-                    size="lg"
-                    borderColor="brand.leatherBrown"
-                    _checked={{
-                      borderColor: 'brand.antiqueGold',
-                      bg: 'brand.agedParchment'
-                    }}
-                  >
-                    <Text fontSize="lg" color="brand.deepBurgundy">
-                      {provider.charAt(0).toUpperCase() + provider.slice(1)} API
-                    </Text>
-                  </Radio>
-                ))}
-              </RadioGroup>
-            </Box>
-            <Box flex="1">
-              <FormLabel
-                fontSize="lg"
-                fontWeight="bold"
-                color="brand.deepBurgundy"
-                mb={2}
-              >
-                API Provider
-              </FormLabel>
-              <RadioGroup
-                value={apiProvider}
-                onChange={setApiProvider}
-                display="flex"
-                flexDirection="column"
-                gap={3}
-              >
-                {availableProviders.map(provider => (
-                  <Radio
-                    key={provider}
-                    value={provider}
-                    size="lg"
-                    borderColor="brand.leatherBrown"
-                    _checked={{
-                      borderColor: 'brand.antiqueGold',
-                      bg: 'brand.agedParchment'
-                    }}
-                  >
-                    <Text fontSize="lg" color="brand.deepBurgundy">
-                      {provider.charAt(0).toUpperCase() + provider.slice(1)} API
-                    </Text>
-                  </Radio>
-                ))}
-              </RadioGroup>
-            </Box>
+            
           </HStack>
           <Box mt={2}>
             {persona === 'hitchens' && (
@@ -472,6 +405,41 @@ const TextTransformer = () => {
                   <option value="1">Concise - Brief Response</option>
                   <option value="2">Moderate - Balanced Length</option>
                   <option value="3">Verbose - Detailed Analysis</option>
+                </Select>
+              </FormControl>
+
+              <FormControl>
+                <FormLabel 
+                  htmlFor="api-provider-select"
+                  fontSize="lg"
+                  fontWeight="bold"
+                  color="brand.deepBurgundy"
+                >
+                  API Provider
+                </FormLabel>
+                <Select
+                  id="api-provider-select"
+                  value={apiProvider}
+                  onChange={(e) => setApiProvider(e.target.value)}
+                  size="lg"
+                  bg="white"
+                  border="2px"
+                  borderColor="brand.leatherBrown"
+                  _hover={{
+                    borderColor: 'brand.antiqueGold'
+                  }}
+                  _focus={{
+                    borderColor: 'brand.antiqueGold',
+                    boxShadow: '0 0 0 1px brand.antiqueGold'
+                  }}
+                  h="60px"
+                  fontSize="md"
+                >
+                  {availableProviders.map(provider => (
+                    <option key={provider} value={provider}>
+                      {provider.charAt(0).toUpperCase() + provider.slice(1)} API
+                    </option>
+                  ))}
                 </Select>
               </FormControl>
 
