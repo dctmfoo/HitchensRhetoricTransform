@@ -6,12 +6,23 @@ from models import Transformation, User
 from utils.openai_helper import transform_text as openai_transform
 from utils.gemini_helper import transform_text as gemini_transform
 
-# Configure transform functions
+# Configure transform functions with error handling
 TRANSFORM_FUNCTIONS = {
     'openai': openai_transform,
     'gemini': gemini_transform
 }
-DEFAULT_API = 'openai'
+
+# Validate transform functions and set default
+available_transforms = {k: v for k, v in TRANSFORM_FUNCTIONS.items() if v is not None}
+if not available_transforms:
+    app.logger.error("No transform functions available")
+    TRANSFORM_FUNCTIONS = {}
+else:
+    TRANSFORM_FUNCTIONS = available_transforms
+
+DEFAULT_API = 'openai'  # Default to OpenAI if available
+if DEFAULT_API not in TRANSFORM_FUNCTIONS:
+    DEFAULT_API = next(iter(TRANSFORM_FUNCTIONS.keys())) if TRANSFORM_FUNCTIONS else None
 
 from auth import auth
 import os
@@ -96,11 +107,17 @@ def transform():
 def get_api_providers():
     """Get available API providers and default provider"""
     try:
+        # Ensure we have at least one provider available
+        available_providers = list(TRANSFORM_FUNCTIONS.keys())
+        if not available_providers:
+            return jsonify({'error': 'No API providers configured'}), 500
+            
         return jsonify({
-            'providers': list(TRANSFORM_FUNCTIONS.keys()),
-            'default': DEFAULT_API
+            'providers': available_providers,
+            'default': DEFAULT_API if DEFAULT_API in available_providers else available_providers[0]
         })
     except Exception as e:
+        app.logger.error(f"Error fetching API providers: {str(e)}")
         return jsonify({'error': str(e)}), 500
 
 @app.route('/api/history')

@@ -45,19 +45,20 @@ const TextTransformer = () => {
           throw new Error('No API providers available');
         }
         setAvailableProviders(data.providers);
-        setApiProvider(data.default || data.providers[0]);
+        setApiProvider(data.default || data.providers[0]); // Set default or first provider
       } catch (error) {
         console.error('Error fetching providers:', error);
         toast({
           title: 'Error',
-          description: 'Failed to load API providers. Please refresh the page.',
+          description: 'Failed to load API providers. Using fallback options.',
           status: 'error',
           duration: 5000,
           isClosable: true,
         });
-        // Set default fallback
-        setAvailableProviders(['openai']);
-        setApiProvider('openai');
+        // Set fallback providers if fetching fails
+        const fallbackProviders = ['openai', 'default-provider'];
+        setAvailableProviders(fallbackProviders);
+        setApiProvider(fallbackProviders[0]);
       } finally {
         setIsLoadingProviders(false);
       }
@@ -230,9 +231,7 @@ const TextTransformer = () => {
               }}
             />
 
-            {/* Controls Section */}
             <VStack spacing={4} align="stretch">
-              {/* Response Length Control */}
               <FormControl>
                 <FormLabel 
                   htmlFor="verbosity-select"
@@ -266,7 +265,6 @@ const TextTransformer = () => {
                 </Select>
               </FormControl>
 
-              {/* API Provider Selection */}
               <FormControl isDisabled={isLoadingProviders}>
                 <FormLabel 
                   htmlFor="api-provider-select"
@@ -293,17 +291,20 @@ const TextTransformer = () => {
                   }}
                   h="60px"
                   fontSize="md"
-                  placeholder={isLoadingProviders ? "Loading providers..." : undefined}
+                  placeholder={isLoadingProviders ? "Loading providers..." : "Select a provider"}
                 >
-                  {availableProviders.map(provider => (
-                    <option key={provider} value={provider}>
-                      {provider.charAt(0).toUpperCase() + provider.slice(1)} API
-                    </option>
-                  ))}
+                  {availableProviders.length > 0 ? (
+                    availableProviders.map((provider) => (
+                      <option key={provider} value={provider}>
+                        {provider.charAt(0).toUpperCase() + provider.slice(1)} API
+                      </option>
+                    ))
+                  ) : (
+                    <option disabled>No providers available</option>
+                  )}
                 </Select>
               </FormControl>
 
-              {/* Action Buttons */}
               <HStack spacing={4}>
                 <Button
                   onClick={handleTransform}
@@ -348,7 +349,6 @@ const TextTransformer = () => {
             </VStack>
           </VStack>
 
-          {/* Output Section */}
           <VStack flex={1} spacing={4} align="stretch">
             <HStack justify="space-between">
               <Text fontWeight="bold" fontSize="lg">Transformed Text</Text>
@@ -450,6 +450,5 @@ const TextTransformer = () => {
 };
 
 export default function Home() {
-  const { isAuthenticated } = useAuth();
   return <TextTransformer />;
 }
