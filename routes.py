@@ -1,10 +1,14 @@
-from flask import render_template, request, jsonify, send_from_directory
+from flask import Blueprint, request, jsonify, send_from_directory
 from flask_login import login_required, current_user
 from functools import wraps
-from app import app, db, verify_token
+import os
+from extensions import db
 from models import Transformation, User
 from utils.openai_helper import transform_text as openai_transform
 from utils.gemini_helper import transform_text as gemini_transform
+
+# Create blueprint
+main = Blueprint('main', __name__)
 
 # Configure transform functions with error handling
 TRANSFORM_FUNCTIONS = {
@@ -15,7 +19,7 @@ TRANSFORM_FUNCTIONS = {
 # Validate transform functions and set default
 available_transforms = {k: v for k, v in TRANSFORM_FUNCTIONS.items() if v is not None}
 if not available_transforms:
-    app.logger.error("No transform functions available")
+    main.logger.error("No transform functions available")
     TRANSFORM_FUNCTIONS = {}
 else:
     TRANSFORM_FUNCTIONS = available_transforms
@@ -23,12 +27,6 @@ else:
 DEFAULT_API = 'openai'  # Default to OpenAI if available
 if DEFAULT_API not in TRANSFORM_FUNCTIONS:
     DEFAULT_API = next(iter(TRANSFORM_FUNCTIONS.keys())) if TRANSFORM_FUNCTIONS else None
-
-from auth import auth
-import os
-
-# Register the auth blueprint
-app.register_blueprint(auth)
 
 def token_required(f):
     @wraps(f)
@@ -41,30 +39,21 @@ def token_required(f):
         if token.startswith('Bearer '):
             token = token[7:]
         
-        user_id = verify_token(token)
+        from flask import current_app
+        user_id = current_app.verify_token(token)
         if not user_id:
             return jsonify({'error': 'Invalid or expired token'}), 401
         return f(*args, **kwargs)
     return decorated
 
-@app.route('/', defaults={'path': ''})
-@app.route('/<path:path>')
+@main.route('/', defaults={'path': ''})
+@main.route('/<path:path>')
 def serve_react(path):
-    if path and os.path.exists(os.path.join(app.static_folder, 'react', path)):
-        return send_from_directory(os.path.join(app.static_folder, 'react'), path)
-    return send_from_directory(os.path.join(app.static_folder, 'react'), 'index.html')
+    if path and os.path.exists(os.path.join(main.static_folder, 'react', path)):
+        return send_from_directory(os.path.join(main.static_folder, 'react'), path)
+    return send_from_directory(os.path.join(main.static_folder, 'react'), 'index.html')
 
-@app.route('/promote-admin/<username>')
-@login_required
-def promote_to_admin(username):
-    user = User.query.filter_by(username=username).first()
-    if user:
-        user.is_admin = True
-        db.session.commit()
-        return jsonify({'message': f'User {username} promoted to admin'})
-    return jsonify({'error': 'User not found'}), 404
-
-@app.route('/api/transform', methods=['POST'])
+@main.route('/api/transform', methods=['POST'])
 @login_required
 def transform():
     try:
@@ -102,7 +91,7 @@ def transform():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-@app.route('/api/config/providers', methods=['GET'])
+@main.route('/api/config/providers', methods=['GET'])
 @login_required
 def get_api_providers():
     """Get available API providers and default provider"""
@@ -117,10 +106,10 @@ def get_api_providers():
             'default': DEFAULT_API if DEFAULT_API in available_providers else available_providers[0]
         })
     except Exception as e:
-        app.logger.error(f"Error fetching API providers: {str(e)}")
+        main.logger.error(f"Error fetching API providers: {str(e)}")
         return jsonify({'error': str(e)}), 500
 
-@app.route('/api/history')
+@main.route('/api/history')
 @login_required
 def history():
     try:

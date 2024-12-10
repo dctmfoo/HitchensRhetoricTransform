@@ -1,7 +1,7 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, current_app
 from flask_login import login_user, logout_user, login_required, current_user
 from models import User, db
-from app import generate_token
+from utils.token import generate_token, verify_token
 
 auth = Blueprint('auth', __name__)
 
@@ -25,7 +25,7 @@ def register():
     db.session.commit()
     
     login_user(user)
-    token = generate_token(user.id)
+    token = generate_token(user.id, current_app.config['JWT_SECRET_KEY'])
     
     return jsonify({
         'message': 'Registration successful',
@@ -46,7 +46,7 @@ def login():
         return jsonify({'error': 'Invalid username or password'}), 401
     
     login_user(user)
-    token = generate_token(user.id)
+    token = generate_token(user.id, current_app.config['JWT_SECRET_KEY'])
     
     return jsonify({
         'message': 'Login successful',
