@@ -12,41 +12,38 @@ import jwt
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+# Initialize Flask app
+app = Flask(__name__, 
+    static_folder='static/react',
+    static_url_path=''
+)
+
+# Enable CORS
+CORS(app)
+
+# Configuration
+app.config.update(
+    SECRET_KEY=os.environ.get("FLASK_SECRET_KEY", "hitchens_secret_key"),
+    SQLALCHEMY_DATABASE_URI=os.environ.get("DATABASE_URL"),
+    SQLALCHEMY_ENGINE_OPTIONS={
+        "pool_recycle": 300,
+        "pool_pre_ping": True,
+    },
+    JWT_SECRET_KEY=os.environ.get("JWT_SECRET_KEY", "hitchens_secret_key"),
+    JWT_ACCESS_TOKEN_EXPIRES=timedelta(days=1)
+)
+
+# Initialize database
 class Base(DeclarativeBase):
     pass
 
 db = SQLAlchemy(model_class=Base)
+db.init_app(app)
+
+# Initialize login manager
 login_manager = LoginManager()
-
-def create_app():
-    app = Flask(__name__)
-    
-    # Enable CORS
-    CORS(app)
-    
-    # Configuration
-    app.secret_key = os.environ.get("FLASK_SECRET_KEY", "hitchens_secret_key")
-    app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URL")
-    app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
-        "pool_recycle": 300,
-        "pool_pre_ping": True,
-    }
-    app.config['JWT_SECRET_KEY'] = os.environ.get("JWT_SECRET_KEY", app.secret_key)
-    app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(days=1)
-    
-    try:
-        # Initialize extensions
-        db.init_app(app)
-        login_manager.init_app(app)
-        login_manager.login_view = 'auth.login'
-        
-        logger.info("Successfully initialized Flask application")
-        return app
-    except Exception as e:
-        logger.error(f"Failed to initialize Flask application: {str(e)}")
-        raise
-
-app = create_app()
+login_manager.init_app(app)
+login_manager.login_view = 'auth.login'
 
 def generate_token(user_id):
     """Generate JWT token for the user"""
@@ -75,19 +72,27 @@ def load_user(user_id):
     from models import User
     return User.query.get(int(user_id))
 
+# Import models first to ensure they're registered
+import models
+
+# Import routes and register blueprints
+from routes import *
+from admin import admin
+app.register_blueprint(admin)
+
+# Create all tables
+with app.app_context():
+    try:
+        db.create_all()
+        logger.info("Database tables created successfully")
+    except Exception as e:
+        logger.error(f"Error creating database tables: {str(e)}")
+        raise
+
 if __name__ == '__main__':
     try:
-        # Import routes after app initialization
-        with app.app_context():
-            from routes import *
-            from admin import admin
-            import models
-            
-            app.register_blueprint(admin)
-            db.create_all()
-            
-            logger.info("Starting Flask server...")
-            app.run(host='0.0.0.0', port=5000, debug=True)
+        logger.info("Starting Flask server...")
+        app.run(host='0.0.0.0', port=5000, debug=True)
     except Exception as e:
         logger.error(f"Failed to start Flask server: {str(e)}")
         raise
