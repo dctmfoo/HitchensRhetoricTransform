@@ -3,12 +3,13 @@ from flask_login import login_required, current_user
 from functools import wraps
 import os
 from extensions import db
-from models import Transformation, User
+# Import models after db is initialized
+from models import User, Transformation
 from utils.openai_helper import transform_text as openai_transform
 from utils.gemini_helper import transform_text as gemini_transform
 
 # Create blueprint
-main = Blueprint('main', __name__)
+main = Blueprint('main', __name__, static_folder='static/react', static_url_path='/')
 
 # Configure transform functions with error handling
 TRANSFORM_FUNCTIONS = {
@@ -46,12 +47,16 @@ def token_required(f):
         return f(*args, **kwargs)
     return decorated
 
-@main.route('/', defaults={'path': ''})
+@main.route('/', defaults={'path': 'index.html'})
 @main.route('/<path:path>')
 def serve_react(path):
-    if path and os.path.exists(os.path.join(main.static_folder, 'react', path)):
-        return send_from_directory(os.path.join(main.static_folder, 'react'), path)
-    return send_from_directory(os.path.join(main.static_folder, 'react'), 'index.html')
+    try:
+        if path != "index.html" and os.path.exists(os.path.join(main.static_folder, path)):
+            return send_from_directory(main.static_folder, path)
+        return send_from_directory(main.static_folder, 'index.html')
+    except Exception as e:
+        logger.error(f"Error serving static file: {str(e)}")
+        return f"Error serving file: {str(e)}", 500
 
 @main.route('/api/transform', methods=['POST'])
 @login_required
